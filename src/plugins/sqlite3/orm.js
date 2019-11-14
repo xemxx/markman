@@ -16,7 +16,7 @@ export default class SqliteDB {
     }
     createTable(sql) {
         this.db.serialize(() => {
-            this.db.run(sql, function (err) {
+            this.db.run(sql, (err) => {
                 if (null != err) {
                     this.printErrorInfo(err);
                     return;
@@ -25,18 +25,17 @@ export default class SqliteDB {
         });
     }
     insertData(sql, objects) {
-        this.db.serialize(function () {
-            var stmt = this.db.prepare(sql);
-            for (var i = 0; i < objects.length; ++i) {
+        this.db.serialize(() => {
+            let stmt = this.db.prepare(sql);
+            for (let i = 0; i < objects.length; ++i) {
                 stmt.run(objects[i]);
             }
-
             stmt.finalize();
         });
 
     }
     queryData(sql, callback) {
-        this.db.all(sql, function (err, rows) {
+        this.db.all(sql, (err, rows) => {
             if (null != err) {
                 this.printErrorInfo(err);
                 return;
@@ -49,7 +48,7 @@ export default class SqliteDB {
         });
     }
     executeSql(sql) {
-        this.db.run(sql, function (err) {
+        this.db.run(sql, (err) => {
             if (null != err) {
                 this.printErrorInfo(err);
             }
@@ -92,8 +91,8 @@ export default class SqliteDB {
 // /// tilesData format; [[level, column, row, content], [level, column, row, content]]
 // DB.SqliteDB.prototype.insertData = function (sql, objects) {
 //     DB.db.serialize(function () {
-//         var stmt = DB.db.prepare(sql);
-//         for (var i = 0; i < objects.length; ++i) {
+//         let stmt = DB.db.prepare(sql);
+//         for (let i = 0; i < objects.length; ++i) {
 //             stmt.run(objects[i]);
 //         }
 

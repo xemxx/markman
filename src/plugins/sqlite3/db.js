@@ -8,17 +8,7 @@ let dbPath = path.join(remote.app.getPath('userData'), 'data.db');
 
 let sqlite = new SqliteDB(dbPath);
 
-// let dbsql = fs.readFileSync('src/assets/db.sql', (err, data) => {
-//     if (err) {
-//         console.log(err);
-//     }
-//     dbsql = data;
-// })
-// sqlite.db.run(dbsql.toString(), function (err) {
-//     if (err)
-//         console.log(err);
-// });
-function build() {
+sqlite.build = function () {
     sqlite.createTable(sql.user);
     sqlite.createTable(sql.article);
     sqlite.createTable(sql.floder);
@@ -27,9 +17,8 @@ function build() {
     sqlite.createTable(sql.tag_article);
     sqlite.executeSql(sql.article_uuid_idx);
     sqlite.executeSql(sql.floder_uuid_idx);
+    sqlite.executeSql(sql.user_username_idx);
 }
-build();
-
-//TODO: sync
+sqlite.build();
 
 Vue.prototype.$db = sqlite;
