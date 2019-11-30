@@ -11,15 +11,18 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'sign',
     component: Sign,
     children: [
       {
-        path: 'in',
+        path: '',
         component: SignIn
       },
       {
-        path: 'up',
+        path: 'signin',
+        component: SignIn
+      },
+      {
+        path: 'signup',
         component: SignUp
       }
     ]
@@ -27,7 +30,8 @@ const routes = [
   {
     path: '/Editor',
     name: 'editor',
-    component: Editor
+    component: Editor,
+    meta: { auth: true }
   }
 ]
 

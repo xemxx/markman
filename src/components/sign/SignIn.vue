@@ -1,6 +1,11 @@
 <template>
   <div>
-    <Form ref="formInline" :model="formInline" :rules="ruleInline" :label-width="80">
+    <Form
+      ref="formInline"
+      :model="formInline"
+      :rules="ruleInline"
+      :label-width="80"
+    >
       <FormItem prop="server">
         <Input type="text" v-model="formInline.server" placeholder="服务器地址">
           <Icon type="ios-person-outline" slot="prepend"></Icon>
@@ -17,7 +22,9 @@
         </Input>
       </FormItem>
       <FormItem>
-        <Button type="primary" @click="handleSubmit('formInline')">Signin</Button>
+        <Button type="primary" @click="handleSubmit('formInline')"
+          >Signin</Button
+        >
       </FormItem>
     </Form>
   </div>
@@ -72,5 +79,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

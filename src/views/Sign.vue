@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Layout>
+    <Layout style="height:100vh">
       <Header>
-        <router-link to="in">登陆</router-link>
-        <router-link to="up">注册</router-link>
+        <router-link to="signin">登陆</router-link>
+        <router-link to="signup">注册</router-link>
       </Header>
       <Content>
         <router-view></router-view>
@@ -22,5 +22,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
