@@ -36,7 +36,7 @@ export default {
   user: `CREATE TABLE IF NOT EXISTS "user" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "username" TEXT,
-  "password" TEXT,
+  "token" TEXT,
   "state" integer,
   "server" TEXT
 )

@@ -24,7 +24,7 @@ export default class SqliteDB {
             });
         });
     }
-    insertData(sql, objects) {
+    bindAndRun(sql, objects) {
         this.db.serialize(() => {
             let stmt = this.db.prepare(sql);
             for (let i = 0; i < objects.length; ++i) {

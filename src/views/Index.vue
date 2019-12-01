@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <Layout :style="{minHeight: '100vh'}">
+    <Layout :style="{ minHeight: '100vh' }">
       <Sider hide-trigger>
         <Floder @load-article="loadArticle" />
       </Sider>
@@ -13,12 +13,16 @@
 <script>
 import Floder from "@/components/Floder.vue";
 export default {
-  name: "home",
+  name: "index",
   components: {
     Floder
   },
+  mounted() {
+    //TODO 做自动登陆时的用户信息验证及更新
+  },
   methods: {
     loadArticle(id) {
+      // TODO 加载本地文章以及离线编辑时的处理
       let user = "xem";
       let data;
       this.$db.queryData(

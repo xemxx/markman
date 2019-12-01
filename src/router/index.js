@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Editor from '../views/Editor.vue'
+import Index from '../views/Index.vue'
 import Sign from '../views/Sign.vue'
 import SignUp from '../components/sign/SignUp.vue'
 import SignIn from '../components/sign/SignIn.vue'
@@ -10,27 +10,23 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
+    path: '/sign',
     component: Sign,
     children: [
       {
-        path: '',
+        path: 'in',
         component: SignIn
       },
       {
-        path: 'signin',
-        component: SignIn
-      },
-      {
-        path: 'signup',
+        path: 'up',
         component: SignUp
       }
     ]
   },
   {
-    path: '/Editor',
-    name: 'editor',
-    component: Editor,
+    path: '/',
+    name: 'Index',
+    component: Index,
     meta: { auth: true }
   }
 ]

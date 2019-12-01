@@ -90,11 +90,10 @@ export default {
               let data = response.data;
               if (data.err == 200) {
                 //成功，保存本地数据
-                let sql =
-                  "insert into user (server ,username,password) values (?,?,?)";
-                db.insertData(sql, [[user.server, user.user, user.password]]);
+                let sql = "insert into user (server ,username) values (?,?)";
+                db.bindAndRun(sql, [[user.server, user.user]]);
                 msg.success("注册成功!请手动登陆:)");
-                router.push("/signin");
+                router.push("/sign/in");
               } else {
                 //打印服务端提供的错误信息
                 msg.error(data.msg);

@@ -12,7 +12,7 @@ Vue.config.productionTip = false
 router.beforeEach((to, from, next) => {
   if (to.matched.some(m => m.meta.auth)) {
     if (store.state.user.token === '') {
-      next({ path: '/signin' });
+      next({ path: '/sign/in' });
     } else {
       next();
     }
