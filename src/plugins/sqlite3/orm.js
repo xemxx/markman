@@ -30,7 +30,11 @@ export default class SqliteDB {
             for (let i = 0; i < objects.length; ++i) {
                 stmt.run(objects[i]);
             }
-            stmt.finalize();
+            stmt.finalize((err) => {
+                if (null != err) {
+                    this.printErrorInfo(err);
+                }
+            });
         });
 
     }

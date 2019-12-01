@@ -5,7 +5,7 @@
         <router-link to="signin">登陆</router-link>
         <router-link to="signup">注册</router-link>
       </Header>
-      <Content>
+      <Content style="padding-top:20px">
         <router-view></router-view>
       </Content>
       <Footer>Footer</Footer>

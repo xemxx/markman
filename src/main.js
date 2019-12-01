@@ -5,6 +5,8 @@ import store from './store'
 
 import './plugins/viewui.js'
 import './plugins/sqlite3/db.js'
+import './plugins/axios.js'
+
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {

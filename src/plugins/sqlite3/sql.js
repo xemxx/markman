@@ -37,7 +37,8 @@ export default {
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "username" TEXT,
   "password" TEXT,
-  "state" integer
+  "state" integer,
+  "server" TEXT
 )
   `,
   user_username_idx: `CREATE UNIQUE INDEX IF NOT EXISTS user_username_idx ON user (username)`,
