@@ -1,7 +1,7 @@
 export default {
   article: `CREATE TABLE IF NOT EXISTS article (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uuid TEXT,
+  uid TEXT,
   username TEXT,
   type INTEGER,
   state INTEGER,
@@ -12,7 +12,7 @@ export default {
   floder: `
   CREATE TABLE IF NOT EXISTS floder (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uuid TEXT,
+  uid TEXT,
   username TEXT,
   name TEXT,
   sort INTEGER,--目录排序--

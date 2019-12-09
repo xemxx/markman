@@ -4,11 +4,11 @@ import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol
 } from 'vue-cli-plugin-electron-builder/lib'
-// import { fstat } from 'fs'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-// const path = require('path')
-// const os = require('os')
+const path = require('path')
+const os = require('os')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -20,7 +20,7 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: tru
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800, height: 600, webPreferences: {
+    width: 800, height: 1000, webPreferences: {
       nodeIntegration: true
     }
   })
@@ -73,9 +73,9 @@ app.on('ready', async () => {
     // } catch (e) {
     //   console.error('Vue Devtools failed to install:', e.toString())
     // }
-    // BrowserWindow.addDevToolsExtension(
-    //   path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.2_0')
-    // )
+    BrowserWindow.addDevToolsExtension(
+      path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Profile 1/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.3_0')
+    )
   }
   createWindow()
 })

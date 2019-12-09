@@ -1,6 +1,6 @@
 <template>
   <div class="floder">
-    <Collapse simple :style="{height:'100vh'}" v-model="panel">
+    <Collapse simple :style="{ height: '100vh' }" v-model="panel">
       <Panel name="favorite">
         收藏夹
         <div slot="content">
@@ -27,8 +27,8 @@
             <li
               v-for="item in floders"
               :key="item.id"
-              @click="$emit('load-article',item.id)"
-            >{{ item.name+'('+item.nums+')'}}</li>
+              @click="$emit('load-article', item.id)"
+            >{{ item.name + "(" + item.nums + ")" }}</li>
           </ul>
         </div>
       </Panel>
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { uuid } from "../tools/function.js";
+// import { uuid } from "../tools/function.js";
 import { remote } from "electron";
 const { Menu, MenuItem } = remote;
 import Favorite from "./floder/Favorite";
@@ -71,11 +71,24 @@ export default {
   methods: {
     init() {
       //TODO: 获取服务端文章，更新本地文章或者同步服务端文章
+      if (this.$store.state.user.online) {
+        this.updateFloderByServer();
+      } else {
+        this.updateFloderByLocal();
+      }
+      //this.createMenu();
+    },
+    updateFloderByServer() {
+      let server = this.$store.state.user.url;
+      this.$axios.post(server + "/getFloder");
+    },
+    updateFloderByLocal() {
+      // let sql = "select * from floder";
+      //this.$db.bindAndRun();
       this.floders = [
         { id: 1, name: "linux", nums: 1 },
         { id: 2, name: "macos", nums: 2 }
       ];
-      //this.createMenu();
     },
     addFloder() {
       this.panel = "floder";
@@ -89,15 +102,16 @@ export default {
       if (name == "") {
         this.blurAddFloder();
       }
-      this.$db.queryData(
-        "SELECT tbl_name FROM sqlite_master WHERE type = 'table'",
-        rows => {
-          console.log(JSON.stringify(rows));
-        }
-      );
+      // test
+      // this.$db.queryData(
+      //   "SELECT tbl_name FROM sqlite_master WHERE type = 'table'",
+      //   rows => {
+      //     console.log(JSON.stringify(rows));
+      //   }
+      // );
       this.$db.insertData(
-        "insert into floder (uuid,username,name,sort,sortType) values(?,?,?,?)",
-        [[uuid(32, 10), this.$store.user.username, name, 1, 0]]
+        "insert into floder (username,name,sort,sortType) values(?,?,?)",
+        [[this.$store.state.user.username, name, 1, 0]]
       );
     },
     blurAddFloder() {
