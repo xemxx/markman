@@ -44,10 +44,25 @@ export default {
               console.log(err);
               store.commit("update_online", false);
               //由于安全系数要求并不高，所以在请求失败时认定为断网，只要自身解析token未超时则可本地离线编辑，后续考虑添加用户自定义设置，例如本地密码
-              //TODO 先自身解析token是否超时，如果超时直接跳转到登录界面，否则认定为离线编辑状态
-              setTimeout(() => {
-                this.$router.push("/home").catch(err => err);
-              }, 1000);
+              //先自身解析token是否超时，如果超时直接跳转到登录界面，否则认定为离线编辑状态
+              let data = JSON.parse(
+                decodeURIComponent(
+                  escape(window.atob(ustate.token.split(".")[1]))
+                )
+              );
+              console.log(data);
+              console.log(Date.parse(new Date()) / 1000);
+              if (data.exp > new Date().getTime() / 1000) {
+                setTimeout(() => {
+                  this.$router.push("/home").catch(err => err);
+                }, 1000);
+              } else {
+                ustate.model.updateState("0", ustate.id); //注销活动用户
+                store.commit("user/update_token", "");
+                setTimeout(() => {
+                  this.$router.push("/sign/in").catch(err => err);
+                }, 1000);
+              }
             });
         }
       } else {
