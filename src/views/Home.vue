@@ -2,9 +2,12 @@
   <div class="layout">
     <Layout :style="{ minHeight: '100vh' }">
       <Sider hide-trigger>
-        <Floder @load-article="loadArticle" />
+        <Floder />
       </Sider>
-      <!-- <Sider hide-trigger>file</Sider> -->
+      <Sider hide-trigger>
+        <List />
+      </Sider>
+
       <Content>editor</Content>
     </Layout>
   </div>
@@ -12,27 +15,16 @@
 
 <script>
 import Floder from "@/components/Floder.vue";
+import List from "@/components/List.vue";
 // import User from "../model/user.js";
 export default {
   name: "index",
   components: {
-    Floder
+    Floder,
+    List
   },
-  methods: {
-    // TODO 可能被删除
-    loadArticle(id) {
-      // TODO 加载本地文章以及离线编辑时的处理
-      let user = "xem";
-      let data;
-      this.$db.queryData(
-        `select * from floder_article as a join article as b on a.aid=b.id where a.fid=${id} and b.username="${user}"`,
-        rows => {
-          data = rows;
-        }
-      );
-      console.log(data);
-    }
-  }
+  created() {},
+  methods: {}
 };
 </script>
 <style lang="scss" scoped>

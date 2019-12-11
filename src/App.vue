@@ -50,8 +50,7 @@ export default {
                   escape(window.atob(ustate.token.split(".")[1]))
                 )
               );
-              console.log(data);
-              console.log(Date.parse(new Date()) / 1000);
+              //console.log(Date.parse(new Date()) / 1000);
               if (data.exp > new Date().getTime() / 1000) {
                 setTimeout(() => {
                   this.$router.push("/home").catch(err => err);
@@ -63,6 +62,19 @@ export default {
                   this.$router.push("/sign/in").catch(err => err);
                 }, 1000);
               }
+            });
+          //开始同步数据
+          //TODO 增量同步具体实现
+          store
+            .dispatch("sync/incrementalSync")
+            .then(() => {
+              setTimeout(() => {
+                store.commit("sync/update_isSyncing", false);
+              }, 3000);
+              store.dispatch("notebook/getNotebooks");
+            })
+            .catch(err => {
+              console.log(err);
             });
         }
       } else {

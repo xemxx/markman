@@ -1,7 +1,8 @@
-
+import Note from '../../model/note.js'
 const state = {
-    list: { items: [] },
-    detail: {}
+    list: {},
+    detail: {},
+    model: new Note
 };
 
 const mutations = {
@@ -9,7 +10,11 @@ const mutations = {
     note_update_detail(state, value) { state.detail = value; }
 };
 
-const actions = {};
+const actions = {
+    getList({ rootState }) {
+        let select = rootState
+    }
+};
 
 export default {
     state,

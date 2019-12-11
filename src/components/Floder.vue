@@ -3,32 +3,32 @@
     <Collapse simple :style="{ height: '100vh' }" v-model="panel">
       <Panel name="favorite">
         收藏夹
-        <div slot="content">
-          <Favorite />
-        </div>
+        <div slot="content"></div>
       </Panel>
       <Panel name="floder">
         笔记本
-        <span class="add" @click.stop="addFloder">
+        <span class="add" @click.stop="addNotebook">
           <Icon type="ios-add-circle-outline" size="30" />
         </span>
         <div slot="content" class="note">
           <ul>
-            <li v-show="floderInput">
+            <li v-show="notebookInput">
               <Input
-                ref="floderInput"
-                v-model="floderName"
-                @on-enter="doAddFloder"
-                @on-blur="blurAddFloder"
+                ref="notebookInput"
+                v-model="notebookName"
+                @on-enter="doAddNotebook"
+                @on-blur="blurAddNotebook"
                 size="small"
                 placeholder="small size"
               />
             </li>
             <li
-              v-for="item in floders"
+              v-for="item in this.$store.state.notebook.notebooks"
               :key="item.id"
-              @click="$emit('load-article', item.id)"
-            >{{ item.name + "(" + item.nums + ")" }}</li>
+              @click="$"
+            >
+              {{ item.name + "(" + item.nums + ")" }}
+            </li>
           </ul>
         </div>
       </Panel>
@@ -38,85 +38,60 @@
           <Tag />
         </div>
       </Panel>
+      <div class="toolbar">
+        <p v-if="this.$store.state.sync.isSyncing">
+          syncing
+        </p>
+        <p v-else>
+          sync finish
+        </p>
+      </div>
     </Collapse>
   </div>
 </template>
 
 <script>
-// import { uuid } from "../tools/function.js";
 import { remote } from "electron";
 const { Menu, MenuItem } = remote;
-import Favorite from "./floder/Favorite";
-//import Note from "./floder/Note";
-import Tag from "./floder/Tag";
 
 export default {
   name: "floder",
   data: function() {
     return {
-      floders: [],
       panel: "floder",
-      floderInput: false,
-      floderName: ""
+      notebookInput: false,
+      notebookName: ""
     };
-  },
-  components: {
-    Favorite,
-    //Note,
-    Tag
   },
   mounted() {
     this.init();
   },
   methods: {
     init() {
-      //TODO: 获取服务端文章，更新本地文章或者同步服务端文章
-      if (this.$store.state.user.online) {
-        this.updateFloderByServer();
-      } else {
-        this.updateFloderByLocal();
-      }
+      //只从本地获取文章，同步交给同步state处理
+      this.$store.dispatch("notebook/getNotebooks");
+      //TODO 考虑添加右键菜单，方便操作 优先级较低
       //this.createMenu();
     },
-    updateFloderByServer() {
-      let server = this.$store.state.user.url;
-      this.$axios.post(server + "/getFloder");
-    },
-    updateFloderByLocal() {
-      // let sql = "select * from floder";
-      //this.$db.bindAndRun();
-      this.floders = [
-        { id: 1, name: "linux", nums: 1 },
-        { id: 2, name: "macos", nums: 2 }
-      ];
-    },
-    addFloder() {
+    addNotebook() {
       this.panel = "floder";
-      this.floderInput = true;
+      this.notebookInput = true;
       this.$nextTick(() => {
-        this.$refs.floderInput.focus();
+        this.$refs.notebookInput.focus();
       });
     },
-    doAddFloder() {
-      let name = this.floderName;
+    doAddNotebook() {
+      let name = this.notebookName;
       if (name == "") {
-        this.blurAddFloder();
+        this.blurAddNotebook();
+      } else {
+        // 添加到本地数据库和显示列表
+        this.$store.dispatch("notebook/addNotebook", name);
       }
-      // test
-      // this.$db.queryData(
-      //   "SELECT tbl_name FROM sqlite_master WHERE type = 'table'",
-      //   rows => {
-      //     console.log(JSON.stringify(rows));
-      //   }
-      // );
-      this.$db.insertData(
-        "insert into floder (username,name,sort,sortType) values(?,?,?)",
-        [[this.$store.state.user.username, name, 1, 0]]
-      );
     },
-    blurAddFloder() {
-      this.floderInput = false;
-      this.floderName = "";
+    blurAddNotebook() {
+      this.notebookInput = false;
+      this.notebookName = "";
     },
     createMenu() {
       //TODO:完善各个菜单项的右键菜单渲染
@@ -141,7 +116,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scope>
 .floder {
   height: 100vh;
 }
@@ -157,5 +132,13 @@ export default {
   right: 10px;
   border-radius: 50px;
   justify-items: center;
+}
+.toolbar {
+  position: absolute;
+  background-color: wheat;
+  color: black;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
 }
 </style>

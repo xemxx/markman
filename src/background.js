@@ -4,11 +4,9 @@ import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol
 } from 'vue-cli-plugin-electron-builder/lib'
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
-const path = require('path')
-const os = require('os')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -73,9 +71,12 @@ app.on('ready', async () => {
     // } catch (e) {
     //   console.error('Vue Devtools failed to install:', e.toString())
     // }
-    BrowserWindow.addDevToolsExtension(
-      path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Profile 1/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.3_0')
-    )
+    // BrowserWindow.addDevToolsExtension(
+    //   path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Profile 1/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.3_0')
+    // )
+    installExtension(VUEJS_DEVTOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('An error occurred: ', err));
   }
   createWindow()
 })
