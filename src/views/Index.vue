@@ -1,5 +1,5 @@
 <template>
-  <div class="startImg"></div>
+  <div class="LodingImg"></div>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.startImg {
+.LodingImg {
   height: 100vh;
   overflow-y: hidden;
   background: url("../assets/img/index.jpg") center center no-repeat;

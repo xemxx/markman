@@ -1,10 +1,7 @@
 <template>
   <div class="floder">
     <Collapse simple :style="{ height: '100vh' }" v-model="panel">
-      <Panel name="favorite">
-        收藏夹
-        <div slot="content"></div>
-      </Panel>
+      <Panel name="favorite" @click="showList({type:'all'})">所有笔记</Panel>
       <Panel name="floder">
         笔记本
         <span class="add" @click.stop="addNotebook">
@@ -23,12 +20,10 @@
               />
             </li>
             <li
-              v-for="item in this.$store.state.notebook.notebooks"
+              v-for="item in notebooks"
               :key="item.id"
-              @click="$"
-            >
-              {{ item.name + "(" + item.nums + ")" }}
-            </li>
+              @click="showList({type:'note',tid:item.id})"
+            >{{ item.name + "(" + item.nums + ")" }}</li>
           </ul>
         </div>
       </Panel>
@@ -39,12 +34,8 @@
         </div>
       </Panel>
       <div class="toolbar">
-        <p v-if="this.$store.state.sync.isSyncing">
-          syncing
-        </p>
-        <p v-else>
-          sync finish
-        </p>
+        <p v-if="isSyncing">syncing</p>
+        <p v-else>sync finish</p>
       </div>
     </Collapse>
   </div>
@@ -53,6 +44,7 @@
 <script>
 import { remote } from "electron";
 const { Menu, MenuItem } = remote;
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "floder",
@@ -63,16 +55,24 @@ export default {
       notebookName: ""
     };
   },
-  mounted() {
-    this.init();
+  computed: {
+    ...mapState({
+      notebooks: state => state.notebook.notebooks,
+      isSyncing: state => state.sync.isSyncing
+    })
+  },
+  created() {
+    //只从本地获取文章，同步交给同步state处理
+    this.showNotebooks;
+    //TODO 添加右键菜单，方便修改
+    //this.createMenu();
   },
   methods: {
-    init() {
-      //只从本地获取文章，同步交给同步state处理
-      this.$store.dispatch("notebook/getNotebooks");
-      //TODO 考虑添加右键菜单，方便操作 优先级较低
-      //this.createMenu();
-    },
+    ...mapActions({
+      showList: "list/showList",
+      showNotebooks: "notebook/showNotebooks",
+      addNotebook: "notebook/addNotebook"
+    }),
     addNotebook() {
       this.panel = "floder";
       this.notebookInput = true;
@@ -86,7 +86,7 @@ export default {
         this.blurAddNotebook();
       } else {
         // 添加到本地数据库和显示列表
-        this.$store.dispatch("notebook/addNotebook", name);
+        this.addNotebook(name);
       }
     },
     blurAddNotebook() {

@@ -1,13 +1,10 @@
 <template>
-  <div>editor</div>
+  <div></div>
 </template>
 
 <script>
-export default {
-    name:'editor'
-}
+export default {};
 </script>
 
 <style>
-
 </style>

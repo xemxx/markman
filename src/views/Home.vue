@@ -7,8 +7,9 @@
       <Sider hide-trigger>
         <List />
       </Sider>
-
-      <Content>editor</Content>
+      <Content>
+        <Editor></Editor>
+      </Content>
     </Layout>
   </div>
 </template>
@@ -16,12 +17,14 @@
 <script>
 import Floder from "@/components/Floder.vue";
 import List from "@/components/List.vue";
-// import User from "../model/user.js";
+import Editor from "@/components/editor";
+
 export default {
   name: "index",
   components: {
     Floder,
-    List
+    List,
+    Editor
   },
   created() {},
   methods: {}

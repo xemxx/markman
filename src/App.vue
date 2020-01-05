@@ -71,7 +71,7 @@ export default {
               setTimeout(() => {
                 store.commit("sync/update_isSyncing", false);
               }, 3000);
-              store.dispatch("notebook/getNotebooks");
+              store.dispatch("notebook/showNotebooks");
             })
             .catch(err => {
               console.log(err);
