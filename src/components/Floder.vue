@@ -116,7 +116,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scope>
+<style lang="stylus" scope>
 .floder {
   height: 100vh;
 }

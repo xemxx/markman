@@ -7,8 +7,8 @@ import "./plugins/viewui.js";
 import "./plugins/sqlite3/init.js";
 import "./plugins/axios.js";
 
-import "./assets/styles/index.css";
-import "./assets/styles/printService.css";
+//import "./assets/styles/index.css";
+//import "./assets/styles/printService.css";
 
 Vue.config.productionTip = false;
 

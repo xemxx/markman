@@ -8,7 +8,7 @@ export default {
   methods: {}
 };
 </script>
-<style lang="scss" scoped>
+<style lang="stylus" scoped>
 .LodingImg {
   height: 100vh;
   overflow-y: hidden;

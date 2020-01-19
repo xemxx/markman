@@ -19,7 +19,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="stylus" scoped>
 .list {
   height: 100vh;
   background-color: rgb(238, 224, 224);

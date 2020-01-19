@@ -30,7 +30,7 @@ export default {
   methods: {}
 };
 </script>
-<style lang="scss" scoped>
+<style lang="stylus" scoped>
 .layout {
   height: 100vh;
 }

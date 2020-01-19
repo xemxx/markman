@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, Menu } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 
@@ -12,7 +12,13 @@ let win;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  { scheme: "app", privileges: { secure: true, standard: true } }
+  {
+    scheme: "app",
+    privileges: {
+      secure: true,
+      standard: true
+    }
+  }
 ]);
 
 function createWindow() {
@@ -38,6 +44,30 @@ function createWindow() {
   win.on("closed", () => {
     win = null;
   });
+  createMenu();
+}
+
+function createMenu() {
+  if (process.platform === "darwin") {
+    const template = [
+      {
+        label: "App Demo",
+        submenu: [
+          {
+            role: "about"
+          },
+          {
+            role: "quit"
+          }
+        ]
+      }
+    ];
+    let menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+  } else {
+    // windows及linux系统
+    Menu.setApplicationMenu(null);
+  }
 }
 
 // Quit when all windows are closed.
