@@ -120,11 +120,13 @@ export default {
 .floder {
   height: 100vh;
 }
+
 .note {
   & ul {
     list-style-type: none;
   }
 }
+
 .add {
   display: flex;
   position: relative;
@@ -133,6 +135,7 @@ export default {
   border-radius: 50px;
   justify-items: center;
 }
+
 .toolbar {
   position: absolute;
   background-color: wheat;

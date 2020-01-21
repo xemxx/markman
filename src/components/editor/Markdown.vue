@@ -67,7 +67,7 @@ export default {
     }
   }
 }
-// .editor-wrapper.source {
+// .editor-wrapper .source {
 //   position: absolute;
 //   z-index: -1;
 //   top: 0;

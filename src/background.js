@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu } from "electron";
+import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 
@@ -34,7 +34,7 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
+    // if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
     // Load the index.html when not in development
@@ -48,26 +48,26 @@ function createWindow() {
 }
 
 function createMenu() {
-  if (process.platform === "darwin") {
-    const template = [
-      {
-        label: "App Demo",
-        submenu: [
-          {
-            role: "about"
-          },
-          {
-            role: "quit"
-          }
-        ]
-      }
-    ];
-    let menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
-  } else {
-    // windows及linux系统
-    Menu.setApplicationMenu(null);
-  }
+  // if (process.platform === "darwin") {
+  //   const template = [
+  //     {
+  //       label: "App Demo",
+  //       submenu: [
+  //         {
+  //           role: "about"
+  //         },
+  //         {
+  //           role: "quit"
+  //         }
+  //       ]
+  //     }
+  //   ];
+  //   let menu = Menu.buildFromTemplate(template);
+  //   Menu.setApplicationMenu(menu);
+  // } else {
+  //   // windows及linux系统
+  //   Menu.setApplicationMenu(null);
+  // }
 }
 
 // Quit when all windows are closed.

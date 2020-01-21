@@ -1,15 +1,15 @@
 <template>
   <div>
-    <Layout style="height:100vh">
-      <Header>
+    <el-container class="sign">
+      <el-header>
         <router-link to="in">登陆</router-link>
         <router-link to="up">注册</router-link>
-      </Header>
-      <Content style="padding-top:20px">
+      </el-header>
+      <el-main style="padding-top:20px">
         <router-view></router-view>
-      </Content>
-      <Footer>Footer</Footer>
-    </Layout>
+      </el-main>
+      <el-footer>Footer</el-footer>
+    </el-container>
   </div>
 </template>
 
@@ -22,4 +22,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="stylus" scoped>
+.sign
+  height 100vh
+  & .el-header
+    text-align center
+</style>
+
