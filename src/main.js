@@ -8,6 +8,8 @@ import "./plugins/sqlite3/init.js";
 import "./plugins/axios.js";
 import "./plugins/element.js";
 
+import "./assets/css/index.styl";
+
 Vue.config.productionTip = false;
 
 // 全局拦截，检测token

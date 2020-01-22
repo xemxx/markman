@@ -1,22 +1,14 @@
-import db from '../plugins/sqlite3/db.js'
+import db from "../plugins/sqlite3/db.js";
+import Model from "./base.js";
 
-export default class Notebook {
-    getAll(uid) {
-        return db.all(`select * from notebook where uid=?`, [uid])
-    }
-    add({ uid, name, isModify, sort, sortType, SC, addDate, modifyDate }) {
-        return db.run(`insert into notebook(uid,name,isModify,sort,sortType,SC,addDate,modifyDate)values(?,?,?,?,?,?,?,?)`, [uid, name, isModify, sort, sortType, SC, addDate, modifyDate])
-    }
-    update(id, data) {
-        let keys = Object.keys(data);
-        let sql = `update notebook set`;
-        let arr = [];
-        for (let key of keys) {
-            sql += ` ${key}=?`;
-            arr.push(data[key]);
-        }
-        sql += ` where id=?`
-        arr.push(id)
-        return db.run(sql, data)
-    }
+export default class Notebook extends Model{
+  getAll(uid) {
+    return db.all(`select * from notebook where uid=?`, [uid]);
+  }
+  addOne(data) {
+    return super.insert('notebook',data);
+  }
+  updateById(id, data) {
+    return super.updateById(id,'notebook',data)
+  }
 }

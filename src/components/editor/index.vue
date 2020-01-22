@@ -1,18 +1,22 @@
 <template>
-  <div class="editor">
-    <div class="title">
-      <input v-model="title" />
-    </div>
-    <div class="content">
-      <Markdown :markdown="markdown"></Markdown>
-      <!-- <source-code v-if="sourceCode" :markdown="markdown"></source-code> -->
-    </div>
-    <div class="tags">
-      <ul>
-        <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
-      </ul>
-    </div>
-  </div>
+  <el-container>
+    <el-main>
+      <div class="editor">
+        <div class="title">
+          <input v-model="title" />
+        </div>
+        <div class="content">
+          <Markdown :markdown="markdown"></Markdown>
+          <!-- <source-code v-if="sourceCode" :markdown="markdown"></source-code> -->
+        </div>
+        <div class="tags">
+          <ul>
+            <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
+          </ul>
+        </div>
+      </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -58,20 +62,23 @@ export default {
 <style lang="stylus" scoped>
 .editor {
   position: relative;
-  height: 100vh;
   display: flex;
   flex-direction: column;
 }
+
 .title {
   display: flex;
+
   & input {
     flex: 1;
   }
 }
+
 .content {
   display: flex;
   flex: 1;
 }
+
 .tags {
   bottom: 0px;
   width: 100%;
@@ -82,6 +89,7 @@ export default {
   & ul {
     list-style-type: none;
     display: inline;
+
     & li {
       border: 1px;
       border-radius: 5px;

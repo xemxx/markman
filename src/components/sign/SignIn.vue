@@ -55,7 +55,7 @@ export default {
             })
             .then(data => {
               store
-                .dispatch("user/set_activer", { ...user, token: data.token })
+                .dispatch("user/setActiver", { ...user, token: data.token })
                 .then(() => {
                   msg({
                     message: "登录成功:)",

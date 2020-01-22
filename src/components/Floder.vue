@@ -1,44 +1,38 @@
 <template>
-  <div class="floder">
-    <Collapse simple :style="{ height: '100vh' }" v-model="panel">
-      <Panel name="favorite" @click="showList({type:'all'})">所有笔记</Panel>
-      <Panel name="floder">
-        笔记本
-        <span class="add" @click.stop="addNotebook">
-          <Icon type="ios-add-circle-outline" size="30" />
-        </span>
-        <div slot="content" class="note">
-          <ul>
-            <li v-show="notebookInput">
-              <Input
-                ref="notebookInput"
-                v-model="notebookName"
-                @on-enter="doAddNotebook"
-                @on-blur="blurAddNotebook"
-                size="small"
-                placeholder="small size"
-              />
-            </li>
-            <li
-              v-for="item in notebooks"
-              :key="item.id"
-              @click="showList({type:'note',tid:item.id})"
-            >{{ item.name + "(" + item.nums + ")" }}</li>
-          </ul>
-        </div>
-      </Panel>
-      <Panel name="tag">
-        标签
-        <div slot="content">
-          <Tag />
-        </div>
-      </Panel>
-      <div class="toolbar">
-        <p v-if="isSyncing">syncing</p>
-        <p v-else>sync finish</p>
-      </div>
-    </Collapse>
-  </div>
+  <el-container>
+    <el-main>
+      <el-menu ref="menu" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+        <el-menu-item index="1">所有笔记</el-menu-item>
+        <el-submenu index="2">
+          <template slot="title">
+            笔记本
+            <Icon type="ios-add-circle-outline" size="20" @click.stop="addNotebook" />
+          </template>
+          <el-menu-item v-show="notebookInput" index="1-new">
+            <Input
+              ref="notebookInput"
+              v-model="notebookName"
+              @on-enter="doAddNotebook"
+              @on-blur="blurAddNotebook"
+              size="small"
+              placeholder="small size"
+            />
+          </el-menu-item>
+          <el-menu-item
+            v-for="item in notebooks"
+            :key="item.id"
+            :index="item.id+''"
+            @click="showList({type:'note',tid:item.id})"
+          >{{ item.name }}</el-menu-item>
+        </el-submenu>
+        <el-menu-item index="3">Tag</el-menu-item>
+      </el-menu>
+    </el-main>
+    <el-footer class="toolbar" height="auto">
+      <p v-if="isSyncing">syncing</p>
+      <p v-else>sync finish</p>
+    </el-footer>
+  </el-container>
 </template>
 
 <script>
@@ -50,9 +44,9 @@ export default {
   name: "floder",
   data: function() {
     return {
-      panel: "floder",
       notebookInput: false,
-      notebookName: ""
+      notebookName: "",
+      isCollapse: false
     };
   },
   computed: {
@@ -63,18 +57,18 @@ export default {
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
-    this.showNotebooks;
+    this.flashList;
     //TODO 添加右键菜单，方便修改
     //this.createMenu();
   },
   methods: {
     ...mapActions({
       showList: "list/showList",
-      showNotebooks: "notebook/showNotebooks",
-      addNotebook: "notebook/addNotebook"
+      flashList: "notebook/flashList",
+      addOne: "notebook/addOne"
     }),
     addNotebook() {
-      this.panel = "floder";
+      this.$refs["menu"].open(2);
       this.notebookInput = true;
       this.$nextTick(() => {
         this.$refs.notebookInput.focus();
@@ -86,10 +80,13 @@ export default {
         this.blurAddNotebook();
       } else {
         // 添加到本地数据库和显示列表
-        this.addNotebook(name);
+        this.addOne(name).then(()=>{
+          this.blurAddNotebook();
+        });
       }
     },
     blurAddNotebook() {
+      this.$refs["menu"].close(2);
       this.notebookInput = false;
       this.notebookName = "";
     },
@@ -111,16 +108,17 @@ export default {
         },
         false
       );
+    },
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
     }
   }
 };
 </script>
-
-<style lang="stylus" scope>
-.floder {
-  height: 100vh;
-}
-
+<style lang="stylus" scoped>
 .note {
   & ul {
     list-style-type: none;
@@ -130,18 +128,13 @@ export default {
 .add {
   display: flex;
   position: relative;
-  float: right;
-  right: 10px;
   border-radius: 50px;
   justify-items: center;
 }
 
 .toolbar {
-  position: absolute;
   background-color: wheat;
   color: black;
-  bottom: 0px;
-  width: 100%;
   text-align: center;
 }
 </style>

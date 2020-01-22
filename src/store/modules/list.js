@@ -20,7 +20,7 @@ const actions = {
     { commit, state, rootState },
     { type, tid } = { type: "", tid: "" }
   ) {
-    let uid = rootState.user.uid;
+    let uid = rootState.user.id;
     let list = {};
     type = type ? type : state.type;
     tid = tid ? tid : state.tid;

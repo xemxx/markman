@@ -1,27 +1,15 @@
 <template>
-  <el-container style="height:100vh">
-    <el-header>
-      MarkMan
-      <div class="handle-bar" v-if="process.platform === 'win32'">
-        <!-- 如果是windows平台 -->
-        <i class="el-icon-minus" @click="minimizeWindow"></i>
-        <i class="el-icon-close" @click="closeWindow"></i>
-      </div>
-    </el-header>
-    <el-main>
-      <div class="layout">
-        <div class="floder">
-          <Floder />
-        </div>
-        <div class="list">
-          <List />
-        </div>
-        <div class="editor">
-          <Editor />
-        </div>
-      </div>
-    </el-main>
-  </el-container>
+  <div class="layout">
+    <div class="floder">
+      <Floder />
+    </div>
+    <div class="list">
+      <List />
+    </div>
+    <div class="editor">
+      <Editor />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -37,6 +25,11 @@ export default {
     Floder,
     List,
     Editor
+  },
+  computed: {
+    isWin: () => {
+      return process.platform === "win32";
+    }
   },
   created() {},
   methods: {
@@ -54,7 +47,8 @@ export default {
 <style lang="stylus" scoped>
 .layout {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  height: 100%;
 }
 
 .floder, .list {

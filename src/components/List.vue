@@ -21,7 +21,6 @@ export default {
 
 <style lang="stylus" scoped>
 .list {
-  height: 100vh;
   background-color: rgb(238, 224, 224);
 }
 </style>

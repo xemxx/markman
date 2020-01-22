@@ -44,7 +44,7 @@ const actions = {
       .then(() => {
         //更新显示
         if (params.data.bid != "") {
-          dispatch("notebook/showNotebooks", null, { root: true });
+          dispatch("notebook/flashList", null, { root: true });
         }
         dispatch("list/showList", null, { root: true });
         //同步服务器
