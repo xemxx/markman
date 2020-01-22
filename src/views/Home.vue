@@ -1,21 +1,35 @@
 <template>
-  <div class="layout">
-    <div class="toolbar">
-      <Floder />
-    </div>
-    <div class="listView">
-      <List />
-    </div>
-    <div class="editor">
-      <Editor></Editor>
-    </div>
-  </div>
+  <el-container style="height:100vh">
+    <el-header>
+      MarkMan
+      <div class="handle-bar" v-if="process.platform === 'win32'">
+        <!-- 如果是windows平台 -->
+        <i class="el-icon-minus" @click="minimizeWindow"></i>
+        <i class="el-icon-close" @click="closeWindow"></i>
+      </div>
+    </el-header>
+    <el-main>
+      <div class="layout">
+        <div class="floder">
+          <Floder />
+        </div>
+        <div class="list">
+          <List />
+        </div>
+        <div class="editor">
+          <Editor />
+        </div>
+      </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
 import Floder from "@/components/Floder.vue";
 import List from "@/components/List.vue";
 import Editor from "@/components/editor";
+
+import { BrowserWindow } from "electron";
 
 export default {
   name: "index",
@@ -25,27 +39,31 @@ export default {
     Editor
   },
   created() {},
-  methods: {}
+  methods: {
+    minimizeWindow() {
+      const window = BrowserWindow.getFocusedWindow();
+      window.minimize();
+    },
+    closeWindow() {
+      const window = BrowserWindow.getFocusedWindow();
+      window.close();
+    }
+  }
 };
 </script>
 <style lang="stylus" scoped>
 .layout {
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.toolbar {
-  height: 100vh;
+.floder, .list {
+  flex: 1;
   max-width: 200px;
-  align-items left
-}
-
-.listView {
-  height: 100vh;
-  max-width: 200px;
+  min-width: 50px;
 }
 
 .editor {
-  height: 100vh;
-  width: auto;
+  flex: 1;
 }
 </style>

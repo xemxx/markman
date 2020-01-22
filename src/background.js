@@ -23,18 +23,32 @@ protocol.registerSchemesAsPrivileged([
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({
+  const options = {
     width: 800,
     height: 1000,
+    title: "MarkMan",
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    show: false,
+    titleBarStyle: "hidden"
+  };
+  if (process.platform === "win32") {
+    // 如果平台是win32，也即windows
+    options.show = true; // 当window创建的时候打开
+    options.frame = false; // 创建一个frameless窗口，详情：https://electronjs.org/docs/api/frameless-window
+    options.backgroundColor = "#3f3c37";
+  }
+  win = new BrowserWindow(options);
+  win.once("ready-to-show", () => {
+    win.show();
   });
+  
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-    // if (!process.env.IS_TEST) win.webContents.openDevTools();
+    if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
     // Load the index.html when not in development

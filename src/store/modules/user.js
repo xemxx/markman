@@ -1,7 +1,7 @@
 import User from "../../model/user.js";
 import { getCookie, setCookie } from "../../tools";
 
-const model = new User()
+const model = new User();
 
 const state = {
   id: getCookie("uid") ? getCookie("uid") : "",
@@ -25,12 +25,12 @@ const mutations = {
   },
   update_server(state, value) {
     setCookie("server", value);
-    state.url = value;
+    state.server = value;
   }
 };
 
 const actions = {
-  init_activer({ commit }) {
+  get_activer({ commit }) {
     return model.getActiver().then(user => {
       if (user != undefined) {
         commit("update_id", user.id);
@@ -50,29 +50,35 @@ const actions = {
 
   flash_token({ state, commit }, token) {
     model.update(state.id, { token: "token" });
-    commit("update_token", token)
+    commit("update_token", token);
   },
 
   unset_activer({ state, commit }) {
     model.updateState(state.id, { state: 0 });
-    commit("user/update_token", "");
+    commit("update_token", "");
   },
 
-  set_activer({ commit }, user) {
-    return model.existUser(user.user, user.server).then((id) => {
-      //修改数据库
+  set_activer({ dispatch }, user) {
+    return model.existUser(user.user, user.server).then(id => {
       if (id !== "") {
-        // 设置本地活动用户
-        model.updateById(id,{state:1});
-        commit("update_id", id);
-      } else {
-        model.createUser(user.user, user.server, user.token);
+        return model
+          .updateById(id, { state: 1, token: user.token })
+          .then(() => {
+            return dispatch("get_activer");
+          })
+          .catch(err => {
+            console.log(err);
+          });
       }
-      //修改state
-      commit("update_token", user.token);
-      commit("update_username", user.user);
-      commit("update_server", user.server);
-    })
+      return model
+        .createUser(user.user, user.server, user.token)
+        .then(() => {
+          return dispatch("get_activer");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
   }
 };
 

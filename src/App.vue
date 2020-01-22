@@ -11,7 +11,7 @@ export default {
     // 从数据库读用户数据初始化
     let store = this.$store;
     let ustate = store.state.user;
-    this.$store.dispatch("user/init_activer").then(isLogin => {
+    this.$store.dispatch("user/get_activer").then(isLogin => {
       // 如果认定存在活动用户则进行开始判断网络状态
       if (isLogin) {
         // 如果可联网 刷新用户状态，向服务端获取新token
