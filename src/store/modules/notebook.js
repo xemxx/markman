@@ -1,6 +1,7 @@
 import Notebook from "../../model/notebook.js";
 
 const model = new Notebook();
+
 const state = {
   notebooks: {}
 };
@@ -21,10 +22,10 @@ const actions = {
         console.log(err);
       });
   },
-  addOne({ dispatch, rootState }, name) {
+  addNotebook({ dispatch, rootState }, name) {
     let time = Date.parse(new Date()) / 1000;
     return model
-      .addOne({
+      .add({
         uid: rootState.user.id,
         name: name,
         guid: Date.parse(new Date()) + rootState.user.id,
@@ -43,9 +44,20 @@ const actions = {
       })
       .catch(err => console.log(err));
   },
-  update({ dispatch }, params) {
+  updateNotebook({ dispatch }, params) {
     return model
-      .updateById(params.id, params.data)
+      .update(params.id, params.data)
+      .then(() => {
+        //更新列表显示
+        dispatch("flashList");
+        //同步服务器
+        dispatch("sync/sendChange", null, { root: true });
+      })
+      .catch(err => console.log(err));
+  },
+  deleteNotebook({ dispatch }, id) {
+    return model
+      .delete(id)
       .then(() => {
         //更新列表显示
         dispatch("flashList");

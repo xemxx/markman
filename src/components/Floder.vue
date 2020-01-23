@@ -6,7 +6,7 @@
         <el-submenu index="2">
           <template slot="title">
             笔记本
-            <Icon type="ios-add-circle-outline" size="20" @click.stop="addNotebook" />
+            <Icon type="ios-add-circle-outline" size="20" @click.stop="showAddNotebook" />
           </template>
           <el-menu-item v-show="notebookInput" index="1-new">
             <Input
@@ -23,7 +23,11 @@
             :key="item.id"
             :index="item.id+''"
             @click="showList({type:'note',tid:item.id})"
-          >{{ item.name }}</el-menu-item>
+          >
+            <div class="delete_button" @click="deleteNotebook(item.id)">
+              {{ item.name }}<i class="el-icon-delete"></i>
+            </div>
+          </el-menu-item>
         </el-submenu>
         <el-menu-item index="3">Tag</el-menu-item>
       </el-menu>
@@ -36,8 +40,6 @@
 </template>
 
 <script>
-import { remote } from "electron";
-const { Menu, MenuItem } = remote;
 import { mapState, mapActions } from "vuex";
 
 export default {
@@ -65,9 +67,10 @@ export default {
     ...mapActions({
       showList: "list/showList",
       flashList: "notebook/flashList",
-      addOne: "notebook/addOne"
+      addNotebook: "notebook/addNotebook",
+      deleteNotebook: "notebook/deleteNotebook"
     }),
-    addNotebook() {
+    showAddNotebook() {
       this.$refs["menu"].open(2);
       this.notebookInput = true;
       this.$nextTick(() => {
@@ -80,7 +83,7 @@ export default {
         this.blurAddNotebook();
       } else {
         // 添加到本地数据库和显示列表
-        this.addOne(name).then(()=>{
+        this.addNotebook(name).then(() => {
           this.blurAddNotebook();
         });
       }
@@ -89,25 +92,6 @@ export default {
       this.$refs["menu"].close(2);
       this.notebookInput = false;
       this.notebookName = "";
-    },
-    createMenu() {
-      //TODO:完善各个菜单项的右键菜单渲染
-      const menu = new Menu();
-      menu.append(
-        new MenuItem({
-          label: "新建记事本",
-          click: () => this.addFloder()
-        })
-      );
-      menu.append(new MenuItem({ type: "separator" })); //分割线
-      window.addEventListener(
-        "contextmenu",
-        e => {
-          e.preventDefault();
-          menu.popup({ window: remote.getCurrentWindow() });
-        },
-        false
-      );
     },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);

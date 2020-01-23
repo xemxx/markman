@@ -30,4 +30,8 @@ export default class Model {
     arr.push(id);
     return db.run(sql, arr);
   }
+  delete(id, table) {
+    const sql = `delete from ${table} where id=?`;
+    return db.run(sql, [id]);
+  }
 }

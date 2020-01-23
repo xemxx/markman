@@ -13,16 +13,26 @@ const mutations = {
 };
 
 const actions = {
-  fullSync() {
+  fullSync({commit}) {
     //TODO 全量同步
+    commit("update_isSyncing", true);
+    setTimeout(() => {
+      commit("update_isSyncing", false);
+    }, 10000);
   },
   incrementalSync({ commit }) {
     //TODO 增量同步
     commit("update_isSyncing", true);
+    setTimeout(() => {
+      commit("update_isSyncing", false);
+    }, 10000);
   },
   sendChange({ commit }) {
     //TODO 发送改变
     commit("update_isSyncing", true);
+    setTimeout(() => {
+      commit("update_isSyncing",false)
+    }, 10000);
   }
 };
 
