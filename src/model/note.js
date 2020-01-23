@@ -1,29 +1,27 @@
 import db from "../plugins/sqlite3/db.js";
+import Model from "./base.js";
 
-export default class Note {
-  getNotesByBook(uid, bid) {
+export default class Note extends Model {
+  static table = "note";
+  getOne(id) {
+    return db.get(`select * from note where id=?`, [id]);
+  }
+  getAllByBook(uid, bid) {
     return db.all(`select * from note where uid=? and bid=?`, [uid, bid]);
   }
-  getNotesByTag(uid, tid) {
+  getAllByTag(uid, tid) {
     return db.all(
-      `select b.* from note_tag as a left join note ad b on a.nid=b.id where a.tid=? and b.uid=?`,
+      `select b.* from note_tag as a left join note as b on a.nid=b.id where a.tid=? and b.uid=?`,
       [tid, uid]
     );
   }
-  getAllNotes(uid) {
+  getAll(uid) {
     return db.all(`select * from note where uid=?`, [uid]);
   }
   update(id, data) {
-    let keys = Object.keys(data);
-    let sql = `update notebook set`;
-    let arr = [];
-    for (let key of keys) {
-      sql += ` ${key}=?`;
-      arr.push(data[key]);
-    }
-    sql += ` where id=?`;
-    arr.push(id);
-    return db.run(sql, data);
+    return super.update(id, this.table, data);
   }
-  updateTag() {}
+  add(data) {
+    return super.insert("note", data);
+  }
 }

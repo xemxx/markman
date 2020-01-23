@@ -24,8 +24,8 @@ protocol.registerSchemesAsPrivileged([
 function createWindow() {
   // Create the browser window.
   const options = {
-    width: 800,
-    height: 1000,
+    width: 1080,
+    height: 720,
     title: "MarkMan",
     webPreferences: {
       nodeIntegration: true

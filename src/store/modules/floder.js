@@ -23,7 +23,7 @@ const actions = {
       });
   },
   addNotebook({ dispatch, rootState }, name) {
-    let time = Date.parse(new Date()) / 1000;
+    const time = Date.parse(new Date()) / 1000;
     return model
       .add({
         uid: rootState.user.id,
@@ -44,9 +44,9 @@ const actions = {
       })
       .catch(err => console.log(err));
   },
-  updateNotebook({ dispatch }, params) {
+  deleteNotebook({ dispatch }, id) {
     return model
-      .update(params.id, params.data)
+      .delete(id)
       .then(() => {
         //更新列表显示
         dispatch("flashList");
@@ -55,9 +55,11 @@ const actions = {
       })
       .catch(err => console.log(err));
   },
-  deleteNotebook({ dispatch }, id) {
+
+  //TODO
+  updateNotebook({ dispatch }, params) {
     return model
-      .delete(id)
+      .update(params.id, params.data)
       .then(() => {
         //更新列表显示
         dispatch("flashList");

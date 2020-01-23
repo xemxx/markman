@@ -1,9 +1,8 @@
-import Sync from "../../model/sync.js";
+// import Sync from "../../model/sync.js";
 
 const state = {
   //同步状态
   isSyncing: false,
-  model: new Sync()
 };
 
 const mutations = {

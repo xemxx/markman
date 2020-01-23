@@ -9,7 +9,7 @@ export default class Notebook extends Model {
     return super.insert("notebook", data);
   }
   update(id, data) {
-    return super.updateById(id, "notebook", data);
+    return super.update(id, "notebook", data);
   }
   delete(id) {
     return super.delete(id, "notebook");

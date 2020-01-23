@@ -16,9 +16,13 @@ export default class Model {
       fields.length - 1
     )}) values( ${values.substr(0, values.length - 1)} )`;
 
-    return db.run(sql, arr);
+    return db.run(sql, arr).then(
+      () => this.getId(table),
+      err => console.log("isnet:" + err)
+    );
   }
-  updateById(id, table, data) {
+
+  update(id, table, data) {
     let keys = Object.keys(data);
     let sql = `update ${table} set `;
     let arr = [];
@@ -30,8 +34,14 @@ export default class Model {
     arr.push(id);
     return db.run(sql, arr);
   }
+
   delete(id, table) {
     const sql = `delete from ${table} where id=?`;
     return db.run(sql, [id]);
+  }
+  
+  getId(table) {
+    const sql = "select last_insert_rowid() as id from " + table;
+    return db.get(sql).then((data)=>data.id);
   }
 }

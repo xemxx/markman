@@ -1,40 +1,51 @@
-import List from "../../model/list.js";
+import Note from "../../model/note.js";
+const nModel = new Note();
 const state = {
   type: "all",
-  tid: "",
-  data: "",
-  model: new List()
+  flagId: "",
+  notes: ""
 };
 
 const mutations = {
-  update_list(state, { type, tid, data }) {
-    state.type = type;
-    state.tid = tid;
-    state.data = data;
+  update_list(state, { type, flagId, notes }) {
+    state.type = type ? type : state.type;
+    state.flagId = flagId ? flagId : state.tid;
+    state.notes = notes ? notes : state.notes;
   }
 };
 
 const actions = {
-  // 更新list，vue将自动更新到视图
-  showList(
-    { commit, state, rootState },
-    { type, tid } = { type: "", tid: "" }
+  //更新state中的list，视图将自动更新
+  flashList(
+    { commit, state, rootState, dispatch },
+    { type, flagId } = {
+      type: "",
+      flagId: ""
+    }
   ) {
-    let uid = rootState.user.id;
+    const uid = rootState.user.id;
     let list = {};
     type = type ? type : state.type;
-    tid = tid ? tid : state.tid;
+    flagId = flagId ? flagId : state.flagId;
+
     if (type === "note") {
-      list = state.model.getNotesByBook(uid, tid);
+      list = nModel.getAllByBook(uid, flagId);
     } else if (type === "tag") {
-      list = state.model.getNotesByTag(uid, tid);
+      list = nModel.getAllByTag(uid, flagId);
     } else if (type === "all") {
-      list = state.model.getAllNotes(uid);
+      list = nModel.getAll(uid);
     }
+
     return list
       .then(notes => {
-        // 同步更新list
-        commit("update_list", { type, tid, data: notes });
+        commit("update_list", {
+          type,
+          flagId,
+          notes: notes
+        });
+        if (notes[0] != undefined) {
+          dispatch("editor/loadNote", notes[0].id, { root: true });
+        }
       })
       .catch(err => console.log(err));
   }

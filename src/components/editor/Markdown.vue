@@ -1,10 +1,6 @@
 <template>
   <div class="editor-wrapper">
-    <div v-show="!select">no file checked</div>
-    <div ref="editor" class="editor-markdown">
-      <textarea v-model="markdown"></textarea>
-    </div>
-    <div ref="preview" class="editor-preview">{{preview}}</div>
+    <textarea v-model="markdown"></textarea>
   </div>
 </template>
 
@@ -24,9 +20,7 @@ export default {
     platform: String
   },
   computed: {
-    ...mapState({
-      //sourceCode: state => state.preferences.sourceCode
-    })
+    ...mapState({})
   },
   watch: {
     markdown: () => {
@@ -42,12 +36,6 @@ export default {
     this.$nextTick(() => {
       let { markdown } = this;
       this.preview = marked(markdown);
-      // this.editor.on("change", changes => {
-      //   this.$store.dispatch(
-      //     "note/listen_for_markdown_change",
-      //     Object.assign(changes, { id: "muya" })
-      //   );
-      // });
     });
   }
 };
@@ -56,33 +44,21 @@ export default {
 <style lang="stylus" scoped>
 .editor-wrapper {
   height: 100%;
-  position: relative;
-  flex: 1;
-  padding: 10px 100px;
-  //   color: var(--editorColor);
-  & .ag-dialog-table {
-    & .el-button {
-      font-size: 13px;
-      width: 70px;
-    }
+  width: 100%;
+  padding 5px 0
+
+  & textarea {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    resize: none;
+    background-color: #ffffff;
+
+    // &::-webkit-scrollbar {
+    //   width: 0px;
+    //   height: 0px;
+    // }
   }
-}
-// .editor-wrapper .source {
-//   position: absolute;
-//   z-index: -1;
-//   top: 0;
-//   left: 0;
-//   overflow: hidden;
-// }
-.editor-markdown {
-  height: 100%;
-  overflow: auto;
-  box-sizing: border-box;
-}
-.editor-preview {
-  height: 100%;
-  height: 100%;
-  overflow: auto;
-  box-sizing: border-box;
 }
 </style>

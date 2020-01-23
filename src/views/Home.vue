@@ -1,10 +1,12 @@
 <template>
   <div class="layout">
-    <div class="floder">
-      <Floder />
-    </div>
-    <div class="list">
-      <List />
+    <div v-show="mode" class="shider">
+      <div class="floder">
+        <Floder />
+      </div>
+      <div class="list">
+        <List />
+      </div>
     </div>
     <div class="editor">
       <Editor />
@@ -18,6 +20,7 @@ import List from "@/components/List.vue";
 import Editor from "@/components/editor";
 
 import { BrowserWindow } from "electron";
+import { mapState } from "vuex";
 
 export default {
   name: "index",
@@ -26,10 +29,21 @@ export default {
     List,
     Editor
   },
+  data: () => {
+    return {};
+  },
   computed: {
-    isWin: () => {
-      return process.platform === "win32";
-    }
+    ...mapState({
+      viewMode: state => {
+        switch (state.main.viewMode) {
+          case "focus":
+            return false;
+          default:
+            return true;
+        }
+      }
+    }),
+    isWin: () => process.platform === "win32"
   },
   created() {},
   methods: {
@@ -51,10 +65,25 @@ export default {
   height: 100%;
 }
 
+.shider {
+  display: flex;
+  flex: 1;
+  max-width: 400px;
+  min-width: 100px;
+}
+
 .floder, .list {
   flex: 1;
   max-width: 200px;
   min-width: 50px;
+}
+
+.floder {
+  background-color: floder-bc;
+}
+
+.list {
+  background-color: list-bc;
 }
 
 .editor {

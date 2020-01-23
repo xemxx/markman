@@ -1,27 +1,23 @@
 <template>
-  <el-container>
+  <el-container class="editor">
+    <el-header height="auto">
+      <input v-model="title" class="editor-title" />
+    </el-header>
     <el-main>
-      <div class="editor">
-        <div class="title">
-          <input v-model="title" />
-        </div>
-        <div class="content">
-          <Markdown :markdown="markdown"></Markdown>
-          <!-- <source-code v-if="sourceCode" :markdown="markdown"></source-code> -->
-        </div>
-        <div class="tags">
-          <ul>
-            <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
-          </ul>
-        </div>
-      </div>
+      <Markdown :markdown="markdown"></Markdown>
     </el-main>
+    <el-footer height="auto">
+      <div class="tags">
+        <ul>
+          <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
+        </ul>
+      </div>
+    </el-footer>
   </el-container>
 </template>
 
 <script>
 import Markdown from "./Markdown.vue";
-// import SourceCode from "./SourceCode.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -35,48 +31,37 @@ export default {
   },
   computed: {
     ...mapState({
-      markdown: state => state.note.detail.markdown,
-      title: state => state.note.detail.title
-      // sourceCode: state => state.preferences.sourceCode
+      markdown: state => state.editor.detail.markdown,
+      title: state => state.editor.detail.title
     })
   },
   components: {
     Markdown
   },
-  methods: {
-    // save(type) {
-    //   let nowOs = this.$store.state.platform === "darwin" ? "meta" : "ctrl";
-    //   if (type == nowOs) {
-    //     this.$store.dispatch("note/update", {
-    //       title: encodeURI(this.title),
-    //       content: encodeURI(this.content),
-    //       isModify: true,
-    //       modifyDate: Date.parse(new Date()) / 1000
-    //     });
-    //   }
-    // }
-  }
+  methods: {}
 };
 </script>
 
 <style lang="stylus" scoped>
+.editor, .editor-title {
+  background-color: editor-bc;
+}
+
 .editor {
-  position: relative;
-  display: flex;
-  flex-direction: column;
+  padding 0 10px
 }
 
-.title {
-  display: flex;
+.editor-title {
+  width: 100%;
+  padding: 5px 0;
+  border: none;
+  font-size: 24px;
+  font-weight: 500;
 
-  & input {
-    flex: 1;
+  &:focus {
+    border: none;
+    outline: none;
   }
-}
-
-.content {
-  display: flex;
-  flex: 1;
 }
 
 .tags {

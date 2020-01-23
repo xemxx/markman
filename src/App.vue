@@ -90,7 +90,7 @@ export default {
           setTimeout(() => {
             store.commit("sync/update_isSyncing", false);
           }, 3000);
-          store.dispatch("notebook/flashList");
+          store.dispatch("floder/flashList");
         })
         .catch(err => {
           console.log(err);
@@ -113,7 +113,6 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  // text-align: center;
   color: #2c3e50;
   height: 100vh;
   overflow: hidden;
@@ -122,6 +121,7 @@ export default {
 .el-header {
   text-align: center;
   -webkit-app-region: drag;
+  background-color: floder-bc;
 
   & .handle-bar {
     float: right;

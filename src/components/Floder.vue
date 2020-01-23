@@ -1,12 +1,12 @@
 <template>
   <el-container>
     <el-main>
-      <el-menu ref="menu" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-        <el-menu-item index="1">所有笔记</el-menu-item>
+      <el-menu ref="menu" @open="handleOpen" @close="handleClose" :collapse="isCollapse" class="menu">
+        <el-menu-item index="1" @click="flashList({type:'all'})">所有笔记</el-menu-item>
         <el-submenu index="2">
           <template slot="title">
             笔记本
-            <Icon type="ios-add-circle-outline" size="20" @click.stop="showAddNotebook" />
+            <i class="el-icon-plus" @click.stop="showAddNotebook"></i>
           </template>
           <el-menu-item v-show="notebookInput" index="1-new">
             <Input
@@ -22,25 +22,32 @@
             v-for="item in notebooks"
             :key="item.id"
             :index="item.id+''"
-            @click="showList({type:'note',tid:item.id})"
+            @click="flashList({type:'note',flagId:item.id})"
           >
-            <div class="delete_button" @click="deleteNotebook(item.id)">
-              {{ item.name }}<i class="el-icon-delete"></i>
+            <div class="notebook-item" @click.right="rightMenu">
+              {{ item.name }}
+              <i @click.stop="deleteNotebook(item.id)" class="el-icon-delete"></i>
             </div>
           </el-menu-item>
         </el-submenu>
-        <el-menu-item index="3">Tag</el-menu-item>
+        <el-menu-item index="3" @click="flashList({type:'tag'})">Tag</el-menu-item>
       </el-menu>
     </el-main>
     <el-footer class="toolbar" height="auto">
+      <div style="display:inline-block">
       <p v-if="isSyncing">syncing</p>
       <p v-else>sync finish</p>
+      </div>
+      <el-button type="primary" style="float:right" heigth="20px" @click="checkViewMode('focus')">focus</el-button>
     </el-footer>
   </el-container>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
+
+const { remote } = require("electron");
+const { Menu, MenuItem } = remote;
 
 export default {
   name: "floder",
@@ -53,22 +60,25 @@ export default {
   },
   computed: {
     ...mapState({
-      notebooks: state => state.notebook.notebooks,
+      notebooks: state => state.floder.notebooks,
       isSyncing: state => state.sync.isSyncing
     })
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
-    this.flashList;
+    this.flashNotebooks;
     //TODO 添加右键菜单，方便修改
     //this.createMenu();
   },
   methods: {
+    ...mapMutations({
+      checkViewMode:"main/update_viewMode"
+    }),
     ...mapActions({
-      showList: "list/showList",
-      flashList: "notebook/flashList",
-      addNotebook: "notebook/addNotebook",
-      deleteNotebook: "notebook/deleteNotebook"
+      flashList: "list/flashList",
+      flashNotebooks: "floder/flashList",
+      addNotebook: "floder/addNotebook",
+      deleteNotebook: "floder/deleteNotebook"
     }),
     showAddNotebook() {
       this.$refs["menu"].open(2);
@@ -98,17 +108,31 @@ export default {
     },
     handleClose(key, keyPath) {
       console.log(key, keyPath);
+    },
+    rightMenu(e) {
+      //右键餐单
+      console.log(e);
+      const menu = new Menu();
+      menu.append(
+        new MenuItem({
+          label: "放大",
+          click: () => {
+            console.log("item 1 clicked");
+          }
+        })
+      );
+      menu.append(new MenuItem({ type: "separator" })); //分割线
+      menu.append(
+        new MenuItem({ label: "缩小", type: "checkbox", checked: true })
+      ); //选中
+      menu.popup({ window: remote.getCurrentWindow() });
     }
   }
 };
 </script>
 <style lang="stylus" scoped>
-.note {
-  & ul {
-    list-style-type: none;
-  }
-}
-
+.menu
+  background-color floder-bc
 .add {
   display: flex;
   position: relative;
@@ -120,5 +144,9 @@ export default {
   background-color: wheat;
   color: black;
   text-align: center;
+}
+
+.el-submenu .el-menu-item {
+  padding-right: 0;
 }
 </style>

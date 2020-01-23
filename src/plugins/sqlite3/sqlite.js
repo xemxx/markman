@@ -48,6 +48,7 @@ class Sqlite {
     return new Promise((resolve, reject) => {
       this.db.get(sql, params, (err, data) => {
         if (err) {
+          console.log("run:" + err);
           reject(err);
         } else {
           resolve(data);

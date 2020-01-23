@@ -28,6 +28,6 @@ export default class User extends Model {
   }
 
   updateById(id, data) {
-    return super.updateById(id,'user',data)
+    return super.update(id,'user',data)
   }
 }
