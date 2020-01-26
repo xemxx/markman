@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header height="auto">
+      <el-header height="auto" @dblclick="checkSize">
         {{title}}
         <!-- 如果是windows平台 -->
         <div class="handle-bar" v-if="isWin">
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { BrowserWindow } from "electron";
+import { remote } from "electron";
 export default {
   name: "app",
   created() {
@@ -82,8 +82,6 @@ export default {
   methods: {
     sync() {
       const store = this.$store;
-      //开始同步数据
-      //TODO 增量同步具体实现
       store
         .dispatch("sync/incrementalSync")
         .then(() => {
@@ -96,12 +94,20 @@ export default {
           console.log(err);
         });
     },
+    checkSize(){
+      const window = remote.getCurrentWindow();
+      if(window.isMaximized()){
+        window.minimize();
+      }else{
+        window.maximize();
+      }
+    },
     minimizeWindow() {
-      const window = BrowserWindow.getFocusedWindow();
+      const window = remote.getCurrentWindow();
       window.minimize();
     },
     closeWindow() {
-      const window = BrowserWindow.getFocusedWindow();
+      const window = remote.getCurrentWindow();
       window.close();
     }
   }

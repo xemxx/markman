@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <div v-show="mode" class="shider">
+    <div v-show="viewMode" class="shider">
       <div class="floder">
         <Floder />
       </div>

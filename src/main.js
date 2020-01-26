@@ -3,7 +3,6 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 
-import "./plugins/viewui.js";
 import "./plugins/sqlite3/init.js";
 import "./plugins/axios.js";
 import "./plugins/element.js";

@@ -4,7 +4,9 @@
       <input v-model="title" class="editor-title" />
     </el-header>
     <el-main>
-      <Markdown :markdown="markdown"></Markdown>
+      <div class="editor-wrapper">
+        <textarea v-model="markdown"></textarea>
+      </div>
     </el-main>
     <el-footer height="auto">
       <div class="tags">
@@ -17,26 +19,35 @@
 </template>
 
 <script>
-import Markdown from "./Markdown.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "editor",
   data() {
     return {
-      tags: [{ id: 1, name: 2 }],
       isModify: false,
       editor: null
     };
   },
   computed: {
     ...mapState({
-      markdown: state => state.editor.detail.markdown,
-      title: state => state.editor.detail.title
-    })
-  },
-  components: {
-    Markdown
+      tags: state => state.editor.tags,
+    }),
+    markdown:{
+      get:function(){
+        return this.$store.state.editor.detail.markdown
+      },
+      set:function(newVal){
+        this.$store.commit('editor/update_markdown',newVal)
+      }
+    },title:{
+      get:function(){
+        return this.$store.state.editor.detail.title
+      },
+      set:function(newVal){
+        this.$store.commit('editor/update_title',newVal)
+      }
+    }
   },
   methods: {}
 };
@@ -48,7 +59,7 @@ export default {
 }
 
 .editor {
-  padding 0 10px
+  padding: 0 10px;
 }
 
 .editor-title {
@@ -64,6 +75,23 @@ export default {
   }
 }
 
+.editor-wrapper {
+  height: 100%;
+  width: 100%;
+  padding: 6px 0;
+
+  & textarea {
+    outline-offset: 0px;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    resize: none;
+    background-color: #ffffff;
+    font-size: 16px;
+  }
+}
+
 .tags {
   bottom: 0px;
   width: 100%;
@@ -71,11 +99,11 @@ export default {
   min-height: 20px;
   background-color: rgb(25, 118, 211);
 
-  & ul {
+  ul {
     list-style-type: none;
     display: inline;
 
-    & li {
+    li {
       border: 1px;
       border-radius: 5px;
       background-color: aqua;

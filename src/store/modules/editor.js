@@ -3,32 +3,30 @@ const nModel = new Note();
 //import { hasKeys } from "../../tools";
 
 const state = {
-  detail: {
-    markdown: "",
-    title: ""
-  },
-  tags: {}
+  detail: { markdown: "", title: "" },
+  tags: []
 };
 
 const mutations = {
   update_detail(state, value) {
     state.detail = value;
   },
+  update_title(state, value) {
+    state.detail.title = value;
+  },
   update_tags(state, value) {
     state.tags = value;
   },
-  set_markdown(state, value) {
+  update_markdown(state, value) {
     state.detail.markdown = value;
-    state.detail.title = "123";
   }
 };
 
 const actions = {
   // 加载编辑区域数据
   loadNote({ commit }, id) {
-    // 获取到detail，直接在视图绑定detail.content
+    // 获取到detail，直接在视图绑定detail
     return nModel.getOne(id).then(data => {
-      //console.log(id,data);
       const detail = {
         markdown: data.content,
         title: data.title
@@ -53,7 +51,7 @@ const actions = {
     return nModel
       .add(note)
       .then(id => {
-        dispatch("list/flashList",null,{root:true});
+        dispatch("list/flashList", null, { root: true });
         dispatch("loadNote", id);
       })
       .catch(err => console.log(err));

@@ -76,18 +76,19 @@ axios.interceptors.response.use(
         type: "error",
         center: true
       });
-    } else {
+    } else if (!err.request) {
       //发送请求失败，可能是用户url地址错误或者代码错误
       //or
       //成功发送请求，但是未接收到响应
       if (!window.navigator.onLine) {
         store.commit("update_online", false);
+      } else {
+        Message({
+          message: "网络错误，请检查，ERROR：" + err,
+          type: "error",
+          center: true
+        });
       }
-      Message({
-        message: "网络错误，请检查，ERROR：" + err,
-        type: "error",
-        center: true
-      });
     }
     //console.log(err)
     return Promise.reject(err);

@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Index from '../views/Index.vue'
 import Home from '../views/Home.vue'
@@ -6,14 +5,6 @@ import Sign from '../views/Sign.vue'
 import SignUp from '../components/sign/SignUp.vue'
 import SignIn from '../components/sign/SignIn.vue'
 
-
-// const routerPush = VueRouter.prototype.push
-// VueRouter.prototype.push = function push(location) {
-//   return routerPush.call(this, location).catch(error => error)
-// }
-
-
-Vue.use(VueRouter)
 
 const routes = [
   {
@@ -45,7 +36,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

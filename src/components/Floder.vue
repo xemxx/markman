@@ -46,7 +46,7 @@
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 
-const { remote } = require("electron");
+import { remote } from "electron";
 const { Menu, MenuItem } = remote;
 
 export default {
@@ -109,9 +109,10 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
-    rightMenu(e) {
-      //右键餐单
-      console.log(e);
+    rightMenu() {
+      //右键菜单
+      //console.log(e);
+      //TODO 新建笔记，删除笔记本，重命名笔记本
       const menu = new Menu();
       menu.append(
         new MenuItem({

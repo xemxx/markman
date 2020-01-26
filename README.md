@@ -1,30 +1,33 @@
 # markman
 
-## Project setup
+## 配置开发环境
 
 ``` 
-yarn install
+npm install
+npm run installsql
 ```
 
-### Compiles and hot-reloads for development
+## 建议的配置`~/.npmrc`
+
+1. 解决electron问题：
+```
+home=https://npm.taobao.org
+electron_mirror=https://cdn.npm.taobao.org/dist/electron/
+electron_custom_dir=7.1.10
+registry=https://registry.npm.taobao.org/
+```
+
+2. 解决sqlite问题：
+
+- 如果是卡在install 挂vpn或者用cnpm
+
+- 如果是卡在installsql 挂vpn
+
+
+## 运行
 
 ``` 
-yarn serve
+npm run electron:serve
 ```
 
-### Compiles and minifies for production
-
-``` 
-yarn build
-```
-
-### Lints and fixes files
-
-``` 
-yarn lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
 
