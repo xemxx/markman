@@ -7,10 +7,25 @@ module.exports = {
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-    "vue/no-parsing-error": [2, { "x-invalid-end-tag": false }],
+    "vue/no-parsing-error": [2, { "x-invalid-end-tag": false }]
     // 'indent': ["error", 2]
   },
   parserOptions: {
     parser: "babel-eslint"
+  },
+  globals: {
+    __static: true
+  },
+  settings: {
+    "import/resolver": {
+      alias: {
+        map: [
+          ["common", "./src/common"],
+          // Normally only valid for renderer/
+          // ["@", "./src/renderer"],
+        ],
+        extensions: [".js", ".vue", ".json", ".css", ".node"]
+      }
+    }
   }
 };

@@ -1,16 +1,13 @@
 import WindowManager from "../app/windowManager";
 
 import Keybindings from "../keyboard/shortcutHandler";
-import AppMenu from "../menu";
+import AppMenu from "../menu/one";
 
 class Accessor {
-  /**
-   * @param {AppEnvironment} appEnvironment The application environment instance.
-   */
-  constructor(appEnvironment) {
-    this.env = appEnvironment;
-    this.keybindings = new Keybindings();
-    this.menu = new AppMenu(this.keybindings);
+  constructor(args) {
+    let userDataPath = args.userDataPath;
+    this.keybindings = new Keybindings(userDataPath);
+    this.menu = new AppMenu(this.keybindings, userDataPath);
     this.windowManager = new WindowManager(this.menu);
   }
 }

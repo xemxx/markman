@@ -4,10 +4,10 @@ import App from "./main/app";
 
 import { app, protocol } from "electron";
 import Accessor from "./main/app/accessor";
-import setupEnvironment from "./main/app/env";
-import { isDevelopment, isWindows } from "./main/config";
+import { isDevelopment, isWindows, userDataPath } from "./main/config";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
-
+// import "./main/globalSetting"
+import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 protocol.registerSchemesAsPrivileged([
   {
     scheme: "app",
@@ -17,6 +17,7 @@ protocol.registerSchemesAsPrivileged([
     }
   }
 ]);
+createProtocol("app");
 
 if (isDevelopment && !process.env.IS_TEST) {
   app.on("ready", () => {
@@ -26,9 +27,18 @@ if (isDevelopment && !process.env.IS_TEST) {
   });
 }
 
-const appEnvironment = setupEnvironment();
+// Make  a single instance application.
+if (!process.mas && !isDevelopment) {
+  const gotSingleInstanceLock = app.requestSingleInstanceLock();
+  if (!gotSingleInstanceLock) {
+    process.stdout.write("Other instance detected: exiting...\n");
+    app.exit();
+  }
+}
 
-let accessor = new Accessor(appEnvironment);
+let accessor = new Accessor({
+  userDataPath:userDataPath
+});
 const markman = new App(accessor);
 markman.init();
 
