@@ -2,12 +2,7 @@
   <div id="app">
     <el-container>
       <el-header height="auto">
-        {{ title }}
-        <!-- 如果是windows平台 -->
-        <div class="handle-bar" v-if="isWin">
-          <i class="el-icon-minus" @click="minimizeWindow"></i>
-          <i class="el-icon-close" @click="closeWindow"></i>
-        </div>
+        <TitleBar />
       </el-header>
       <el-main>
         <router-view></router-view>
@@ -17,9 +12,12 @@
 </template>
 
 <script>
-import { remote } from 'electron'
+import TitleBar from './components/TitleBar.vue'
 export default {
   name: 'app',
+  components: {
+    TitleBar
+  },
   created() {
     // 从数据库读用户数据初始化
     let store = this.$store
@@ -71,14 +69,7 @@ export default {
         }, 1000)
       })
   },
-  computed: {
-    isWin: () => {
-      return process.platform === 'win32'
-    },
-    title: () => {
-      return 'MarkMan'
-    }
-  },
+  computed: {},
   methods: {
     sync() {
       const store = this.$store
@@ -93,14 +84,6 @@ export default {
         .catch(err => {
           console.log(err)
         })
-    },
-    minimizeWindow() {
-      const window = remote.getCurrentWindow()
-      window.minimize()
-    },
-    closeWindow() {
-      const window = remote.getCurrentWindow()
-      window.close()
     }
   }
 }
@@ -114,14 +97,6 @@ export default {
   color #2c3e50
   height 100vh
   overflow hidden
-
-.el-header
-  text-align center
-  -webkit-app-region drag
-  background-color floder-bc
-
-  & .handle-bar
-    float right
 
 .el-main
   overflow auto

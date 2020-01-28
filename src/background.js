@@ -34,13 +34,6 @@ if (!process.mas && !isDevelopment) {
   }
 }
 
-const accessor = new Accessor({
-  userDataPath: userDataPath
-})
-
-const markman = new App(accessor)
-markman.init()
-
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (isWindows) {
@@ -55,3 +48,10 @@ if (isDevelopment) {
     })
   }
 }
+
+const accessor = new Accessor({
+  userDataPath: userDataPath
+})
+
+const markman = new App(accessor)
+markman.init()

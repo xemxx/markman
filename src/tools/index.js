@@ -41,4 +41,5 @@ export function setCookie(key, val) {
 export function deleteCookie(key) {
   return localStorage.removeItem(key)
 }
+
 export const hasKeys = obj => Object.keys(obj).length > 0

@@ -17,8 +17,7 @@ export const editorWinOptions = {
   useContentSize: true,
   show: false, // Show the window after the app is ready.
   frame: true,
-  titleBarStyle: 'hiddenInset',
-  zoomFactor: 1.0
+  titleBarStyle: 'hidden'
 }
 
 export const preferencesWinOptions = {
@@ -36,8 +35,7 @@ export const preferencesWinOptions = {
   show: true,
   frame: true,
   thickFrame: !isOsx,
-  titleBarStyle: 'hiddenInset',
-  zoomFactor: 1.0
+  titleBarStyle: 'hidden'
 }
 
 export const EXTENSION_HASN = {
