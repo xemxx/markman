@@ -15,14 +15,7 @@ export const MARKDOWN_EXTENSIONS = [
   'txt'
 ]
 
-export const IMAGE_EXTENSIONS = [
-  'jpeg',
-  'jpg',
-  'png',
-  'gif',
-  'svg',
-  'webp'
-]
+export const IMAGE_EXTENSIONS = ['jpeg', 'jpg', 'png', 'gif', 'svg', 'webp']
 
 /**
  * Returns true if the filename matches one of the markdown extensions.
@@ -31,7 +24,9 @@ export const IMAGE_EXTENSIONS = [
  */
 export const hasMarkdownExtension = filename => {
   if (!filename || typeof filename !== 'string') return false
-  return MARKDOWN_EXTENSIONS.some(ext => filename.toLowerCase().endsWith(`.${ext}`))
+  return MARKDOWN_EXTENSIONS.some(ext =>
+    filename.toLowerCase().endsWith(`.${ext}`)
+  )
 }
 
 /**
@@ -41,10 +36,13 @@ export const hasMarkdownExtension = filename => {
  */
 export const isImageFile = filepath => {
   const extname = path.extname(filepath)
-  return isFile(filepath) && IMAGE_EXTENSIONS.some(ext => {
-    const EXT_REG = new RegExp(ext, 'i')
-    return EXT_REG.test(extname)
-  })
+  return (
+    isFile(filepath) &&
+    IMAGE_EXTENSIONS.some(ext => {
+      const EXT_REG = new RegExp(ext, 'i')
+      return EXT_REG.test(extname)
+    })
+  )
 }
 
 /**

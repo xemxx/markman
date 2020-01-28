@@ -3,29 +3,28 @@ module.exports = {
   env: {
     node: true
   },
-  extends: ["plugin:vue/essential", "eslint:recommended"],
   rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-    "vue/no-parsing-error": [2, { "x-invalid-end-tag": false }]
-    // 'indent': ["error", 2]
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'prettier/prettier': 'error'
   },
   parserOptions: {
-    parser: "babel-eslint"
+    parser: 'babel-eslint'
   },
   globals: {
     __static: true
   },
   settings: {
-    "import/resolver": {
+    'import/resolver': {
       alias: {
         map: [
-          ["common", "./src/common"],
+          ['common', './src/common']
           // Normally only valid for renderer/
           // ["@", "./src/renderer"],
         ],
-        extensions: [".js", ".vue", ".json", ".css", ".node"]
+        extensions: ['.js', '.vue', '.json', '.css', '.node']
       }
     }
-  }
-};
+  },
+  extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier']
+}

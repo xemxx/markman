@@ -1,11 +1,17 @@
 const DISABLE_LABELS = [
   // paragraph menu items
-  'heading1MenuItem', 'heading2MenuItem', 'heading3MenuItem', 'heading4MenuItem',
-  'heading5MenuItem', 'heading6MenuItem',
-  'upgradeHeadingMenuItem', 'degradeHeadingMenuItem',
+  'heading1MenuItem',
+  'heading2MenuItem',
+  'heading3MenuItem',
+  'heading4MenuItem',
+  'heading5MenuItem',
+  'heading6MenuItem',
+  'upgradeHeadingMenuItem',
+  'degradeHeadingMenuItem',
   'tableMenuItem',
   // formats menu items
-  'hyperlinkMenuItem', 'imageMenuItem'
+  'hyperlinkMenuItem',
+  'imageMenuItem'
 ]
 
 const MENU_ID_MAP = {
@@ -40,39 +46,49 @@ export const paragraph = (win, type) => {
 //       window id from `AppMenu` manager.
 
 const setParagraphMenuItemStatus = (applicationMenu, bool) => {
-  const paragraphMenuItem = applicationMenu.getMenuItemById('paragraphMenuEntry')
-  paragraphMenuItem.submenu.items
-    .forEach(item => (item.enabled = bool))
+  const paragraphMenuItem = applicationMenu.getMenuItemById(
+    'paragraphMenuEntry'
+  )
+  paragraphMenuItem.submenu.items.forEach(item => (item.enabled = bool))
 }
 
 const setMultipleStatus = (applicationMenu, list, status) => {
-  const paragraphMenuItem = applicationMenu.getMenuItemById('paragraphMenuEntry')
+  const paragraphMenuItem = applicationMenu.getMenuItemById(
+    'paragraphMenuEntry'
+  )
   paragraphMenuItem.submenu.items
     .filter(item => item.id && list.includes(item.id))
     .forEach(item => (item.enabled = status))
 }
 
-const setCheckedMenuItem = (applicationMenu, { affiliation, isTable, isLooseListItem, isTaskList }) => {
-  const paragraphMenuItem = applicationMenu.getMenuItemById('paragraphMenuEntry')
+const setCheckedMenuItem = (
+  applicationMenu,
+  { affiliation, isTable, isLooseListItem, isTaskList }
+) => {
+  const paragraphMenuItem = applicationMenu.getMenuItemById(
+    'paragraphMenuEntry'
+  )
   paragraphMenuItem.submenu.items.forEach(item => (item.checked = false))
   paragraphMenuItem.submenu.items.forEach(item => {
     if (!item.id) {
       return false
     } else if (item.id === 'looseListItemMenuItem') {
       item.checked = !!isLooseListItem
-    } else if (Object.keys(affiliation).some(b => {
-      if (b === 'ul' && isTaskList) {
-        if (item.id === 'taskListMenuItem') {
+    } else if (
+      Object.keys(affiliation).some(b => {
+        if (b === 'ul' && isTaskList) {
+          if (item.id === 'taskListMenuItem') {
+            return true
+          }
+          return false
+        } else if (isTable && item.id === 'tableMenuItem') {
+          return true
+        } else if (item.id === 'codeFencesMenuItem' && /code$/.test(b)) {
           return true
         }
-        return false
-      } else if (isTable && item.id === 'tableMenuItem') {
-        return true
-      } else if (item.id === 'codeFencesMenuItem' && /code$/.test(b)) {
-        return true
-      }
-      return b === MENU_ID_MAP[item.id]
-    })) {
+        return b === MENU_ID_MAP[item.id]
+      })
+    ) {
       item.checked = true
     }
   })

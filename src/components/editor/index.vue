@@ -19,38 +19,39 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
 export default {
-  name: "editor",
+  name: 'editor',
   data() {
     return {
       isModify: false,
       editor: null
-    };
+    }
   },
   computed: {
     ...mapState({
-      tags: state => state.editor.tags,
+      tags: state => state.editor.tags
     }),
-    markdown:{
-      get:function(){
+    markdown: {
+      get: function() {
         return this.$store.state.editor.detail.markdown
       },
-      set:function(newVal){
-        this.$store.commit('editor/update_markdown',newVal)
+      set: function(newVal) {
+        this.$store.commit('editor/update_markdown', newVal)
       }
-    },title:{
-      get:function(){
+    },
+    title: {
+      get: function() {
         return this.$store.state.editor.detail.title
       },
-      set:function(newVal){
-        this.$store.commit('editor/update_title',newVal)
+      set: function(newVal) {
+        this.$store.commit('editor/update_title', newVal)
       }
     }
   },
   methods: {}
-};
+}
 </script>
 
 <style lang="stylus" scoped>

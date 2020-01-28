@@ -5,7 +5,7 @@ import help from './help'
 import view from './view'
 import window from './window'
 import markman from './markman'
-import {isOsx} from '../../config'
+import { isOsx } from '../../config'
 
 // export dockMenu from './dock'
 
@@ -14,12 +14,12 @@ import {isOsx} from '../../config'
  *
  * @param {Keybindings} keybindings The keybindings instance
  */
-export const configSettingMenu = (keybindings) => {
+export const configSettingMenu = keybindings => {
   return [
-    ...(process.platform === "darwin" ? [markman(keybindings)] : []),
+    ...(process.platform === 'darwin' ? [markman(keybindings)] : []),
     prefEdit(keybindings),
     help()
-  ];
+  ]
 }
 
 /**
@@ -27,7 +27,7 @@ export const configSettingMenu = (keybindings) => {
  *
  * @param {Keybindings} keybindings The keybindings instance.
  */
-export default function (keybindings) {
+export default function(keybindings) {
   return [
     ...(isOsx ? [markman(keybindings)] : []),
     file(keybindings),
@@ -35,5 +35,5 @@ export default function (keybindings) {
     window(keybindings),
     view(keybindings),
     help()
-  ];
+  ]
 }

@@ -1,17 +1,17 @@
-import db from "../plugins/sqlite3/db.js";
-import Model from "./base.js";
+import db from '../plugins/sqlite3/db.js'
+import Model from './base.js'
 
 export default class Notebook extends Model {
   getAll(uid) {
-    return db.all(`select * from notebook where uid=?`, [uid]);
+    return db.all(`select * from notebook where uid=?`, [uid])
   }
   add(data) {
-    return super.insert("notebook", data);
+    return super.insert('notebook', data)
   }
   update(id, data) {
-    return super.update(id, "notebook", data);
+    return super.update(id, 'notebook', data)
   }
   delete(id) {
-    return super.delete(id, "notebook");
+    return super.delete(id, 'notebook')
   }
 }

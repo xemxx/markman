@@ -1,46 +1,46 @@
-import { shell } from "electron";
+import { shell } from 'electron'
 
-import * as actions from "../actions/help";
-import { isOsx } from "../../config";
+import * as actions from '../actions/help'
+import { isOsx } from '../../config'
 
 export default function() {
   const helpMenu = {
-    label: "&Help",
-    role: "help",
+    label: '&Help',
+    role: 'help',
     submenu: [
       {
-        label: "Report Issue or Feature request",
+        label: 'Report Issue or Feature request',
         click() {
-          shell.openExternal("https://github.com/xemxx/markman-client/issues");
+          shell.openExternal('https://github.com/xemxx/markman-client/issues')
         }
       },
       {
-        label: "Watch on GitHub",
+        label: 'Watch on GitHub',
         click() {
-          shell.openExternal("https://github.com/xemxx/markman-client");
+          shell.openExternal('https://github.com/xemxx/markman-client')
         }
       },
       {
-        label: "Follow @Xem on Github",
+        label: 'Follow @Xem on Github',
         click() {
-          shell.openExternal("https://github.com/xemxx");
+          shell.openExternal('https://github.com/xemxx')
         }
       }
     ]
-  };
+  }
 
   if (!isOsx) {
     helpMenu.submenu.push(
       {
-        type: "separator"
+        type: 'separator'
       },
       {
-        label: "About Markman",
+        label: 'About Markman',
         click(menuItem, browserWindow) {
-          actions.showAboutDialog(browserWindow);
+          actions.showAboutDialog(browserWindow)
         }
       }
-    );
+    )
   }
-  return helpMenu;
+  return helpMenu
 }

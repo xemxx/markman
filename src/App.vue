@@ -2,7 +2,7 @@
   <div id="app">
     <el-container>
       <el-header height="auto" @dblclick="checkSize">
-        {{title}}
+        {{ title }}
         <!-- 如果是windows平台 -->
         <div class="handle-bar" v-if="isWin">
           <i class="el-icon-minus" @click="minimizeWindow"></i>
@@ -17,104 +17,104 @@
 </template>
 
 <script>
-import { remote } from "electron";
+import { remote } from 'electron'
 export default {
-  name: "app",
+  name: 'app',
   created() {
     // 从数据库读用户数据初始化
-    let store = this.$store;
-    let ustate = store.state.user;
+    let store = this.$store
+    let ustate = store.state.user
     this.$store
-      .dispatch("user/loadActiver")
+      .dispatch('user/loadActiver')
       .then(() => {
         // 如果认定存在活动用户则进行开始判断网络状态
         // 如果可联网 刷新用户状态，向服务端获取新token
         // 默认token可使用30天，如果连续30天不登录将被取消登录状态
         if (store.state.online) {
           this.$axios
-            .post(ustate.server + "/user/flashToken")
+            .post(ustate.server + '/user/flashToken')
             .then(data => {
               //刷新成功
-              store.dispatch("user/flashToken", data.token);
-              this.sync();
+              store.dispatch('user/flashToken', data.token)
+              this.sync()
               setTimeout(() => {
-                this.$router.push("/home").catch(err => err);
-              }, 1000);
+                this.$router.push('/home').catch(err => err)
+              }, 1000)
             })
             .catch(() => {
               //先自身解析token是否超时，如果超时直接跳转到登录界面，否则认定为离线编辑状态
               let data = JSON.parse(
                 decodeURIComponent(
-                  escape(window.atob(ustate.token.split(".")[1]))
+                  escape(window.atob(ustate.token.split('.')[1]))
                 )
-              );
+              )
               if (data.exp > Date.parse(new Date()) / 1000) {
                 //离线编辑
-                this.sync();
+                this.sync()
                 setTimeout(() => {
-                  this.$router.push("/home").catch(err => err);
-                }, 1000);
+                  this.$router.push('/home').catch(err => err)
+                }, 1000)
               } else {
                 //用户登录失效
-                store.dispatch("user/unsetActiver");
+                store.dispatch('user/unsetActiver')
                 setTimeout(() => {
-                  this.$router.push("/sign/in").catch(err => err);
-                }, 1000);
+                  this.$router.push('/sign/in').catch(err => err)
+                }, 1000)
               }
-            });
+            })
         }
       })
       .catch(err => {
-        console.log(err);
+        console.log(err)
         setTimeout(() => {
-          this.$router.push("/sign/in").catch(err => err);
-        }, 1000);
-      });
+          this.$router.push('/sign/in').catch(err => err)
+        }, 1000)
+      })
   },
   computed: {
     isWin: () => {
-      return process.platform === "win32";
+      return process.platform === 'win32'
     },
     title: () => {
-      return "MarkMan";
+      return 'MarkMan'
     }
   },
   methods: {
     sync() {
-      const store = this.$store;
+      const store = this.$store
       store
-        .dispatch("sync/incrementalSync")
+        .dispatch('sync/incrementalSync')
         .then(() => {
           setTimeout(() => {
-            store.commit("sync/update_isSyncing", false);
-          }, 3000);
-          store.dispatch("floder/flashList");
+            store.commit('sync/update_isSyncing', false)
+          }, 3000)
+          store.dispatch('floder/flashList')
         })
         .catch(err => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
-    checkSize(){
-      const window = remote.getCurrentWindow();
-      if(window.isMaximized()){
-        window.minimize();
-      }else{
-        window.maximize();
+    checkSize() {
+      const window = remote.getCurrentWindow()
+      if (window.isMaximized()) {
+        window.minimize()
+      } else {
+        window.maximize()
       }
     },
     minimizeWindow() {
-      const window = remote.getCurrentWindow();
-      window.minimize();
+      const window = remote.getCurrentWindow()
+      window.minimize()
     },
     closeWindow() {
-      const window = remote.getCurrentWindow();
-      window.close();
+      const window = remote.getCurrentWindow()
+      window.close()
     }
   }
-};
+}
 </script>
 
-<style lang="stylus" scoped >
+<style lang="stylus" scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -5,7 +5,6 @@ import Sign from '../views/Sign.vue'
 import SignUp from '../components/sign/SignUp.vue'
 import SignIn from '../components/sign/SignIn.vue'
 
-
 const routes = [
   {
     path: '/sign',

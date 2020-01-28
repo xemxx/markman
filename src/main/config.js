@@ -1,11 +1,11 @@
-export const isOsx = process.platform === "darwin";
-export const isWindows = process.platform === "win32";
-export const isLinux = process.platform === "linux";
-export const isDevelopment = process.env.NODE_ENV !== "production";
+export const isOsx = process.platform === 'darwin'
+export const isWindows = process.platform === 'win32'
+export const isLinux = process.platform === 'linux'
+export const isDevelopment = process.env.NODE_ENV !== 'production'
 
-import { app } from "electron";
+import { app } from 'electron'
 
-export const userDataPath = app.getPath("userData");
+export const userDataPath = app.getPath('userData')
 
 export const editorWinOptions = {
   minWidth: 550,
@@ -17,9 +17,9 @@ export const editorWinOptions = {
   useContentSize: true,
   show: false, // Show the window after the app is ready.
   frame: true,
-  titleBarStyle: "hiddenInset",
+  titleBarStyle: 'hiddenInset',
   zoomFactor: 1.0
-};
+}
 
 export const preferencesWinOptions = {
   width: 950,
@@ -36,11 +36,10 @@ export const preferencesWinOptions = {
   show: true,
   frame: true,
   thickFrame: !isOsx,
-  titleBarStyle: "hiddenInset",
+  titleBarStyle: 'hiddenInset',
   zoomFactor: 1.0
-};
+}
 
+export const TITLE_BAR_HEIGHT = isOsx ? 21 : 32
 
-export const TITLE_BAR_HEIGHT = isOsx ? 21 : 32;
-
-export const URL_REG = /^http(s)?:\/\/([a-z0-9\-._~]+\.[a-z]{2,}|[0-9.]+|localhost|\[[a-f0-9.:]+\])(:[0-9]{1,5})?(\/[\S]+)?/i;
+export const URL_REG = /^http(s)?:\/\/([a-z0-9\-._~]+\.[a-z]{2,}|[0-9.]+|localhost|\[[a-f0-9.:]+\])(:[0-9]{1,5})?(\/[\S]+)?/i

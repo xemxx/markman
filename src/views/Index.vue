@@ -4,9 +4,9 @@
 
 <script>
 export default {
-  name: "index",
+  name: 'index',
   methods: {}
-};
+}
 </script>
 <style lang="stylus" scoped>
 .LodingImg {

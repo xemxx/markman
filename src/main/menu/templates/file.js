@@ -1,73 +1,73 @@
-import { app } from "electron";
-import * as actions from "../actions/file";
-import { userSetting } from "../actions/marktext";
-import { isOsx } from "../../config";
+import { app } from 'electron'
+import * as actions from '../actions/file'
+import { userSetting } from '../actions/marktext'
+import { isOsx } from '../../config'
 
 export default function(keybindings) {
   const fileMenu = {
-    label: "&File",
+    label: '&File',
     submenu: []
-  };
+  }
 
   fileMenu.submenu.push(
     {
-      label: "Save",
-      accelerator: keybindings.getAccelerator("file.save"),
+      label: 'Save',
+      accelerator: keybindings.getAccelerator('file.save'),
       click(menuItem, browserWindow) {
-        actions.save(browserWindow);
+        actions.save(browserWindow)
       }
     },
     {
-      label: "Auto Save",
-      type: "checkbox",
-      id: "autoSaveMenuItem",
+      label: 'Auto Save',
+      type: 'checkbox',
+      id: 'autoSaveMenuItem',
       click(menuItem, browserWindow) {
-        actions.autoSave(menuItem, browserWindow);
+        actions.autoSave(menuItem, browserWindow)
       }
     },
     {
-      type: "separator"
+      type: 'separator'
     },
     {
-      label: "Export",
+      label: 'Export',
       submenu: [
         {
-          label: "HTML",
+          label: 'HTML',
           click(menuItem, browserWindow) {
-            actions.exportFile(browserWindow, "styledHtml");
+            actions.exportFile(browserWindow, 'styledHtml')
           }
         },
         {
-          label: "PDF",
+          label: 'PDF',
           click(menuItem, browserWindow) {
-            actions.exportFile(browserWindow, "pdf");
+            actions.exportFile(browserWindow, 'pdf')
           }
         }
       ]
     },
     {
-      type: "separator",
+      type: 'separator',
       visible: !isOsx
     },
     {
-      label: "Preferences",
-      accelerator: keybindings.getAccelerator("file.preferences"),
+      label: 'Preferences',
+      accelerator: keybindings.getAccelerator('file.preferences'),
       visible: !isOsx,
       click() {
-        userSetting();
+        userSetting()
       }
     },
     {
-      label: "Close Window",
-      accelerator: keybindings.getAccelerator("file.close-window"),
-      role: "close"
+      label: 'Close Window',
+      accelerator: keybindings.getAccelerator('file.close-window'),
+      role: 'close'
     },
     {
-      label: "Quit",
-      accelerator: keybindings.getAccelerator("file.quit"),
+      label: 'Quit',
+      accelerator: keybindings.getAccelerator('file.quit'),
       visible: !isOsx,
       click: app.quit
     }
-  );
-  return fileMenu;
+  )
+  return fileMenu
 }

@@ -8,7 +8,9 @@ ipcMain.on('mt::ask-for-image-auto-path', (e, { pathname, src, id }) => {
   if (src.endsWith('/') || src.endsWith('\\') || src.endsWith('.')) {
     return win.webContents.send(`mt::response-of-image-path-${id}`, [])
   }
-  const fullPath = path.isAbsolute(src) ? src : path.join(path.dirname(pathname), src)
+  const fullPath = path.isAbsolute(src)
+    ? src
+    : path.join(path.dirname(pathname), src)
   const dir = path.dirname(fullPath)
   const searchKey = path.basename(fullPath)
   searchFilesAndDir(dir, searchKey)

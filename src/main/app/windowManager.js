@@ -1,5 +1,5 @@
-import { ipcMain, BrowserWindow } from "electron";
-import EventEmitter from "events";
+import { ipcMain, BrowserWindow } from 'electron'
+import EventEmitter from 'events'
 
 class WindowManager extends EventEmitter {
   /**
@@ -7,13 +7,13 @@ class WindowManager extends EventEmitter {
    * @param {AppMenu} appMenu The application menu instance.
    */
   constructor(appMenu) {
-    super();
+    super()
 
-    this._appMenu = appMenu;
+    this._appMenu = appMenu
 
-    this._editor = null;
-    this._setting = null;
-    this._listenForIpcMain();
+    this._editor = null
+    this._setting = null
+    this._listenForIpcMain()
   }
 
   /**
@@ -22,14 +22,14 @@ class WindowManager extends EventEmitter {
    * @param {IApplicationWindow} window The application window. We take ownership!
    */
   addEditor(window) {
-    this._editor = window;
-    window.on("window-closed", () => {
-      this._editor = null;
-    });
+    this._editor = window
+    window.on('window-closed', () => {
+      this._editor = null
+    })
   }
 
-  getEditor (){
-    return this._editor;
+  getEditor() {
+    return this._editor
   }
 
   /**
@@ -39,25 +39,25 @@ class WindowManager extends EventEmitter {
    */
   forceClose(browserWindow) {
     if (!browserWindow) {
-      return false;
+      return false
     }
 
-    const { id: windowId } = browserWindow;
-    const { _appMenu } = this;
+    const { id: windowId } = browserWindow
+    const { _appMenu } = this
 
-    _appMenu.removeWindowMenu(windowId);
+    _appMenu.removeWindowMenu(windowId)
 
-    browserWindow.destroy();
-    return true;
+    browserWindow.destroy()
+    return true
   }
 
   _listenForIpcMain() {
     // Force close a BrowserWindow
-    ipcMain.on("mt::close-window", e => {
-      const win = BrowserWindow.fromWebContents(e.sender);
-      this.forceClose(win);
-    });
+    ipcMain.on('mt::close-window', e => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      this.forceClose(win)
+    })
   }
 }
 
-export default WindowManager;
+export default WindowManager

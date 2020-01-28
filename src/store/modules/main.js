@@ -2,22 +2,20 @@
 
 const state = {
   //同步状态
-  viewMode: "all" //all,focus
-};
+  viewMode: 'all' //all,focus
+}
 
 const mutations = {
   update_viewMode(state, value) {
-    state.viewMode = value;
+    state.viewMode = value
   }
-};
+}
 
-const actions = {
-    
-};
+const actions = {}
 
 export default {
   namespaced: true,
   state,
   mutations,
   actions
-};
+}

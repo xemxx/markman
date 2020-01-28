@@ -5,4 +5,3 @@ export const toggleAlwaysOnTop = win => {
     ipcMain.emit('window-toggle-always-on-top', win)
   }
 }
-

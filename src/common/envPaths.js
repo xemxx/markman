@@ -5,7 +5,7 @@ class EnvPaths {
    * @param {string} userDataPath The user data path.
    * @returns
    */
-  constructor (userDataPath) {
+  constructor(userDataPath) {
     const currentDate = new Date()
     if (!userDataPath) {
       throw new Error('"userDataPath" is not set.')
@@ -13,30 +13,36 @@ class EnvPaths {
 
     this._electronUserDataPath = userDataPath // path.join(userDataPath, 'electronUserData')
     this._userDataPath = userDataPath
-    this._logPath = path.join(this._userDataPath, 'logs', `${currentDate.getFullYear()}${currentDate.getMonth() + 1}`)
+    this._logPath = path.join(
+      this._userDataPath,
+      'logs',
+      `${currentDate.getFullYear()}${currentDate.getMonth() + 1}`
+    )
     this._preferencesPath = userDataPath // path.join(this._userDataPath, 'preferences')
-    this._preferencesFilePath = path.join(this._preferencesPath, 'preference.json')
-
+    this._preferencesFilePath = path.join(
+      this._preferencesPath,
+      'preference.json'
+    )
   }
 
-  get electronUserDataPath () {
+  get electronUserDataPath() {
     // This path is identical to app.getPath('userData') but userDataPath must not necessarily be the same path.
     return this._electronUserDataPath
   }
 
-  get userDataPath () {
+  get userDataPath() {
     return this._userDataPath
   }
 
-  get logPath () {
+  get logPath() {
     return this._logPath
   }
 
-  get preferencesPath () {
+  get preferencesPath() {
     return this._preferencesPath
   }
 
-  get preferencesFilePath () {
+  get preferencesFilePath() {
     return this._preferencesFilePath
   }
 }

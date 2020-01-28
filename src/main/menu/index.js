@@ -1,4 +1,3 @@
-
 import { ipcMain, Menu } from 'electron'
 import log from 'electron-log'
 import { isLinux, isOsx, isWindows } from '../config'
@@ -8,7 +7,6 @@ import { updateFormatMenu } from '../menu/actions/format'
 import { updateSelectionMenus } from '../menu/actions/paragraph'
 import { viewLayoutChanged } from '../menu/actions/view'
 import configureMenu, { configSettingMenu } from '../menu/templates'
-
 
 export const MenuType = {
   DEFAULT: 0,
@@ -21,7 +19,7 @@ class AppMenu {
    * @param {Keybindings} keybindings The keybindings instances.
    * @param {string} userDataPath The user data path.
    */
-  constructor (keybindings, userDataPath) {
+  constructor(keybindings, userDataPath) {
     this._keybindings = keybindings
     this._userDataPath = userDataPath
 
@@ -32,15 +30,13 @@ class AppMenu {
     this._listenForIpcMain()
   }
 
-
   /**
    * Add the editor menu to the given window.
    *
    * @param {BrowserWindow} window The editor browser window.
    * @param {[*]} options The menu options.
    */
-  addEditorMenu (window) {
-
+  addEditorMenu(window) {
     const { windowMenus } = this
     windowMenus.set(window.id, this._buildEditorMenu(true))
 
@@ -54,7 +50,7 @@ class AppMenu {
    *
    * @param {number} windowId The window id.
    */
-  removeWindowMenu (windowId) {
+  removeWindowMenu(windowId) {
     // NOTE: Shortcut handler is automatically unregistered when window is closed.
     const { activeWindowId } = this
     this.windowMenus.delete(windowId)
@@ -69,10 +65,12 @@ class AppMenu {
    * @param {number} windowId The window id.
    * @returns {Electron.Menu} The menu.
    */
-  getWindowMenuById (windowId) {
+  getWindowMenuById(windowId) {
     const menu = this.windowMenus.get(windowId)
     if (!menu) {
-      log.error(`getWindowMenuById: Cannot find window menu for window id ${windowId}.`)
+      log.error(
+        `getWindowMenuById: Cannot find window menu for window id ${windowId}.`
+      )
       throw new Error(`Cannot find window menu for id ${windowId}.`)
     }
     return menu.menu
@@ -83,7 +81,7 @@ class AppMenu {
    *
    * @param {number} windowId The window id.
    */
-  has (windowId) {
+  has(windowId) {
     return this.windowMenus.has(windowId)
   }
 
@@ -92,7 +90,7 @@ class AppMenu {
    *
    * @param {number} windowId The window id.
    */
-  setActiveWindow (windowId) {
+  setActiveWindow(windowId) {
     if (this.activeWindowId !== windowId) {
       // Change application menu to the current window menu.
       this._setApplicationMenu(this.getWindowMenuById(windowId))
@@ -107,7 +105,7 @@ class AppMenu {
    *
    * @param {[string[]]} recentUsedDocuments
    */
-  updateAppMenu (recentUsedDocuments) {
+  updateAppMenu(recentUsedDocuments) {
     if (!recentUsedDocuments) {
       recentUsedDocuments = this.getRecentlyUsedDocuments()
     }
@@ -121,7 +119,10 @@ class AppMenu {
       const { menu: oldMenu, type } = value
       if (type !== MenuType.EDITOR) return
 
-      const { menu: newMenu } = this._buildEditorMenu(false, recentUsedDocuments)
+      const { menu: newMenu } = this._buildEditorMenu(
+        false,
+        recentUsedDocuments
+      )
 
       // all other menu items are set automatically
       updateMenuItem(oldMenu, newMenu, 'sourceCodeModeMenuItem')
@@ -147,7 +148,7 @@ class AppMenu {
    * @param {number} windowId The window id.
    * @param {string} lineEnding Either >lf< or >crlf<.
    */
-  updateLineEndingMenu (windowId, lineEnding) {
+  updateLineEndingMenu(windowId, lineEnding) {
     const menus = this.getWindowMenuById(windowId)
     const crlfMenu = menus.getMenuItemById('crlfLineEndingMenuEntry')
     const lfMenu = menus.getMenuItemById('lfLineEndingMenuEntry')
@@ -164,7 +165,7 @@ class AppMenu {
    * @param {number} windowId The window id.
    * @param {boolean} lineEnding Always on top.
    */
-  updateAlwaysOnTopMenu (windowId, flag) {
+  updateAlwaysOnTopMenu(windowId, flag) {
     const menus = this.getWindowMenuById(windowId)
     const menu = menus.getMenuItemById('alwaysOnTopMenuItem')
     menu.checked = flag
@@ -186,12 +187,11 @@ class AppMenu {
       }
 
       themeMenus.submenu.items.forEach(item => (item.checked = false))
-      themeMenus.submenu.items
-        .forEach(item => {
-          if (item.id && item.id === theme) {
-            item.checked = true
-          }
-        })
+      themeMenus.submenu.items.forEach(item => {
+        if (item.id && item.id === theme) {
+          item.checked = true
+        }
+      })
     })
   }
 
@@ -274,8 +274,7 @@ class AppMenu {
     })
   }
 
-  _buildEditorMenu (createShortcutMap) {
-
+  _buildEditorMenu(createShortcutMap) {
     const menuTemplate = configureMenu(this._keybindings)
     const menu = Menu.buildFromTemplate(menuTemplate)
 
@@ -292,7 +291,7 @@ class AppMenu {
     }
   }
 
-  _buildSettingMenu () {
+  _buildSettingMenu() {
     if (isOsx) {
       const menuTemplate = configSettingMenu(this._keybindings)
       const menu = Menu.buildFromTemplate(menuTemplate)
@@ -301,7 +300,7 @@ class AppMenu {
     return { menu: null, type: MenuType.SETTINGS }
   }
 
-  _setApplicationMenu (menu) {
+  _setApplicationMenu(menu) {
     if (isLinux && !menu) {
       // WORKAROUND for Electron#16521: We cannot hide the (application) menu on Linux.
       const dummyMenu = Menu.buildFromTemplate([])
@@ -311,7 +310,7 @@ class AppMenu {
     }
   }
 
-  _listenForIpcMain () {
+  _listenForIpcMain() {
     ipcMain.on('mt::add-recently-used-document', (e, pathname) => {
       this.addRecentlyUsedDocument(pathname)
     })

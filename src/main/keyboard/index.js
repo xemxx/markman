@@ -1,5 +1,9 @@
 // import EventEmitter from 'events'
-import { getCurrentKeyboardLayout, getCurrentKeyboardLanguage, getCurrentKeymap } from 'keyboard-layout'
+import {
+  getCurrentKeyboardLayout,
+  getCurrentKeyboardLanguage,
+  getCurrentKeymap
+} from 'keyboard-layout'
 
 export const getKeyboardLanguage = () => {
   const lang = getCurrentKeyboardLanguage()
@@ -10,9 +14,11 @@ export const getKeyboardLanguage = () => {
 }
 
 export const dumpKeyboardInformation = () => {
-  return `Layout: ${getCurrentKeyboardLayout()}\n` +
+  return (
+    `Layout: ${getCurrentKeyboardLayout()}\n` +
     `Language: ${getCurrentKeyboardLanguage()}\n\n` +
     JSON.stringify(getCurrentKeymap(), null, 2)
+  )
 }
 
 export const getVirtualLetters = () => {

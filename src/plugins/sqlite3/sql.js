@@ -48,4 +48,4 @@ export default [
   "lastSC" INTEGER,
   "lastST" INTEGER
 )`
-];
+]

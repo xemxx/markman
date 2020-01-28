@@ -13,11 +13,11 @@
 
 <script>
 export default {
-  name: "sign",
+  name: 'sign',
   data() {
-    return {};
+    return {}
   }
-};
+}
 </script>
 
 <style lang="stylus" scoped>
@@ -27,4 +27,3 @@ export default {
   }
 }
 </style>
-

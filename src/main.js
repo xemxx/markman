@@ -1,33 +1,33 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
 
-import "./plugins/sqlite3/init.js";
-import "./plugins/axios.js";
-import "./plugins/element.js";
+import './plugins/sqlite3/init.js'
+import './plugins/axios.js'
+import './plugins/element.js'
 
-import "./assets/css/index.styl";
+import './assets/css/index.styl'
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = false
 
 // 全局拦截，检测token
 router.beforeEach((to, from, next) => {
   if (to.matched.some(m => m.meta.auth)) {
-    if (store.state.user.token === "") {
+    if (store.state.user.token === '') {
       next({
-        path: "/sign/in"
-      });
+        path: '/sign/in'
+      })
     } else {
-      next();
+      next()
     }
   } else {
-    next();
+    next()
   }
-});
+})
 
 new Vue({
   router,
   store,
   render: h => h(App)
-}).$mount("#app");
+}).$mount('#app')
