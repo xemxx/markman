@@ -1,9 +1,12 @@
 import VueRouter from 'vue-router'
+import Vue from 'vue'
 import Index from '../views/Index.vue'
 import Home from '../views/Home.vue'
 import Sign from '../views/Sign.vue'
 import SignUp from '../components/sign/SignUp.vue'
 import SignIn from '../components/sign/SignIn.vue'
+
+Vue.use(VueRouter)
 
 const routes = [
   {

@@ -44,6 +44,7 @@ class EditorWindow extends BaseWindow {
 
     // Create a menu for the current window
     appMenu.addEditorMenu(win)
+    appMenu.setActiveWindow(win.id)
 
     win.once('ready-to-show', () => {
       win.show()
@@ -56,8 +57,6 @@ class EditorWindow extends BaseWindow {
 
       // Restore and focus window
       this.bringToFront()
-
-      appMenu.updateLineEndingMenu(this.id)
     })
 
     win.webContents.once(

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header height="auto" @dblclick="checkSize">
+      <el-header height="auto">
         {{ title }}
         <!-- 如果是windows平台 -->
         <div class="handle-bar" v-if="isWin">
@@ -10,7 +10,7 @@
         </div>
       </el-header>
       <el-main>
-        <router-view />
+        <router-view></router-view>
       </el-main>
     </el-container>
   </div>
@@ -94,14 +94,6 @@ export default {
           console.log(err)
         })
     },
-    checkSize() {
-      const window = remote.getCurrentWindow()
-      if (window.isMaximized()) {
-        window.minimize()
-      } else {
-        window.maximize()
-      }
-    },
     minimizeWindow() {
       const window = remote.getCurrentWindow()
       window.minimize()
@@ -115,26 +107,22 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  height: 100vh;
-  overflow: hidden;
-}
+#app
+  font-family 'Avenir', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
+  color #2c3e50
+  height 100vh
+  overflow hidden
 
-.el-header {
-  text-align: center;
-  -webkit-app-region: drag;
-  background-color: floder-bc;
+.el-header
+  text-align center
+  -webkit-app-region drag
+  background-color floder-bc
 
-  & .handle-bar {
-    float: right;
-  }
-}
+  & .handle-bar
+    float right
 
-.el-main {
-  overflow: auto;
-}
+.el-main
+  overflow auto
 </style>

@@ -1,11 +1,11 @@
 import { app } from 'electron'
 import * as actions from '../actions/file'
-import { userSetting } from '../actions/marktext'
+import { userSetting } from '../actions/markman'
 import { isOsx } from '../../config'
 
 export default function(keybindings) {
   const fileMenu = {
-    label: '&File',
+    label: 'File',
     submenu: []
   }
 
@@ -21,8 +21,8 @@ export default function(keybindings) {
       label: 'Auto Save',
       type: 'checkbox',
       id: 'autoSaveMenuItem',
-      click(menuItem, browserWindow) {
-        actions.autoSave(menuItem, browserWindow)
+      click(menuItem) {
+        actions.autoSave(menuItem)
       }
     },
     {

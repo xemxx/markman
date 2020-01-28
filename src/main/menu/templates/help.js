@@ -1,11 +1,10 @@
 import { shell } from 'electron'
-
-import * as actions from '../actions/help'
+import { showAboutDialog } from '../actions/help'
 import { isOsx } from '../../config'
 
 export default function() {
   const helpMenu = {
-    label: '&Help',
+    label: 'Help',
     role: 'help',
     submenu: [
       {
@@ -37,7 +36,7 @@ export default function() {
       {
         label: 'About Markman',
         click(menuItem, browserWindow) {
-          actions.showAboutDialog(browserWindow)
+          showAboutDialog(browserWindow)
         }
       }
     )

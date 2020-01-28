@@ -13,6 +13,7 @@ class WindowManager extends EventEmitter {
 
     this._editor = null
     this._setting = null
+
     this._listenForIpcMain()
   }
 
@@ -28,8 +29,11 @@ class WindowManager extends EventEmitter {
     })
   }
 
-  getEditor() {
+  get editor() {
     return this._editor
+  }
+  get setting() {
+    return this._setting
   }
 
   /**
@@ -56,6 +60,12 @@ class WindowManager extends EventEmitter {
     ipcMain.on('mt::close-window', e => {
       const win = BrowserWindow.fromWebContents(e.sender)
       this.forceClose(win)
+    })
+
+    ipcMain.on('window-toggle-always-on-top', win => {
+      const flag = !win.isAlwaysOnTop()
+      win.setAlwaysOnTop(flag)
+      this._appMenu.updateAlwaysOnTopMenu(win.id, flag)
     })
   }
 }

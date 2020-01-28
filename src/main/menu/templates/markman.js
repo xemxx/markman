@@ -1,6 +1,6 @@
 import { app } from 'electron'
 import { showAboutDialog } from '../actions/help'
-import * as actions from '../actions/marktext'
+import { checkUpdates, userSetting } from '../actions/markman'
 
 export default function(keybindings) {
   return {
@@ -15,14 +15,14 @@ export default function(keybindings) {
       {
         label: 'Check for updates...',
         click(menuItem, browserWindow) {
-          actions.checkUpdates(browserWindow)
+          checkUpdates(browserWindow)
         }
       },
       {
         label: 'Preferences',
         accelerator: keybindings.getAccelerator('file.preferences'),
         click() {
-          actions.userSetting()
+          userSetting()
         }
       },
       {

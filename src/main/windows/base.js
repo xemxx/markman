@@ -2,7 +2,6 @@ import EventEmitter from 'events'
 import { isLinux } from '../config'
 
 /**
- * A Mark Text window.
  * @typedef {BaseWindow} IApplicationWindow
  * @property {number | null} id Identifier (= browserWindow.id) or null during initialization.
  * @property {Electron.BrowserWindow} browserWindow The browse window.
@@ -10,7 +9,6 @@ import { isLinux } from '../config'
  * @property {WindowType} type The window type.
  */
 
-// Window type marktext support.
 export const WindowType = {
   BASE: 'base', // You shold never create a `BASE` window.
   EDITOR: 'editor',

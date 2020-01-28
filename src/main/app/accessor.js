@@ -1,7 +1,7 @@
 import WindowManager from '../app/windowManager'
 
 import Keybindings from '../keyboard/shortcutHandler'
-import AppMenu from '../menu/one'
+import AppMenu from '../menu'
 
 class Accessor {
   constructor(args) {

@@ -4,7 +4,7 @@ import { isDevelopment } from '../../config'
 
 export default function(keybindings) {
   const viewMenu = {
-    label: '&View',
+    label: 'View',
     submenu: [
       {
         label: 'Toggle Sidebar',
@@ -13,7 +13,6 @@ export default function(keybindings) {
         type: 'checkbox',
         checked: false,
         click(item, browserWindow, event) {
-          // if we call this function, the checked state is not set
           if (!event) {
             item.checked = !item.checked
           }
@@ -22,19 +21,21 @@ export default function(keybindings) {
       },
       {
         type: 'separator'
-      }
+      },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' }
     ]
   }
 
   if (isDevelopment) {
     viewMenu.submenu.push({
+      type: 'separator'
+    })
+    viewMenu.submenu.push({
       label: 'Toggle Developer Tools',
       accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
-      click(item, focusedWindow) {
-        if (focusedWindow) {
-          focusedWindow.webContents.toggleDevTools()
-        }
-      }
+      role: 'toggledevtools'
     })
     viewMenu.submenu.push({
       label: 'Reload',

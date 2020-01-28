@@ -1,22 +1,17 @@
 export default function(keybindings) {
   return {
-    label: '&Edit',
+    label: 'Edit',
+    role: 'edit',
     submenu: [
       {
         label: 'Undo',
         accelerator: keybindings.getAccelerator('edit.undo'),
         role: 'undo'
-        // click: (menuItem, browserWindow) => {
-        //   actions.edit(browserWindow, 'undo')
-        // }
       },
       {
         label: 'Redo',
         accelerator: keybindings.getAccelerator('edit.redo'),
         role: 'redo'
-        // click: (menuItem, browserWindow) => {
-        //   actions.edit(browserWindow, "redo");
-        // }
       },
       {
         type: 'separator'
@@ -43,9 +38,6 @@ export default function(keybindings) {
         label: 'Select All',
         accelerator: keybindings.getAccelerator('edit.select-all'),
         role: 'selectAll'
-        // click(menuItem, browserWindow) {
-        //   actions.edit(browserWindow, "selectAll");
-        // }
       }
     ]
   }

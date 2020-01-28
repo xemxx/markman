@@ -3,7 +3,7 @@ import { isOsx } from '../../config'
 
 export default function(keybindings) {
   const menu = {
-    label: '&Window',
+    label: 'Window',
     role: 'window',
     submenu: [
       {
@@ -18,17 +18,6 @@ export default function(keybindings) {
         click(menuItem, browserWindow) {
           toggleAlwaysOnTop(browserWindow)
         }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        label: 'Zoom In',
-        role: 'zoomIn'
-      },
-      {
-        label: 'Zoom Out',
-        role: 'zoomOut'
       },
       {
         type: 'separator'

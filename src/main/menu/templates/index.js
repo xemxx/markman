@@ -23,11 +23,11 @@ export const configSettingMenu = keybindings => {
 }
 
 /**
- * Create the application menu for the editor window.
+ * Create  the editor window.
  *
  * @param {Keybindings} keybindings The keybindings instance.
  */
-export default function(keybindings) {
+export const configEditorMenu = keybindings => {
   return [
     ...(isOsx ? [markman(keybindings)] : []),
     file(keybindings),
