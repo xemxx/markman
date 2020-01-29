@@ -37,5 +37,5 @@ export default function(keybindings) {
       role: 'front'
     })
   }
-  return men
+  return menu
 }
