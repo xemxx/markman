@@ -67,7 +67,7 @@ const actions = {
     return model.existUser(user.user, user.server).then(id => {
       if (id !== '') {
         return model
-          .updateById(id, { state: 1, token: user.token })
+          .update(id, { state: 1, token: user.token })
           .then(() => {
             return dispatch('loadActiver')
           })

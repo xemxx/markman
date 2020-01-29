@@ -27,4 +27,5 @@ export default class Note extends Model {
   add(data) {
     return super.insert('note', data)
   }
+  updateToLocal(uid, data) {}
 }

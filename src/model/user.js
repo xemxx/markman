@@ -1,5 +1,7 @@
 import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
+
+import axios from '../../plugins/axios'
 export default class User extends Model {
   getActiver() {
     return db.get(`select * from user where state= ?`, [1])
@@ -27,7 +29,15 @@ export default class User extends Model {
     )
   }
 
-  updateById(id, data) {
+  update(id, data) {
     return super.update(id, 'user', data)
+  }
+
+  getLastSC(uid) {
+    return db.get(`select lastSC from user where id= ?`, [uid])
+  }
+
+  updateLastSC(id, lastSC) {
+    return this.update(id, { lastSC })
   }
 }

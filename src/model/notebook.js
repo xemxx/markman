@@ -14,4 +14,6 @@ export default class Notebook extends Model {
   delete(id) {
     return super.delete(id, 'notebook')
   }
+
+  updateToLocal(uid, data) {}
 }
