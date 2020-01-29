@@ -1,9 +1,8 @@
 import Note from '../../model/note.js'
 const nModel = new Note()
-//import { hasKeys } from "../../tools";
 
 const state = {
-  detail: { markdown: '', title: '' },
+  detail: { id: '', markdown: '', title: '' },
   tags: []
 }
 
@@ -28,6 +27,7 @@ const actions = {
     // 获取到detail，直接在视图绑定detail
     return nModel.getOne(id).then(data => {
       const detail = {
+        id: data.id,
         markdown: data.content,
         title: data.title
       }
@@ -51,35 +51,33 @@ const actions = {
     return nModel
       .add(note)
       .then(id => {
-        dispatch('list/flashList', null, { root: true })
+        dispatch('list/flashList', {}, { root: true })
         dispatch('loadNote', id)
       })
       .catch(err => console.log(err))
   },
 
-  //TODO
-  updateNoteSelf({ dispatch }, params) {
+  saveNote({ dispatch, state }) {
+    const { markdown: content, id, title } = state.detail
+    const time = Date.parse(new Date()) / 1000
+    const params = {
+      id,
+      data: {
+        content,
+        title,
+        modifyState: 2,
+        modifyDate: time
+      }
+    }
     return nModel
       .update(params.id, params.data)
       .then(() => {
         //更新显示
-        if (params.data.bid != '') {
-          dispatch('floder/flashList', null, { root: true })
-        }
-        dispatch('list/flashList', null, { root: true })
+        dispatch('list/flashList', {}, { root: true })
         //同步服务器
         dispatch('sync/sendChange', null, { root: true })
       })
       .catch(err => console.log(err))
-  },
-
-  listen_editor_save() {
-    // window.addEventListener("keyup", () =>
-    //   store.commit("update_online", true)
-    // );
-  },
-  listen_for_markdown_change({ commit }, { markdown }) {
-    commit('set_markdown', markdown)
   }
 }
 

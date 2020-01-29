@@ -1,17 +1,6 @@
 const typewriterModeMenuItemId = 'typewriterModeMenuItem'
 const focusModeMenuItemId = 'focusModeMenuItem'
 
-export const layout = (item, win, type) => {
-  if (win && win.webContents) {
-    win.webContents.send('mt::set-view-layout', { [type]: item.checked })
-  }
-}
-
-// --- IPC events -------------------------------------------------------------
-
-// NOTE: Don't use static `getMenuItemById` here, instead request the menu by
-//       window id from `AppMenu` manager.
-
 /**
  *
  * @param {*} applicationMenu The application menu instance.

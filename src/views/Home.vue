@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <div v-show="viewMode" class="shider">
+    <div v-show="sidebar" class="sidebar">
       <div class="floder">
         <Floder />
       </div>
@@ -19,7 +19,6 @@ import Floder from '@/components/Floder.vue'
 import List from '@/components/List.vue'
 import Editor from '@/components/editor'
 
-import { BrowserWindow } from 'electron'
 import { mapState } from 'vuex'
 
 export default {
@@ -34,26 +33,17 @@ export default {
   },
   computed: {
     ...mapState({
-      viewMode: state => {
-        switch (state.main.viewMode) {
-          case 'focus':
-            return false
-          default:
-            return true
-        }
-      }
-    }),
-    isWin: () => process.platform === 'win32'
+      sidebar: state => state.sidebar
+    })
   },
-  created() {},
+  created() {
+    this.listen()
+  },
   methods: {
-    minimizeWindow() {
-      const window = BrowserWindow.getFocusedWindow()
-      window.minimize()
-    },
-    closeWindow() {
-      const window = BrowserWindow.getFocusedWindow()
-      window.close()
+    listen() {
+      const { dispatch } = this.$store
+      dispatch('listenSidebar')
+      dispatch('listenFileSave')
     }
   }
 }
@@ -64,7 +54,7 @@ export default {
   flex-direction row
   height 100%
 
-.shider
+.sidebar
   display flex
   flex 1
   max-width 400px

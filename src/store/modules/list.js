@@ -1,5 +1,6 @@
 import Note from '../../model/note.js'
 const nModel = new Note()
+
 const state = {
   type: 'all',
   flagId: '',
@@ -17,16 +18,11 @@ const mutations = {
 const actions = {
   //更新state中的list，视图将自动更新
   flashList(
-    { commit, state, rootState, dispatch },
-    { type, flagId } = {
-      type: '',
-      flagId: ''
-    }
+    { commit, rootState, dispatch },
+    { type = state.type, flagId = state.flagId } = {}
   ) {
     const uid = rootState.user.id
     let list = {}
-    type = type ? type : state.type
-    flagId = flagId ? flagId : state.flagId
 
     if (type === 'note') {
       list = nModel.getAllByBook(uid, flagId)

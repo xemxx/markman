@@ -51,19 +51,12 @@
         <p v-if="isSyncing">syncing</p>
         <p v-else>sync finish</p>
       </div>
-      <el-button
-        type="primary"
-        style="float:right"
-        heigth="20px"
-        @click="checkViewMode('focus')"
-        >focus</el-button
-      >
     </el-footer>
   </el-container>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
@@ -90,9 +83,6 @@ export default {
     //this.createMenu();
   },
   methods: {
-    ...mapMutations({
-      checkViewMode: 'main/update_viewMode'
-    }),
     ...mapActions({
       flashList: 'list/flashList',
       flashNotebooks: 'floder/flashList',
@@ -153,20 +143,18 @@ export default {
 <style lang="stylus" scoped>
 .menu
   background-color floder-bc
-.add {
-  display: flex;
-  position: relative;
-  border-radius: 50px;
-  justify-items: center;
-}
 
-.toolbar {
-  background-color: wheat;
-  color: black;
-  text-align: center;
-}
+.add
+  display flex
+  position relative
+  border-radius 50px
+  justify-items center
 
-.el-submenu .el-menu-item {
-  padding-right: 0;
-}
+.toolbar
+  background-color wheat
+  color black
+  text-align center
+
+.el-submenu .el-menu-item
+  padding-right 0
 </style>

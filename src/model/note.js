@@ -2,7 +2,10 @@ import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
 
 export default class Note extends Model {
-  static table = 'note'
+  constructor() {
+    super()
+    this.table = 'note'
+  }
   getOne(id) {
     return db.get(`select * from note where id=?`, [id])
   }

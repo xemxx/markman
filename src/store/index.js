@@ -6,11 +6,15 @@ Vue.use(Vuex)
 let store = new Vuex.Store({
   state: {
     online: navigator.onLine,
-    platform: process.env.platform
+    platform: process.env.platform,
+    sidebar: true
   },
   mutations: {
     update_online(state, value) {
       state.online = value
+    },
+    update_sidebar(state, value) {
+      state.sidebar = value
     }
   },
   modules

@@ -9,8 +9,7 @@ export const exportFile = (win, type) => {
 
 export const save = win => {
   if (win && win.webContents) {
-    console.log('save')
-    //win.webContents.send('mt::editor-ask-file-save')
+    win.webContents.send('m::file-save')
   }
 }
 

@@ -6,6 +6,7 @@ export default function(keybindings) {
     label: 'Window',
     role: 'window',
     submenu: [
+      { role: 'zoom' },
       {
         label: 'Minimize',
         accelerator: keybindings.getAccelerator('window.minimize'),
@@ -36,5 +37,5 @@ export default function(keybindings) {
       role: 'front'
     })
   }
-  return menu
+  return men
 }

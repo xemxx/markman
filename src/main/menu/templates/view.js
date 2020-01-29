@@ -1,5 +1,3 @@
-import { ipcMain } from 'electron'
-import { layout } from '../actions/view'
 import { isDevelopment } from '../../config'
 
 export default function(keybindings) {
@@ -11,12 +9,9 @@ export default function(keybindings) {
         id: 'sideBarMenuItem',
         accelerator: keybindings.getAccelerator('view.toggle-sidebar'),
         type: 'checkbox',
-        checked: false,
-        click(item, browserWindow, event) {
-          if (!event) {
-            item.checked = !item.checked
-          }
-          layout(item, browserWindow, 'showSideBar')
+        checked: true,
+        click(item, browserWindow) {
+          browserWindow.webContents.send('m::view-sidebar', item.checked)
         }
       },
       {
@@ -40,11 +35,7 @@ export default function(keybindings) {
     viewMenu.submenu.push({
       label: 'Reload',
       accelerator: keybindings.getAccelerator('view.dev-reload'),
-      click(item, focusedWindow) {
-        if (focusedWindow) {
-          ipcMain.emit('window-reload-by-id', focusedWindow.id)
-        }
-      }
+      role: 'reload'
     })
   }
   return viewMenu

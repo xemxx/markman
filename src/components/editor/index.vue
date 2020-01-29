@@ -25,7 +25,7 @@ export default {
   name: 'editor',
   data() {
     return {
-      isModify: false,
+      modifyState: false,
       editor: null
     }
   },
@@ -55,63 +55,51 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.editor, .editor-title {
-  background-color: editor-bc;
-}
+.editor, .editor-title
+  background-color editor-bc
 
-.editor {
-  padding: 0 10px;
-}
+.editor-title
+  width 100%
+  padding 5px 10px
+  border none
+  font-size 24px
+  font-weight 500
 
-.editor-title {
-  width: 100%;
-  padding: 5px 0;
-  border: none;
-  font-size: 24px;
-  font-weight: 500;
+  &:focus
+    border none
+    outline none
 
-  &:focus {
-    border: none;
-    outline: none;
-  }
-}
+.editor-wrapper
+  height 100%
+  width 100%
+  padding 10px 10px
 
-.editor-wrapper {
-  height: 100%;
-  width: 100%;
-  padding: 6px 0;
+  & textarea
+    outline-offset 0px
+    width 100%
+    height 100%
+    border 0
+    outline none
+    resize none
+    background-color #ffffff
+    font-size 16px
 
-  & textarea {
-    outline-offset: 0px;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    outline: none;
-    resize: none;
-    background-color: #ffffff;
-    font-size: 16px;
-  }
-}
+.tags
+  bottom 0px
+  width 100%
+  height auto
+  min-height 20px
+  background-color #aaeedd
 
-.tags {
-  bottom: 0px;
-  width: 100%;
-  height: auto;
-  min-height: 20px;
-  background-color: rgb(25, 118, 211);
+  ul
+    list-style-type none
+    display inline
 
-  ul {
-    list-style-type: none;
-    display: inline;
-
-    li {
-      border: 1px;
-      border-radius: 5px;
-      background-color: aqua;
-      padding-left: 10px;
-      color: black;
-      float: left;
-    }
-  }
-}
+    li
+      border 1px
+      border-radius 5px
+      background-color aqua
+      padding-left 10px
+      color black
+      float left
 </style>
