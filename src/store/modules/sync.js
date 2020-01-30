@@ -47,26 +47,16 @@ const actions = {
     })
   },
 
-  pull({ commit, dispatch, rootState }, { localSC, serverSC }) {
+  pull({ dispatch, rootState }, { localSC, serverSC }) {
     const uid = rootState.user.id
     return dispatch('_syncNotebooksToLocal', localSC)
       .then(() => dispatch('_syncNotesToLocal', localSC))
       .then(() => userModel.updateLastSC(uid, serverSC))
-      .catch(err => {
-        if (err.type === 'info') {
-          dispatch('push')
-        } else {
-          commit('update_isSyncing', false)
-        }
-      })
+      .then(() => dispatch('push'))
   },
 
-  push({ commit }) {
+  push() {
     //TODO: 完成发送改变到服务端
-    commit('update_isSyncing', true)
-    setTimeout(() => {
-      commit('update_isSyncing', false)
-    }, 10000)
   },
 
   _syncNotebooksToLocal({ dispatch, rootState }, afterSC) {
