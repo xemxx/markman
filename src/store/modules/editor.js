@@ -1,4 +1,6 @@
 import Note from '../../model/note.js'
+import uuid from 'uuid/v5'
+
 const nModel = new Note()
 
 const state = {
@@ -39,7 +41,7 @@ const actions = {
     const time = Date.parse(new Date()) / 1000
     const note = {
       uid: rootState.user.id,
-      guid: Date.parse(new Date()) + rootState.user.id,
+      guid: uuid(rootState.user.username, rootState.user.server),
       bid,
       title: '未命名',
       content: '',

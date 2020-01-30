@@ -6,7 +6,7 @@ export default [
   uid INTEGER,
   title text,
   content text,
-  modifyState integer,
+  modifyState integer, -- 0：不需要同步，1：新的东西，2：修改过的东西 3：本地删除但是未同步的数据 --
   SC integer,
   addDate integer,
   modifyDate integer
@@ -19,7 +19,7 @@ export default [
   name TEXT,
   sort INTEGER,--目录排序--
   sortType INTEGER, --文章排序--
-  modifyState integer,
+  modifyState integer, -- 0：不需要同步，1：新的东西，2：修改过的东西 3：本地删除但是未同步的数据 --
   SC integer,
   addDate integer,
   modifyDate integer
@@ -29,7 +29,7 @@ export default [
   uid INTEGER,
   guid integer,
   name TEXT,
-  modifyState integer, 
+  modifyState integer, -- 0：不需要同步，1：新的东西，2：修改过的东西 3：本地删除但是未同步的数据 --
   SC integer,
   addDate integer,
   modifyDate integer

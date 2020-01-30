@@ -2,10 +2,6 @@ import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
 
 export default class Note extends Model {
-  constructor() {
-    super()
-    this.table = 'note'
-  }
   getOne(id) {
     return db.get(`select * from note where id=?`, [id])
   }
@@ -22,10 +18,27 @@ export default class Note extends Model {
     return db.all(`select * from note where uid=?`, [uid])
   }
   update(id, data) {
-    return super.update(id, this.table, data)
+    return super.update(id, 'note', data)
   }
   add(data) {
     return super.insert('note', data)
   }
-  updateToLocal(uid, data) {}
+  delete(id) {
+    return super.delete(id, 'note')
+  }
+  getLocalByServer(uid, serverData) {
+    let sql = ``
+    const guids = serverData.Map(row => {
+      sql += `?,`
+      return row.guid
+    })
+    guids.push(uid)
+    return db.all(
+      `select * from note where guid in (${sql.substr(
+        0,
+        sql.length - 1
+      )}) and uid = ?`,
+      guids
+    )
+  }
 }

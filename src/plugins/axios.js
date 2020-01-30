@@ -12,7 +12,6 @@ const errCode = {
   ErrorAuthToken: 20003 //"Token参数错误"
 }
 
-axios.defaults.baseURL = store.state.user.server
 axios.defaults.withCredentials = false
 
 // 请求拦截器

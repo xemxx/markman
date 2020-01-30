@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import modules from './modules/index.js'
 Vue.use(Vuex)
 
-let store = new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     online: navigator.onLine,
     platform: process.env.platform,

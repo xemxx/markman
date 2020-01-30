@@ -1,5 +1,6 @@
 import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
+import uuid from 'uuid'
 
 export default class Notebook extends Model {
   getAll(uid) {
@@ -15,5 +16,19 @@ export default class Notebook extends Model {
     return super.delete(id, 'notebook')
   }
 
-  updateToLocal(uid, data) {}
+  getLocalByServer(uid, serverData) {
+    let sql = ``
+    const guids = serverData.Map(row => {
+      sql += `?,`
+      return row.guid
+    })
+    guids.push(uid)
+    return db.all(
+      `select * from notebook where guid in (${sql.substr(
+        0,
+        sql.length - 1
+      )}) and uid = ?`,
+      guids
+    )
+  }
 }

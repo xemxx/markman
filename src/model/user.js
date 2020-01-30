@@ -1,7 +1,6 @@
 import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
 
-import axios from '../../plugins/axios'
 export default class User extends Model {
   getActiver() {
     return db.get(`select * from user where state= ?`, [1])

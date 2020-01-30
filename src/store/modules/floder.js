@@ -1,4 +1,5 @@
 import Notebook from '../../model/notebook.js'
+import uuid from 'uuid/v5'
 
 const model = new Notebook()
 
@@ -28,7 +29,7 @@ const actions = {
       .add({
         uid: rootState.user.id,
         name: name,
-        guid: Date.parse(new Date()) + rootState.user.id,
+        guid: uuid(rootState.user.username, rootState.user.server),
         modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
         SC: -1, //暂时不用
         sort: 1, //暂时不用

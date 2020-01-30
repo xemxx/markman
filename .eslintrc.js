@@ -12,7 +12,8 @@ module.exports = {
     parser: 'babel-eslint'
   },
   globals: {
-    __static: true
+    __static: true,
+    BigInt: true
   },
   settings: {
     'import/resolver': {
