@@ -8,7 +8,7 @@
         :collapse="isCollapse"
         class="menu"
       >
-        <el-menu-item index="1" @click="flashList({ type: 'all' })"
+        <el-menu-item index="1" @click="loadList({ type: 'all' })"
           >所有笔记</el-menu-item
         >
         <el-submenu index="2">
