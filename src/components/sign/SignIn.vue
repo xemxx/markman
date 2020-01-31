@@ -58,10 +58,10 @@ export default {
   methods: {
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
-        let msg = this.$message
-        let user = this.signIn
-        let router = this.$router
-        let store = this.$store
+        const msg = this.$message
+        const user = this.signIn
+        const router = this.$router
+        const store = this.$store
         if (valid) {
           this.$axios
             .post(this.signIn.server + '/signIn', {

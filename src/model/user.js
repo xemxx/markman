@@ -21,11 +21,8 @@ export default class User extends Model {
       })
   }
 
-  createUser(username, server, token) {
-    return db.run(
-      `insert into user(username,server,token,state)values(?,?,?,?)`,
-      [username, server, token, 1]
-    )
+  add(data) {
+    return super.insert('user', data)
   }
 
   update(id, data) {

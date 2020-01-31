@@ -1,6 +1,5 @@
 import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
-import uuid from 'uuid'
 
 export default class Notebook extends Model {
   getAll(uid) {
@@ -30,5 +29,9 @@ export default class Notebook extends Model {
       )}) and uid = ?`,
       guids
     )
+  }
+
+  getModify(uid) {
+    return db.all(`select * from notebook where uid=? and modifyState>0`, [uid])
   }
 }

@@ -21,45 +21,74 @@ const mutations = {
 }
 
 const actions = {
-  sync({ commit, dispatch, rootState }) {
+  async sync({ commit, dispatch, rootState }) {
     commit('update_isSyncing', true)
     const uid = rootState.user.id
     const server = rootState.user.server
-    userModel.getLastSC(uid).then(({ lastSC }) => {
-      // 只获取比上次同步后更新的
-      return axios
-        .get(server + '/user/getLastSyncCount')
-        .then(data => {
-          const serverSC = data.SC
-          const localSC = lastSC
-          if (serverSC > localSC) {
-            return dispatch('pull', { localSC, serverSC })
-          }
-          return dispatch('push')
-        })
-        .then(() => {
-          commit('update_isSyncing', false)
-        })
-        .catch(err => {
-          console.log(err)
-          commit('update_isSyncing', false)
-        })
-    })
+    try {
+      const { lastSC: localSC = '' } = await userModel.getLastSC(uid)
+      const { SC: serverSC = '' } = await axios.get(
+        `${server}/user/getLastSyncCount`
+      )
+
+      if (serverSC > localSC) {
+        await dispatch('pull', { localSC, serverSC })
+      } else {
+        await dispatch('push')
+      }
+      commit('update_isSyncing', false)
+    } catch (err) {
+      console.log(err)
+      commit('update_isSyncing', false)
+    }
+    /**
+     * 纯promise版本
+     */
+    // userModel.getLastSC(uid).then(({ lastSC }) => {
+    //   // 只获取比上次同步后更新的
+    //   return axios
+    //     .get(server + '/user/getLastSyncCount')
+    //     .then(data => {
+    //       const serverSC = data.SC
+    //       const localSC = lastSC
+    //       if (serverSC > localSC) {
+    //         return dispatch('pull', { localSC, serverSC })
+    //       }
+    //       return dispatch('push')
+    //     })
+    //     .then(() => {
+    //       commit('update_isSyncing', false)
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //       commit('update_isSyncing', false)
+    //     })
+    // })
   },
 
   pull({ dispatch, rootState }, { localSC, serverSC }) {
     const uid = rootState.user.id
-    return dispatch('_syncNotebooksToLocal', localSC)
-      .then(() => dispatch('_syncNotesToLocal', localSC))
+    return dispatch('_pullNotebooks', localSC)
+      .then(() => dispatch('_pullNotes', localSC))
       .then(() => userModel.updateLastSC(uid, serverSC))
       .then(() => dispatch('push'))
   },
 
-  push() {
-    //TODO: 完成发送改变到服务端
+  async push({ dispatch }) {
+    try {
+      await dispatch('_pushNotebooks')
+      await dispatch('_pushNotes')
+    } catch (err) {
+      if (err.rePull) {
+        // push过程中出现另一客户端对服务端进行了修改，需要重新pull
+        return dispatch('pull')
+      }
+      return Promise.reject(err)
+    }
   },
 
-  _syncNotebooksToLocal({ dispatch, rootState }, afterSC) {
+  // 内部调用
+  _pullNotebooks({ dispatch, rootState }, afterSC) {
     const server = rootState.user.server
     const uid = rootState.user.id
     return axios
@@ -68,7 +97,7 @@ const actions = {
         const notebooks = data.notebooks
         dispatch('_updateNotebooksToLocal', notebooks)
         if (notebooks.length == 10) {
-          return dispatch('_syncNotebooksToLocal', {
+          return dispatch('_pullNotebooks', {
             uid,
             afterSC: notebooks[notebooks.length - 1].SC
           })
@@ -76,7 +105,7 @@ const actions = {
       })
   },
 
-  _syncNotesToLocal({ dispatch, rootState }, afterSC) {
+  _pullNotes({ dispatch, rootState }, afterSC) {
     const server = rootState.user.server
     const uid = rootState.user.id
     return axios
@@ -85,7 +114,7 @@ const actions = {
         const notes = data.notes
         dispatch('_updateNotesToLocal', notes)
         if (notes.length == 20) {
-          return dispatch('_syncNotesToLocal', {
+          return dispatch('_pullNotes', {
             uid,
             afterSC: notes[notes.length - 1].SC
           })
@@ -232,6 +261,120 @@ const actions = {
             modifyState: 0 //0：不需要同步，1：新的东西，2：修改过的东西
           })
         }
+      }
+    })
+  },
+
+  /**
+   * push细节
+   */
+  _pushNotebooks({ rootState, dispatch }) {
+    const uid = rootState.user.id
+    return notebookModel.getModify(uid).then(async data => {
+      return dispatch('_updateNotebooksToServer', { data, count: 0 })
+    })
+  },
+
+  _pushNotes({ rootState, dispatch }) {
+    const uid = rootState.user.id
+    return noteModel.getModify(uid).then(async data => {
+      return dispatch('_updateNotesToServer', { data, count: 0 })
+    })
+  },
+
+  _updateNotebooksToServer({ rootState, dispatch, commit }, { data, count }) {
+    const server = rootState.user.server
+    const uid = rootState.user.uid
+    let result
+    const local = data[count]
+    switch (local.modifyState) {
+      case 1: {
+        result = axios.post(`${server}/notebook/create`, local)
+        break
+      }
+      case 2: {
+        result = axios.post(`${server}/notebook/update`, local)
+        break
+      }
+      case 3: {
+        result = axios.post(`${server}/notebook/delete`, local)
+        break
+      }
+    }
+    return result.then(data => {
+      const { isErr, SC, isRepect } = data
+      if (isErr) {
+        // 在修改过程中，另一服务端进行了修改，产生了冲突，需要重新获取新的更新并在本地解决冲突
+        return Promise.reject({ rePull: true })
+      } else if (isRepect) {
+        //不唯一，需要修改guid重新发送改变
+        data[count].guid = uuid(rootState.user.username, rootState.user.server)
+        notebookModel.update(local.id, {
+          guid: data[count].guid
+        })
+        return dispatch('_updateNotebooksToServer', {
+          data,
+          count
+        })
+      } else if (SC == rootState.user.lastSC + 1) {
+        //成功的状态，更新本地lastSC和对应资源的SC
+        if (local.modifyState == 3) {
+          // 笔记本的删除，不代表本地的笔记已经可以被删除，所以这里只需要删除笔记本，其内的笔记会在后面的同步中删除
+          notebookModel.delete(local.id)
+        } else {
+          notebookModel.update(local.id, { SC, modifyState: 0 })
+        }
+        commit('user/update_lastSC', SC, { root: true })
+        userModel.update(uid, { lastSC: SC })
+        return dispatch('_updateNotebooksToServer', { data, count: count + 1 })
+      }
+    })
+  },
+
+  _updateNotesToServer({ rootState, dispatch, commit }, { data, count }) {
+    const server = rootState.user.server
+    const uid = rootState.user.uid
+    let result
+    const local = data[count]
+    switch (local.modifyState) {
+      case 1: {
+        result = axios.post(`${server}/notebook/create`, local)
+        break
+      }
+      case 2: {
+        result = axios.post(`${server}/notebook/update`, local)
+        break
+      }
+      case 3: {
+        result = axios.post(`${server}/notebook/delete`, local)
+        break
+      }
+    }
+    return result.then(data => {
+      const { isErr, SC, isRepect } = data
+      if (isErr) {
+        // 在修改过程中，另一服务端进行了修改，产生了冲突，需要重新获取新的更新并在本地解决冲突
+        return Promise.reject({ rePull: true })
+      } else if (isRepect) {
+        //不唯一，需要修改guid重新发送改变
+        data[count].guid = uuid(rootState.user.username, rootState.user.server)
+        noteModel.update(local.id, {
+          guid: data[count].guid
+        })
+        return dispatch('_updateNotesToServer', {
+          data,
+          count
+        })
+      } else if (SC == rootState.user.lastSC + 1) {
+        //成功的状态，更新本地lastSC和对应资源的SC
+        if (local.modifyState == 3) {
+          noteModel.delete(local.id)
+        } else {
+          noteModel.update(local.id, { SC, modifyState: 0 })
+        }
+        commit('user/update_lastSC', SC, { root: true })
+        userModel.update(uid, { lastSC: SC })
+        return dispatch('_updateNotesToServer', { data, count: count + 1 })
       }
     })
   }

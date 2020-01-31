@@ -23,6 +23,7 @@ const actions = {
         console.log(err)
       })
   },
+
   addNotebook({ dispatch, rootState }, name) {
     const time = Date.parse(new Date()) / 1000
     return model
@@ -31,7 +32,7 @@ const actions = {
         name: name,
         guid: uuid(rootState.user.username, rootState.user.server),
         modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
-        SC: -1, //暂时不用
+        SC: 0, //暂时不用
         sort: 1, //暂时不用
         sortType: 1, //暂时不用
         addDate: time,
@@ -45,27 +46,28 @@ const actions = {
       })
       .catch(err => console.log(err))
   },
+
   deleteNotebook({ dispatch }, id) {
     return model
-      .delete(id)
+      .update(id, { modifyState: 3 })
       .then(() => {
         //更新列表显示
         dispatch('flashList')
         //同步服务器
-        dispatch('sync/sendChange', null, { root: true })
+        dispatch('sync/sync', null, { root: true })
       })
       .catch(err => console.log(err))
   },
 
-  //TODO
-  updateNotebook({ dispatch }, params) {
+  //TODO: 完成右键菜单后提供重命名功能
+  updateNotebook({ dispatch }, { id, name }) {
     return model
-      .update(params.id, params.data)
+      .update(id, { name, modifyState: 2 })
       .then(() => {
         //更新列表显示
         dispatch('flashList')
         //同步服务器
-        dispatch('sync/sendChange', null, { root: true })
+        dispatch('sync/sync', null, { root: true })
       })
       .catch(err => console.log(err))
   }

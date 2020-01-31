@@ -27,7 +27,7 @@ const actions = {
   // 加载编辑区域数据
   loadNote({ commit }, id) {
     // 获取到detail，直接在视图绑定detail
-    return nModel.getOne(id).then(data => {
+    return nModel.get(id).then(data => {
       const detail = {
         id: data.id,
         markdown: data.content,
@@ -37,6 +37,7 @@ const actions = {
       commit('update_tags', '')
     })
   },
+
   addNote({ rootState, dispatch }, bid) {
     const time = Date.parse(new Date()) / 1000
     const note = {
@@ -46,7 +47,7 @@ const actions = {
       title: '未命名',
       content: '',
       modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
-      SC: -1, //暂时不用
+      SC: 0, //新建时该值无用
       addDate: time,
       modifyDate: time
     }
@@ -62,22 +63,20 @@ const actions = {
   saveNote({ dispatch, state }) {
     const { markdown: content, id, title } = state.detail
     const time = Date.parse(new Date()) / 1000
-    const params = {
-      id,
-      data: {
-        content,
-        title,
-        modifyState: 2,
-        modifyDate: time
-      }
+    const data = {
+      content,
+      title,
+      modifyState: 2,
+      modifyDate: time
     }
+
     return nModel
-      .update(params.id, params.data)
+      .update(id, data)
       .then(() => {
         //更新显示
         dispatch('list/flashList', {}, { root: true })
         //同步服务器
-        dispatch('sync/sendChange', null, { root: true })
+        dispatch('sync/sync', null, { root: true })
       })
       .catch(err => console.log(err))
   }

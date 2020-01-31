@@ -30,7 +30,7 @@
             v-for="item in notebooks"
             :key="item.id"
             :index="item.id + ''"
-            @click="flashList({ type: 'note', flagId: item.id })"
+            @click="loadList({ type: 'note', flagId: item.guid })"
           >
             <div class="notebook-item" @click.right="rightMenu">
               {{ item.name }}
@@ -41,7 +41,7 @@
             </div>
           </el-menu-item>
         </el-submenu>
-        <el-menu-item index="3" @click="flashList({ type: 'tag' })"
+        <el-menu-item index="3" @click="loadList({ type: 'tag' })"
           >Tag</el-menu-item
         >
       </el-menu>
@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      flashList: 'list/flashList',
+      loadList: 'list/flashList',
       flashNotebooks: 'floder/flashList',
       addNotebook: 'floder/addNotebook',
       deleteNotebook: 'floder/deleteNotebook'

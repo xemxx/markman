@@ -73,17 +73,7 @@ export default {
   methods: {
     sync() {
       const store = this.$store
-      store
-        .dispatch('sync/incrementalSync')
-        .then(() => {
-          setTimeout(() => {
-            store.commit('sync/update_isSyncing', false)
-          }, 3000)
-          store.dispatch('floder/flashList')
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      store.dispatch('sync/sync')
     }
   }
 }

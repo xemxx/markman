@@ -46,7 +46,7 @@ const actions = {
         commit('update_server', user.server)
         commit('update_username', user.username)
         commit('update_lastSC', user.lastSC)
-        return Promise.resolve(true)
+        return Promise.resolve()
       } else {
         return Promise.reject('not login')
       }
@@ -59,12 +59,13 @@ const actions = {
   },
 
   unsetActiver({ state, commit }) {
-    model.updateState(state.id, { state: 0 })
+    model.update(state.id, { state: 0 })
     commit('update_token', '')
   },
 
   setActiver({ dispatch }, user) {
-    return model.existUser(user.user, user.server).then(id => {
+    const { user: username, server, token } = user
+    return model.existUser(username, server).then(id => {
       if (id !== '') {
         return model
           .update(id, { state: 1, token: user.token })
@@ -76,7 +77,7 @@ const actions = {
           })
       }
       return model
-        .createUser(user.user, user.server, user.token)
+        .add({ username, server, token, state: 1, lastSC: 0 })
         .then(() => {
           return dispatch('loadActiver')
         })

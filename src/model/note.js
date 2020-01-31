@@ -2,7 +2,7 @@ import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
 
 export default class Note extends Model {
-  getOne(id) {
+  get(id) {
     return db.get(`select * from note where id=?`, [id])
   }
   getAllByBook(uid, bid) {
@@ -40,5 +40,8 @@ export default class Note extends Model {
       )}) and uid = ?`,
       guids
     )
+  }
+  getModify(uid) {
+    return db.all(`select * from notebook where uid=? and modifyState>0`, [uid])
   }
 }
