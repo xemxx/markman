@@ -13,10 +13,10 @@
           placeholder="http://127.0.0.1:8000"
         ></el-input>
       </el-form-item>
-      <el-form-item label="用户名" prop="user">
+      <el-form-item label="用户名" prop="username">
         <el-input
           type="text"
-          v-model="signIn.user"
+          v-model="signIn.username"
           placeholder="xem"
         ></el-input>
       </el-form-item>
@@ -39,7 +39,7 @@ export default {
     return {
       signIn: {
         server: '',
-        user: '',
+        username: '',
         password: ''
       },
       signInRules: {
@@ -47,7 +47,7 @@ export default {
           { required: true, trigger: 'blur' },
           { type: 'url', trigger: 'blur' }
         ],
-        user: [{ required: true, trigger: 'blur' }],
+        username: [{ required: true, trigger: 'blur' }],
         password: [
           { required: true, trigger: 'blur' },
           { min: 6, message: '密码至少6位', trigger: 'blur' }
@@ -59,26 +59,29 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate(valid => {
         const msg = this.$message
-        const user = this.signIn
+        const { username, password, server } = this.signIn
         const router = this.$router
         const store = this.$store
         if (valid) {
           this.$axios
             .post(this.signIn.server + '/signIn', {
-              username: this.signIn.user,
-              password: this.signIn.password
+              username,
+              password
             })
             .then(data => {
-              store
-                .dispatch('user/setActiver', { ...user, token: data.token })
-                .then(() => {
-                  msg({
-                    message: '登录成功:)',
-                    type: 'success',
-                    center: true
-                  })
-                  router.push('/home')
-                })
+              return store.dispatch('user/setActiver', {
+                username,
+                token: data.token,
+                server
+              })
+            })
+            .then(() => {
+              msg({
+                message: '登录成功:)',
+                type: 'success',
+                center: true
+              })
+              router.push('/home')
             })
         } else {
           msg({

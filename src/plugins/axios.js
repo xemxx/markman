@@ -19,7 +19,7 @@ axios.interceptors.request.use(
   config => {
     //自动加token
     const token = store.state.user.token
-    token && (config.headers.Authorization = token)
+    config.headers.Authorization = token ? token : ''
     return config
   },
   error => {
@@ -30,32 +30,31 @@ axios.interceptors.request.use(
 // 响应拦截器
 axios.interceptors.response.use(
   // 请求成功
-  res => {
+  async res => {
     if (res.status === 200) {
-      const err = res.data.err,
+      const code = res.data.code,
         msg = res.data.msg
-      switch (err) {
+      switch (code) {
         case errCode.SUCCESS:
           return Promise.resolve(res.data.data)
-        case (errCode.ErrorAuthToken,
-        errCode.ErrorAuthCheckTokenFail,
-        errCode.ErrorAuthCheckTokenTimeout):
+        case errCode.ErrorAuthToken:
+        case errCode.ErrorAuthCheckTokenFail:
+        case errCode.ErrorAuthCheckTokenTimeout:
           Message({
             message: '登录失效，请重新登录,ERROR：' + msg,
             type: 'error',
             center: true
           })
           store.commit('user/update_token', '')
-          setTimeout(() => {
-            router.replace('/sign/in').catch(err => err)
-          }, 1000)
-          break
+          router.push('/sign/in').catch(err => err)
+          return Promise.reject(res)
         default:
           Message({
             message: 'ERROR：' + msg,
             type: 'error',
             center: true
           })
+          return Promise.reject(res)
       }
     } else {
       Message({
@@ -90,7 +89,6 @@ axios.interceptors.response.use(
         })
       }
     }
-    //console.log(err)
     return Promise.reject(err)
   }
 )

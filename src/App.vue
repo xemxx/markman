@@ -34,26 +34,39 @@ export default {
             .then(data => {
               //刷新成功
               store.dispatch('user/flashToken', data.token)
-              this.sync()
               setTimeout(() => {
                 this.$router.push('/home').catch(err => err)
               }, 1000)
             })
-            .catch(() => {
+            .catch(res => {
+              //处理请求时原有token出现问题
+              if (res.status == 200 && res.data.code != 200) {
+                console.log(res)
+                return
+              }
+              //认定为网络问题
               //先自身解析token是否超时，如果超时直接跳转到登录界面，否则认定为离线编辑状态
-              let data = JSON.parse(
-                decodeURIComponent(
-                  escape(window.atob(ustate.token.split('.')[1]))
+              try {
+                let data = JSON.parse(
+                  decodeURIComponent(
+                    escape(window.atob(ustate.token.split('.')[1]))
+                  )
                 )
-              )
-              if (data.exp > Date.parse(new Date()) / 1000) {
-                //离线编辑
-                this.sync()
-                setTimeout(() => {
-                  this.$router.push('/home').catch(err => err)
-                }, 1000)
-              } else {
-                //用户登录失效
+                if (data.exp > Date.parse(new Date()) / 1000) {
+                  //离线编辑
+                  setTimeout(() => {
+                    this.$router.push('/home').catch(err => err)
+                  }, 1000)
+                } else {
+                  //用户登录失效
+                  store.dispatch('user/unsetActiver')
+                  setTimeout(() => {
+                    this.$router.push('/sign/in').catch(err => err)
+                  }, 1000)
+                }
+              } catch (err) {
+                //可能token被串改不符合格式导致window.atob报错
+                console.log(err)
                 store.dispatch('user/unsetActiver')
                 setTimeout(() => {
                   this.$router.push('/sign/in').catch(err => err)
@@ -70,12 +83,7 @@ export default {
       })
   },
   computed: {},
-  methods: {
-    sync() {
-      const store = this.$store
-      store.dispatch('sync/sync')
-    }
-  }
+  methods: {}
 }
 </script>
 

@@ -17,7 +17,7 @@ export default class Notebook extends Model {
 
   getLocalByServer(uid, serverData) {
     let sql = ``
-    const guids = serverData.Map(row => {
+    let guids = serverData.map(row => {
       sql += `?,`
       return row.guid
     })

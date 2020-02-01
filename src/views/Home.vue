@@ -37,6 +37,7 @@ export default {
     })
   },
   created() {
+    this.$store.dispatch('sync/sync')
     this.listen()
   },
   methods: {

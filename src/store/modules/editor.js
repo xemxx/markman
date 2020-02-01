@@ -1,5 +1,5 @@
 import Note from '../../model/note.js'
-import uuid from 'uuid/v5'
+import uuid from 'uuid/v1'
 
 const nModel = new Note()
 
@@ -31,7 +31,8 @@ const actions = {
       const detail = {
         id: data.id,
         markdown: data.content,
-        title: data.title
+        title: data.title,
+        modifyState: data.modifyState
       }
       commit('update_detail', detail)
       commit('update_tags', '')
@@ -42,7 +43,7 @@ const actions = {
     const time = Date.parse(new Date()) / 1000
     const note = {
       uid: rootState.user.id,
-      guid: uuid(rootState.user.username, rootState.user.server),
+      guid: uuid(),
       bid,
       title: '未命名',
       content: '',
@@ -60,13 +61,17 @@ const actions = {
       .catch(err => console.log(err))
   },
 
-  saveNote({ dispatch, state }) {
+  async saveNote({ dispatch, state }) {
     const { markdown: content, id, title } = state.detail
+    if (id == undefined || id == '') {
+      return
+    }
+    const { modifyState } = await nModel.get(id)
     const time = Date.parse(new Date()) / 1000
     const data = {
       content,
       title,
-      modifyState: 2,
+      modifyState: modifyState == 0 ? 2 : modifyState, //如果是同步过的代表被修改需要同步，否则都是原来的样子，新建不变，
       modifyDate: time
     }
 

@@ -32,6 +32,7 @@ export default class Model {
     }
     sql = sql.substr(0, sql.length - 1) + ` where id=?`
     arr.push(id)
+    console.log(sql, arr)
     return db.run(sql, arr)
   }
 

@@ -3,14 +3,17 @@ import Model from './base.js'
 
 export default class Note extends Model {
   get(id) {
-    return db.get(`select * from note where id=?`, [id])
+    return db.get(`select * from note where id=? and modifyState<3`, [id])
   }
   getAllByBook(uid, bid) {
-    return db.all(`select * from note where uid=? and bid=?`, [uid, bid])
+    return db.all(
+      `select * from note where uid=? and bid=? and modifyState<3`,
+      [uid, bid]
+    )
   }
   getAllByTag(uid, tid) {
     return db.all(
-      `select b.* from note_tag as a left join note as b on a.nid=b.id where a.tid=? and b.uid=?`,
+      `select b.* from note_tag as a left join note as b on a.nid=b.id where a.tid=? and b.uid=? and modifyState<3`,
       [tid, uid]
     )
   }
@@ -28,7 +31,7 @@ export default class Note extends Model {
   }
   getLocalByServer(uid, serverData) {
     let sql = ``
-    const guids = serverData.Map(row => {
+    let guids = serverData.map(row => {
       sql += `?,`
       return row.guid
     })
@@ -42,6 +45,6 @@ export default class Note extends Model {
     )
   }
   getModify(uid) {
-    return db.all(`select * from notebook where uid=? and modifyState>0`, [uid])
+    return db.all(`select * from note where uid=? and modifyState>0`, [uid])
   }
 }

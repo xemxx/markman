@@ -32,8 +32,4 @@ export default class User extends Model {
   getLastSC(uid) {
     return db.get(`select lastSC from user where id= ?`, [uid])
   }
-
-  updateLastSC(id, lastSC) {
-    return this.update(id, { lastSC })
-  }
 }

@@ -1,5 +1,5 @@
 import Notebook from '../../model/notebook.js'
-import uuid from 'uuid/v5'
+import uuid from 'uuid/v1'
 
 const model = new Notebook()
 
@@ -30,7 +30,7 @@ const actions = {
       .add({
         uid: rootState.user.id,
         name: name,
-        guid: uuid(rootState.user.username, rootState.user.server),
+        guid: uuid(),
         modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
         SC: 0, //暂时不用
         sort: 1, //暂时不用
@@ -42,7 +42,7 @@ const actions = {
         //更新列表显示
         dispatch('flashList')
         //同步服务器
-        dispatch('sync/sendChange', null, { root: true })
+        dispatch('sync/sync', null, { root: true })
       })
       .catch(err => console.log(err))
   },

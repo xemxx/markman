@@ -8,7 +8,7 @@ const state = {
   token: getCookie('token') ? getCookie('token') : '',
   username: getCookie('username') ? getCookie('username') : '',
   server: getCookie('server') ? getCookie('server') : '',
-  lastSC: getCookie('SC') ? getCookie('SC') : ''
+  lastSC: getCookie('lastSC') ? getCookie('lastSC') : ''
 }
 
 const mutations = {
@@ -35,10 +35,7 @@ const mutations = {
 }
 
 const actions = {
-  loadActiver({ commit, state }) {
-    if (state.token != '') {
-      return Promise.resolve(true)
-    }
+  loadActiver({ commit }) {
     return model.getActiver().then(user => {
       if (user != undefined) {
         commit('update_id', user.id)
@@ -54,7 +51,7 @@ const actions = {
   },
 
   flashToken({ state, commit }, token) {
-    model.update(state.id, { token: 'token' })
+    model.update(state.id, { token })
     commit('update_token', token)
   },
 
@@ -63,12 +60,11 @@ const actions = {
     commit('update_token', '')
   },
 
-  setActiver({ dispatch }, user) {
-    const { user: username, server, token } = user
+  setActiver({ dispatch }, { username, token, server }) {
     return model.existUser(username, server).then(id => {
       if (id !== '') {
         return model
-          .update(id, { state: 1, token: user.token })
+          .update(id, { state: 1, token })
           .then(() => {
             return dispatch('loadActiver')
           })

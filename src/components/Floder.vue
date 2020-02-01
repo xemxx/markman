@@ -1,13 +1,7 @@
 <template>
   <el-container>
     <el-main>
-      <el-menu
-        ref="menu"
-        @open="handleOpen"
-        @close="handleClose"
-        :collapse="isCollapse"
-        class="menu"
-      >
+      <el-menu ref="menu" :collapse="isCollapse" class="menu">
         <el-menu-item index="1" @click="loadList({ type: 'all' })"
           >所有笔记</el-menu-item
         >
@@ -17,13 +11,11 @@
             <i class="el-icon-plus" @click.stop="showAddNotebook"></i>
           </template>
           <el-menu-item v-show="notebookInput" index="1-new">
-            <Input
+            <input
               ref="notebookInput"
               v-model="notebookName"
-              @on-enter="doAddNotebook"
+              v-on:keyup.enter="doAddNotebook"
               @on-blur="blurAddNotebook"
-              size="small"
-              placeholder="small size"
             />
           </el-menu-item>
           <el-menu-item
@@ -78,7 +70,7 @@ export default {
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
-    this.flashNotebooks
+    this.flashNotebooks()
     //TODO 添加右键菜单，方便修改
     //this.createMenu();
   },
@@ -111,12 +103,6 @@ export default {
       this.$refs['menu'].close(2)
       this.notebookInput = false
       this.notebookName = ''
-    },
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath)
     },
     rightMenu() {
       //右键菜单
