@@ -265,18 +265,20 @@ const actions = {
                 break
             }
         } else {
-          // 直接添加到本地
-          model.add({
-            guid,
-            SC,
-            title,
-            bid,
-            content,
-            addDate,
-            modifyDate,
-            uid,
-            modifyState: 0 //0：不需要同步，1：新的东西，2：修改过的东西
-          })
+          // 如果不是已经删除的，直接同步到本地
+          if (server.isDel === 0) {
+            model.add({
+              guid,
+              SC,
+              title,
+              bid,
+              content,
+              addDate,
+              modifyDate,
+              uid,
+              modifyState: 0 //0：不需要同步，1：新的东西，2：修改过的东西
+            })
+          }
         }
       }
     })
