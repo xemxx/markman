@@ -1,27 +1,23 @@
 'use strict'
 
-import App from './main/app'
+import App from './app'
 
 import { app, protocol } from 'electron'
-import Accessor from './main/app/accessor'
-import { isDevelopment, isWindows, userDataPath } from './main/config'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import Accessor from './app/accessor'
+import { isDevelopment, isWindows, userDataPath } from './config'
+import { installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
 
 protocol.registerSchemesAsPrivileged([
-  {
-    scheme: 'app',
-    privileges: {
-      secure: true,
-      standard: true
-    }
-  }
+  { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
 if (isDevelopment && !process.env.IS_TEST) {
-  app.on('ready', () => {
-    installExtension(VUEJS_DEVTOOLS)
-      .then(name => console.log(`Added Extension:  ${name}`))
-      .catch(err => console.log('An error occurred: ', err))
+  app.on('ready', async () => {
+    try {
+      await installVueDevtools()
+    } catch (e) {
+      console.error('Vue Devtools failed to install:', e.toString())
+    }
   })
 }
 

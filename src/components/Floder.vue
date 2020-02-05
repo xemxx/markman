@@ -13,9 +13,10 @@
           <el-menu-item v-show="notebookInput" index="1-new">
             <input
               ref="notebookInput"
+              class="newBoke"
               v-model="notebookName"
               v-on:keyup.enter="doAddNotebook"
-              @on-blur="blurAddNotebook"
+              @blur="blurAddNotebook"
             />
           </el-menu-item>
           <el-menu-item
@@ -135,6 +136,14 @@ export default {
   position relative
   border-radius 50px
   justify-items center
+
+.newBoke
+  width 100%
+  border none
+
+  &:focus
+    border none
+    outline none
 
 .toolbar
   background-color wheat

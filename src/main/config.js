@@ -12,10 +12,10 @@ export const editorWinOptions = {
   minHeight: 350,
   center: true,
   webPreferences: {
-    nodeIntegration: true
+    nodeIntegration: true //提供完整的node环境支持
   },
   useContentSize: true,
-  show: false, // Show the window after the app is ready.
+  show: true,
   frame: true,
   titleBarStyle: 'hidden'
 }

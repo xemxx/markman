@@ -1,5 +1,4 @@
 import { Menu } from 'electron'
-import log from 'electron-log'
 import { isOsx, isWindows, isLinux } from '../config'
 import { configEditorMenu, configSettingMenu } from '../menu/templates'
 
@@ -59,9 +58,6 @@ class AppMenu {
   getWindowMenuById(windowId) {
     const menu = this.windowMenus.get(windowId)
     if (!menu) {
-      log.error(
-        `getWindowMenuById: Cannot find window menu for window id ${windowId}.`
-      )
       throw new Error(`Cannot find window menu for id ${windowId}.`)
     }
     return menu.menu

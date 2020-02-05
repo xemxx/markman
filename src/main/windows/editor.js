@@ -1,13 +1,7 @@
-import path from 'path'
 import { BrowserWindow, dialog } from 'electron'
-import log from 'electron-log'
 import BaseWindow, { WindowLifecycle, WindowType } from './base'
-import {
-  TITLE_BAR_HEIGHT,
-  editorWinOptions,
-  isLinux,
-  isWindows
-} from '../config'
+import { TITLE_BAR_HEIGHT, editorWinOptions, isWindows } from '../config'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 class EditorWindow extends BaseWindow {
   /**
@@ -30,10 +24,6 @@ class EditorWindow extends BaseWindow {
       editorWinOptions,
       options
     )
-
-    if (isLinux) {
-      winOptions.icon = path.join(__static, 'logo-96px.png')
-    }
 
     if (isWindows) {
       options.frame = false // 创建一个frameless窗口，详情：https://electronjs.org/docs/api/frameless-window
@@ -59,19 +49,11 @@ class EditorWindow extends BaseWindow {
       this.bringToFront()
     })
 
-    win.webContents.once(
-      'did-fail-load',
-      (event, errorCode, errorDescription) => {
-        log.error(
-          `The window failed to load or was cancelled: ${errorCode}; ${errorDescription}`
-        )
-      }
-    )
+    win.webContents.once('did-fail-load', () => {})
 
     //防止意外关闭
     win.webContents.once('crashed', async (event, killed) => {
       const msg = `The renderer process has crashed unexpected or is killed (${killed}).`
-      log.error(msg)
 
       const { response } = await dialog.showMessageBox(win, {
         type: 'warning',
@@ -105,6 +87,7 @@ class EditorWindow extends BaseWindow {
       win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
       if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
+      createProtocol('app')
       win.loadURL('app://./index.html')
     }
     win.setSheetOffset(TITLE_BAR_HEIGHT)
