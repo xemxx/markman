@@ -53,23 +53,17 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.list {
-  overflow-y: auto;
-}
+.list
+  overflow-y auto
 
-.card {
-  margin: 5px;
-}
+.card
+  margin 5px
 
-.el-card__body  {
-  font-size: 14px;
-  max-height: 50px;
-}
+.el-card__body
+  font-size 14px
+  max-height 50px
 
-.toolbar {
-  background-color: #ffffff;
-  text-align: center;
-  & .new {
-  }
-}
+.toolbar
+  background-color #ffffff
+  text-align center
 </style>
