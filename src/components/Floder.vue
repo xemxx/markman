@@ -11,13 +11,12 @@
             <i class="el-icon-plus" @click.stop="showAddNotebook"></i>
           </template>
           <el-menu-item v-show="notebookInput" index="1-new">
-            <input
+            <el-input
               ref="notebookInput"
-              class="newBoke"
               v-model="notebookName"
-              v-on:keyup.enter="doAddNotebook"
+              @keyup.enter="doAddNotebook"
               @blur="blurAddNotebook"
-            />
+            ></el-input>
           </el-menu-item>
           <el-menu-item
             v-for="item in notebooks"
@@ -25,12 +24,15 @@
             :index="item.id + ''"
             @click="loadList({ type: 'note', flagId: item.guid })"
           >
-            <div class="notebook-item" @click.right="rightMenu">
-              {{ item.name }}
-              <i
-                @click.stop="deleteNotebook(item.id)"
-                class="el-icon-delete"
-              ></i>
+            <div class="notebook-item" @click.right="rightMenu(item.id)">
+              <span v-if="!item.rename">{{ item.name }} </span>
+              <input
+                ref="renameInput"
+                v-if="item.rename"
+                v-model="notebookName"
+                @blur="blurRenameNotebook(item.id)"
+                @keyup.enter="doRenameNotebook(item.id)"
+              />
             </div>
           </el-menu-item>
         </el-submenu>
@@ -65,28 +67,32 @@ export default {
   },
   computed: {
     ...mapState({
-      notebooks: state => state.floder.notebooks,
+      notebooks: state => {
+        return state.floder.notebooks.map(item => {
+          item.rename = false
+          return item
+        })
+      },
       isSyncing: state => state.sync.isSyncing
     })
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
     this.flashNotebooks()
-    //TODO 添加右键菜单，方便修改
-    //this.createMenu();
   },
   methods: {
     ...mapActions({
       loadList: 'list/flashList',
       flashNotebooks: 'floder/flashList',
       addNotebook: 'floder/addNotebook',
-      deleteNotebook: 'floder/deleteNotebook'
+      deleteNotebook: 'floder/deleteNotebook',
+      updateNotebook: 'floder/updateNotebook'
     }),
     showAddNotebook() {
       this.$refs['menu'].open(2)
       this.notebookInput = true
       this.$nextTick(() => {
-        this.$refs.notebookInput.focus()
+        this.$refs['notebookInput'].focus()
       })
     },
     doAddNotebook() {
@@ -105,24 +111,45 @@ export default {
       this.notebookInput = false
       this.notebookName = ''
     },
-    rightMenu() {
+    rightMenu(id) {
       //右键菜单
-      //console.log(e);
       //TODO 新建笔记，删除笔记本，重命名笔记本
       const menu = new Menu()
       menu.append(
         new MenuItem({
-          label: '放大',
-          click: () => {
-            console.log('item 1 clicked')
-          }
+          label: '重命名',
+          click: () => this.renameNotebook(id)
         })
       )
-      menu.append(new MenuItem({ type: 'separator' })) //分割线
       menu.append(
-        new MenuItem({ label: '缩小', type: 'checkbox', checked: true })
-      ) //选中
+        new MenuItem({
+          label: '删除',
+          click: () => this.deleteNotebook(id)
+        })
+      )
       menu.popup({ window: remote.getCurrentWindow() })
+    },
+    renameNotebook(id) {
+      let index = this.notebooks.findIndex(item => id === item.id)
+      this.notebooks[index].rename = true
+      this.notebookName = this.notebooks[index].name
+      this.renameOld = this.notebooks[index].name
+      this.$nextTick(() => {
+        console.log(this.$refs)
+        this.$refs.renameInput[0].focus()
+      })
+    },
+    doRenameNotebook(id) {
+      if (this.notebookName != '' && this.notebookName != this.renameOld) {
+        this.updateNotebook({ id, name: this.notebookName })
+      }
+      this.blurRenameNotebook(id)
+    },
+    blurRenameNotebook(id) {
+      console.log('n')
+      let index = this.notebooks.findIndex(item => id === item.id)
+      this.notebooks[index].rename = false
+      this.notebookName = ''
     }
   }
 }
@@ -137,12 +164,12 @@ export default {
   border-radius 50px
   justify-items center
 
-.newBoke
-  width 100%
-  border none
+input
+  width 90%
+  font-size 14px
 
   &:focus
-    border none
+    border 0
     outline none
 
 .toolbar
@@ -152,4 +179,5 @@ export default {
 
 .el-submenu .el-menu-item
   padding-right 0
+  min-width 100px
 </style>

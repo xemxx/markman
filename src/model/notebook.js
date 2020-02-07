@@ -3,7 +3,7 @@ import Model from './base.js'
 
 export default class Notebook extends Model {
   getAll(uid) {
-    return db.all(`select * from notebook where uid=?`, [uid])
+    return db.all(`select * from notebook where uid=? and modifyState<3`, [uid])
   }
   add(data) {
     return super.insert('notebook', data)

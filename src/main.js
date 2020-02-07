@@ -8,6 +8,7 @@ import './plugins/axios.js'
 import './plugins/element.js'
 
 import './assets/css/index.styl'
+import './assets/css/theme/default.styl'
 
 Vue.config.productionTip = false
 

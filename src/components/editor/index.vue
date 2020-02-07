@@ -7,6 +7,10 @@
       <div class="editor-wrapper">
         <textarea v-model="markdown"></textarea>
       </div>
+      <div class="preview-wrapper">
+        <div class="pick-line"></div>
+        <div v-html="preview" id="preview"></div>
+      </div>
     </el-main>
     <el-footer height="auto">
       <div class="tags">
@@ -20,7 +24,7 @@
 
 <script>
 import { mapState } from 'vuex'
-
+import marked from 'marked'
 export default {
   name: 'editor',
   data() {
@@ -31,6 +35,9 @@ export default {
   },
   computed: {
     ...mapState({
+      preview: state => {
+        return marked(state.editor.detail.markdown)
+      },
       tags: state => state.editor.tags
     }),
     markdown: {
@@ -49,6 +56,18 @@ export default {
         this.$store.commit('editor/update_title', newVal)
       }
     }
+  },
+  created() {
+    marked.setOptions({
+      renderer: new marked.Renderer(),
+      pedantic: false,
+      gfm: true,
+      breaks: false,
+      sanitize: false,
+      smartLists: true,
+      smartypants: false,
+      xhtml: false
+    })
   },
   methods: {}
 }
@@ -69,13 +88,16 @@ export default {
     border none
     outline none
 
+.el-main
+  display flex
+
 .editor-wrapper
+  flex 1
   height 100%
   width 100%
-  padding 10px 10px
 
   & textarea
-    outline-offset 0px
+    padding 10px
     width 100%
     height 100%
     border 0
@@ -83,6 +105,13 @@ export default {
     resize none
     background-color #ffffff
     font-size 16px
+
+.preview-wrapper
+  flex 1
+  display flex
+
+  .pick-line
+    border black 1px solid
 
 .tags
   bottom 0px

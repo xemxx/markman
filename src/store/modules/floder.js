@@ -4,7 +4,7 @@ import uuid from 'uuid/v1'
 const model = new Notebook()
 
 const state = {
-  notebooks: {}
+  notebooks: []
 }
 
 const mutations = {
@@ -59,17 +59,22 @@ const actions = {
       .catch(err => console.log(err))
   },
 
-  //TODO: 完成右键菜单后提供重命名功能
-  updateNotebook({ dispatch }, { id, name }) {
-    return model
-      .update(id, { name, modifyState: 2 })
-      .then(() => {
-        //更新列表显示
-        dispatch('flashList')
-        //同步服务器
-        dispatch('sync/sync', null, { root: true })
-      })
-      .catch(err => console.log(err))
+  updateNotebook({ dispatch, state }, { id, name }) {
+    const { modifyState } = state.notebooks.find(item => id === item.id)
+    if (name != '') {
+      return model
+        .update(id, {
+          name,
+          modifyState: modifyState === 0 ? 2 : modifyState
+        })
+        .then(() => {
+          //更新列表显示
+          dispatch('flashList')
+          //同步服务器
+          dispatch('sync/sync', null, { root: true })
+        })
+        .catch(err => console.log(err))
+    }
   }
 }
 

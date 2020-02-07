@@ -1,13 +1,13 @@
+const path = require('path')
 module.exports = {
   //mode: 'production'
   configureWebpack: {
-    // resolve: {
-    //   alias: {
-    //     main: path.join(__dirname, '../src/main'),
-    //     //"@": path.join(__dirname, "../src/renderer"),
-    //     common: path.join(__dirname, '../src/common')
-    //   }
-    // }
+    resolve: {
+      alias: {
+        main: path.join(__dirname, 'src/main'),
+        '@': path.join(__dirname, 'src')
+      }
+    }
   },
   css: {
     loaderOptions: {
