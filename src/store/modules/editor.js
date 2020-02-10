@@ -4,7 +4,7 @@ import uuid from 'uuid/v1'
 const nModel = new Note()
 
 const state = {
-  detail: { id: '', markdown: '', title: '' },
+  detail: { id: '', markdown: '', title: '', modifyState: 0 },
   tags: []
 }
 
@@ -24,6 +24,20 @@ const mutations = {
 }
 
 const actions = {
+  flash({ commit, rootState }) {
+    const { list } = rootState
+    if (list.notes[0] != undefined) {
+      const data = list.notes[0]
+      const detail = {
+        id: data.id,
+        markdown: data.content,
+        title: data.title,
+        modifyState: data.modifyState
+      }
+      commit('update_detail', detail)
+      commit('update_tags', '')
+    }
+  },
   // 加载编辑区域数据
   loadNote({ commit }, id) {
     // 获取到detail，直接在视图绑定detail
@@ -55,7 +69,7 @@ const actions = {
     return nModel
       .add(note)
       .then(id => {
-        dispatch('list/flashList', {}, { root: true })
+        dispatch('list/flash', {}, { root: true })
         dispatch('loadNote', id)
       })
       .catch(err => console.log(err))
@@ -79,7 +93,28 @@ const actions = {
       .update(id, data)
       .then(() => {
         //更新显示
-        dispatch('list/flashList', { loadNote: false }, { root: true })
+        dispatch('list/flash', {}, { root: true })
+        //同步服务器
+        dispatch('sync/sync', null, { root: true })
+      })
+      .catch(err => console.log(err))
+  },
+
+  deleteNote({ dispatch, state }, id) {
+    const time = Date.parse(new Date()) / 1000
+    const data = {
+      modifyState: 3,
+      modifyDate: time
+    }
+    return nModel
+      .update(id, data)
+      .then(() => {
+        //更新显示
+        dispatch('list/flash', {}, { root: true }).then(() => {
+          if (id == state.detail.id) {
+            dispatch('flash')
+          }
+        })
         //同步服务器
         dispatch('sync/sync', null, { root: true })
       })

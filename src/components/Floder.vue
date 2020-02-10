@@ -82,8 +82,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadList: 'list/flashList',
-      flashNotebooks: 'floder/flashList',
+      loadList: 'list/flash',
+      flashNotebooks: 'floder/flash',
       addNotebook: 'floder/addNotebook',
       deleteNotebook: 'floder/deleteNotebook',
       updateNotebook: 'floder/updateNotebook'
@@ -111,9 +111,8 @@ export default {
       this.notebookInput = false
       this.notebookName = ''
     },
+    //右键菜单
     rightMenu(id) {
-      //右键菜单
-      //TODO 新建笔记，删除笔记本，重命名笔记本
       const menu = new Menu()
       menu.append(
         new MenuItem({

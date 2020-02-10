@@ -18,6 +18,7 @@
         v-for="item in notes"
         :key="item.id"
         @click="loadNote(item.id)"
+        @click.right="rightMenu(item.id)"
       >
         <div class="el-card__header">
           {{ item.title }}
@@ -30,6 +31,10 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+
+import { remote } from 'electron'
+const { Menu, MenuItem } = remote
+
 export default {
   name: 'list',
   computed: {
@@ -45,9 +50,31 @@ export default {
   methods: {
     ...mapActions({
       loadNote: 'editor/loadNote',
-      flashList: 'list/flashList',
-      addNote: 'editor/addNote'
-    })
+      flashList: 'list/flash',
+      addNote: 'editor/addNote',
+      deleteNote: 'editor/deleteNote'
+    }),
+    //????
+    rightMenu(id) {
+      const menu = new Menu()
+      menu.append(
+        new MenuItem({
+          label: '??',
+          click: () => this.moveNote(id)
+        })
+      )
+      menu.append(
+        new MenuItem({
+          label: '??',
+          click: () => this.deleteNote(id)
+        })
+      )
+      menu.popup({ window: remote.getCurrentWindow() })
+    },
+    //TODO: ?????????????
+    moveNote(id) {
+      console.log(id)
+    }
   }
 }
 </script>

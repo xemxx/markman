@@ -13,7 +13,7 @@ const mutations = {
   }
 }
 const actions = {
-  flashList({ commit, rootState }) {
+  flash({ commit, rootState }) {
     return model
       .getAll(rootState.user.id)
       .then(notebooks => {
@@ -40,7 +40,7 @@ const actions = {
       })
       .then(() => {
         //更新列表显示
-        dispatch('flashList')
+        dispatch('flash')
         //同步服务器
         dispatch('sync/sync', null, { root: true })
       })
@@ -52,7 +52,7 @@ const actions = {
       .update(id, { modifyState: 3 })
       .then(() => {
         //更新列表显示
-        dispatch('flashList')
+        dispatch('flash')
         //同步服务器
         dispatch('sync/sync', null, { root: true })
       })
@@ -69,7 +69,7 @@ const actions = {
         })
         .then(() => {
           //更新列表显示
-          dispatch('flashList')
+          dispatch('flash')
           //同步服务器
           dispatch('sync/sync', null, { root: true })
         })

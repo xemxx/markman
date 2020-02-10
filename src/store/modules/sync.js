@@ -37,8 +37,9 @@ const actions = {
         await dispatch('push')
       }
       //更新完成刷新显示
-      dispatch('floder/flashList', null, { root: true })
-      dispatch('list/flashList', {}, { root: true })
+      dispatch('floder/flash', null, { root: true })
+      dispatch('list/flash', {}, { root: true })
+      dispatch('editor/flash', {}, { root: true })
 
       commit('update_isSyncing', false)
     } catch (err) {
@@ -93,7 +94,9 @@ const actions = {
     }
   },
 
-  // 内部调用
+  /**
+   * pull细节
+   */
   _pullNotebooks({ dispatch, rootState }, afterSC) {
     const server = rootState.user.server
     const uid = rootState.user.id

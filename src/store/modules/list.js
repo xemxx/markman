@@ -17,9 +17,9 @@ const mutations = {
 
 const actions = {
   //更新state中的list，视图将自动更新
-  flashList(
-    { commit, rootState, dispatch },
-    { type = state.type, flagId = state.flagId, loadNote = true } = {}
+  flash(
+    { commit, rootState },
+    { type = state.type, flagId = state.flagId } = {}
   ) {
     const uid = rootState.user.id
     let list = {}
@@ -39,9 +39,6 @@ const actions = {
           flagId,
           notes: notes
         })
-        if (notes[0] != undefined && loadNote) {
-          dispatch('editor/loadNote', notes[0].id, { root: true })
-        }
       })
       .catch(err => console.log(err))
   }
