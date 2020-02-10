@@ -7,7 +7,8 @@ const store = new Vuex.Store({
   state: {
     online: navigator.onLine,
     platform: process.env.platform,
-    sidebar: true
+    sidebar: true,
+    preview: true
   },
   mutations: {
     update_online(state, value) {
@@ -15,6 +16,9 @@ const store = new Vuex.Store({
     },
     update_sidebar(state, value) {
       state.sidebar = value
+    },
+    update_preview(state, value) {
+      state.preview = value
     }
   },
   modules

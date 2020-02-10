@@ -45,6 +45,7 @@ export default {
       const { dispatch } = this.$store
       dispatch('listenSidebar')
       dispatch('listenFileSave')
+      dispatch('listenPreview')
     }
   }
 }

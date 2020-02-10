@@ -11,6 +11,11 @@ const actions = {
     ipcRenderer.on('m::file-save', () => {
       dispatch('editor/saveNote', null, { root: true })
     })
+  },
+  listenPreview({ commit }) {
+    ipcRenderer.on('m::view-preview', (event, value) => {
+      commit('update_preview', value)
+    })
   }
 }
 

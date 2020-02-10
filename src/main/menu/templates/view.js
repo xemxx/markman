@@ -15,6 +15,16 @@ export default function(keybindings) {
         }
       },
       {
+        label: 'Toggle Preview',
+        id: 'sideBarMenuItem',
+        accelerator: keybindings.getAccelerator('view.toggle-preview'),
+        type: 'checkbox',
+        checked: true,
+        click(item, browserWindow) {
+          browserWindow.webContents.send('m::view-preview', item.checked)
+        }
+      },
+      {
         type: 'separator'
       },
       { role: 'resetzoom' },

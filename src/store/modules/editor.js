@@ -79,7 +79,7 @@ const actions = {
       .update(id, data)
       .then(() => {
         //更新显示
-        dispatch('list/flashList', {}, { root: true })
+        dispatch('list/flashList', { loadNote: false }, { root: true })
         //同步服务器
         dispatch('sync/sync', null, { root: true })
       })

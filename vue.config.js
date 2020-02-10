@@ -1,4 +1,5 @@
 const path = require('path')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 module.exports = {
   //mode: 'production'
   configureWebpack: {
@@ -7,7 +8,8 @@ module.exports = {
         main: path.join(__dirname, 'src/main'),
         '@': path.join(__dirname, 'src')
       }
-    }
+    },
+    plugins: [new MonacoWebpackPlugin()]
   },
   css: {
     loaderOptions: {

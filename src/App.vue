@@ -95,7 +95,4 @@ export default {
   color #2c3e50
   height 100vh
   overflow hidden
-
-.el-main
-  overflow auto
 </style>

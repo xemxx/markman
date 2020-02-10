@@ -5,11 +5,11 @@
     </el-header>
     <el-main>
       <div class="editor-wrapper">
-        <textarea v-model="markdown"></textarea>
+        <Editor :markdown="markdown"></Editor>
       </div>
-      <div class="preview-wrapper">
+      <div class="preview-wrapper" v-if="showPreview">
         <div class="pick-line"></div>
-        <div v-html="preview" id="preview"></div>
+        <preview :markdown="markdown"></preview>
       </div>
     </el-main>
     <el-footer height="auto">
@@ -24,7 +24,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import marked from 'marked'
+import Preview from './Preview.vue'
+import Editor from './Editor.vue'
+
 export default {
   name: 'editor',
   data() {
@@ -35,19 +37,10 @@ export default {
   },
   computed: {
     ...mapState({
-      preview: state => {
-        return marked(state.editor.detail.markdown)
-      },
-      tags: state => state.editor.tags
+      showPreview: state => state.preview,
+      tags: state => state.editor.tags,
+      markdown: state => state.editor.detail.markdown
     }),
-    markdown: {
-      get: function() {
-        return this.$store.state.editor.detail.markdown
-      },
-      set: function(newVal) {
-        this.$store.commit('editor/update_markdown', newVal)
-      }
-    },
     title: {
       get: function() {
         return this.$store.state.editor.detail.title
@@ -57,19 +50,11 @@ export default {
       }
     }
   },
-  created() {
-    marked.setOptions({
-      renderer: new marked.Renderer(),
-      pedantic: false,
-      gfm: true,
-      breaks: false,
-      sanitize: false,
-      smartLists: true,
-      smartypants: false,
-      xhtml: false
-    })
-  },
-  methods: {}
+  methods: {},
+  components: {
+    Preview,
+    Editor
+  }
 }
 </script>
 
@@ -90,25 +75,17 @@ export default {
 
 .el-main
   display flex
+  overflow hidden
 
 .editor-wrapper
+  display flex
   flex 1
-  height 100%
-  width 100%
-
-  & textarea
-    padding 10px
-    width 100%
-    height 100%
-    border 0
-    outline none
-    resize none
-    background-color #ffffff
-    font-size 16px
+  min-width 150px
 
 .preview-wrapper
-  flex 1
   display flex
+  flex 1
+  min-width 150px
 
   .pick-line
     border black 1px solid

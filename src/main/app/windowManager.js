@@ -24,8 +24,14 @@ class WindowManager extends EventEmitter {
    */
   addEditor(window) {
     this._editor = window
-    window.on('window-closed', () => {
+    const { browserWindow } = window
+    browserWindow.on('window-closed', () => {
       this._editor = null
+    })
+
+    //fix: mocano-editor大小不自动变化问题
+    browserWindow.on('resize', () => {
+      browserWindow.webContents.send('m::resize-editor')
     })
   }
 

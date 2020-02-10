@@ -8,7 +8,7 @@ import { app } from 'electron'
 export const userDataPath = app.getPath('userData')
 
 export const editorWinOptions = {
-  minWidth: 550,
+  minWidth: 500,
   minHeight: 350,
   center: true,
   webPreferences: {
