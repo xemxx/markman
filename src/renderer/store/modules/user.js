@@ -1,4 +1,4 @@
-import User from '../../model/user.js'
+import User from '@/model/user.js'
 import { getCookie, setCookie } from '../../tools'
 
 const model = new User()

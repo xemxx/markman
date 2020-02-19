@@ -3,7 +3,7 @@ import Model from './base.js'
 
 export default class Note extends Model {
   get(id) {
-    return db.get(`select * from note where id=? and modifyState<3`, [id])
+    return db.get(`select * from note where id=?`, [id])
   }
   getAllByBook(uid, bid) {
     return db.all(
@@ -18,7 +18,7 @@ export default class Note extends Model {
     )
   }
   getAll(uid) {
-    return db.all(`select * from note where uid=?`, [uid])
+    return db.all(`select * from note where uid=? and modifyState<3`, [uid])
   }
   update(id, data) {
     return super.update(id, 'note', data)

@@ -1,4 +1,4 @@
-import Note from '../../model/note.js'
+import Note from '@/model/note.js'
 const nModel = new Note()
 
 const state = {

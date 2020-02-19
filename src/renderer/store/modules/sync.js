@@ -1,8 +1,8 @@
-// import Sync from "../../model/sync.js";
-import axios from '../../plugins/axios'
-import User from '../../model/user'
-import Note from '../../model/note'
-import Notebook from '../../model/notebook'
+// import Sync from "@/model/sync.js";
+import axios from '@/plugins/axios'
+import User from '@/model/user'
+import Note from '@/model/note'
+import Notebook from '@/model/notebook'
 import uuid from 'uuid/v1'
 
 const notebookModel = new Notebook()
@@ -36,10 +36,10 @@ const actions = {
       } else {
         await dispatch('push')
       }
-      //更新完成刷新显示
+      //更新完成刷新显示 不应该由这里控制
       dispatch('floder/flash', null, { root: true })
       dispatch('list/flash', {}, { root: true })
-      dispatch('editor/flash', {}, { root: true })
+      // dispatch('editor/flash', {}, { root: true })
 
       commit('update_isSyncing', false)
     } catch (err) {

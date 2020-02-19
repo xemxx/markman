@@ -78,12 +78,12 @@ export default {
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
-    this.flashNotebooks()
+    this.loadNotebooks()
   },
   methods: {
     ...mapActions({
       loadList: 'list/flash',
-      flashNotebooks: 'floder/flash',
+      loadNotebooks: 'floder/flash',
       addNotebook: 'floder/addNotebook',
       deleteNotebook: 'floder/deleteNotebook',
       updateNotebook: 'floder/updateNotebook'

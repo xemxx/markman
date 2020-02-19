@@ -1,8 +1,13 @@
 import { BrowserWindow, dialog } from 'electron'
 import BaseWindow, { WindowLifecycle, WindowType } from './base'
-import { TITLE_BAR_HEIGHT, editorWinOptions, isWindows } from '../config'
+import {
+  TITLE_BAR_HEIGHT,
+  editorWinOptions,
+  isWindows,
+  isLinux
+} from '../config'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-
+import path from 'path'
 class EditorWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
@@ -27,6 +32,9 @@ class EditorWindow extends BaseWindow {
 
     if (isWindows) {
       options.frame = false // 创建一个frameless窗口，详情：https://electronjs.org/docs/api/frameless-window
+    }
+    if (isLinux) {
+      winOptions.icon = path.join(__static, 'logo-96px.png')
     }
 
     let win = (this.browserWindow = new BrowserWindow(winOptions))

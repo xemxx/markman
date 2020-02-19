@@ -45,33 +45,33 @@ export default {
     })
   },
   created() {
-    this.flashList({ type: 'all' })
+    this.loadList({ type: 'all' })
   },
   methods: {
     ...mapActions({
       loadNote: 'editor/loadNote',
-      flashList: 'list/flash',
+      loadList: 'list/flash',
       addNote: 'editor/addNote',
       deleteNote: 'editor/deleteNote'
     }),
-    //????
+    //右键菜单
     rightMenu(id) {
       const menu = new Menu()
       menu.append(
         new MenuItem({
-          label: '??',
+          label: '移动',
           click: () => this.moveNote(id)
         })
       )
       menu.append(
         new MenuItem({
-          label: '??',
+          label: '删除',
           click: () => this.deleteNote(id)
         })
       )
       menu.popup({ window: remote.getCurrentWindow() })
     },
-    //TODO: ?????????????
+    //TODO: 移动到新笔记本
     moveNote(id) {
       console.log(id)
     }

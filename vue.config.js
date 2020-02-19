@@ -3,13 +3,21 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 module.exports = {
   //mode: 'production'
   configureWebpack: {
+    entry: {
+      app: './src/renderer/main.js'
+    },
     resolve: {
       alias: {
         main: path.join(__dirname, 'src/main'),
-        '@': path.join(__dirname, 'src')
+        '@': path.join(__dirname, 'src/renderer')
       }
     },
-    plugins: [new MonacoWebpackPlugin()]
+    plugins: [
+      new MonacoWebpackPlugin({
+        languages: ['markdown'],
+        output: './js/monaco-editor'
+      })
+    ]
   },
   css: {
     loaderOptions: {

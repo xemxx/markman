@@ -1,24 +1,27 @@
 <template>
-  <el-container class="editor">
-    <el-header height="auto">
-      <input v-model="title" class="editor-title" />
-    </el-header>
-    <el-main>
-      <div class="editor-wrapper">
-        <Editor :markdown="markdown"></Editor>
-      </div>
-      <div class="preview-wrapper" v-if="showPreview">
-        <div class="pick-line"></div>
-        <preview :markdown="markdown"></preview>
-      </div>
-    </el-main>
-    <el-footer height="auto">
-      <div class="tags">
-        <ul>
-          <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
-        </ul>
-      </div>
-    </el-footer>
+  <el-container>
+    <el-main v-if="!isEdit"></el-main>
+    <el-container class="editor" v-if="isEdit">
+      <el-header height="auto">
+        <input v-model="title" class="editor-title" />
+      </el-header>
+      <el-main>
+        <div class="editor-wrapper">
+          <Editor :markdown="markdown"></Editor>
+        </div>
+        <div class="preview-wrapper" v-if="showPreview">
+          <div class="pick-line"></div>
+          <preview :markdown="markdown"></preview>
+        </div>
+      </el-main>
+      <el-footer height="auto">
+        <div class="tags">
+          <ul>
+            <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
+          </ul>
+        </div>
+      </el-footer>
+    </el-container>
   </el-container>
 </template>
 
@@ -39,7 +42,8 @@ export default {
     ...mapState({
       showPreview: state => state.preview,
       tags: state => state.editor.tags,
-      markdown: state => state.editor.detail.markdown
+      markdown: state => state.editor.detail.markdown,
+      isEdit: state => state.editor.isEdit
     }),
     title: {
       get: function() {

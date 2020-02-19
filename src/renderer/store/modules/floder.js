@@ -1,4 +1,4 @@
-import Notebook from '../../model/notebook.js'
+import Notebook from '@/model/notebook.js'
 import uuid from 'uuid/v1'
 
 const model = new Notebook()

@@ -1,9 +1,10 @@
-import Note from '../../model/note.js'
+import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
 
 const nModel = new Note()
 
 const state = {
+  isEdit: true,
   detail: { id: '', markdown: '', title: '', modifyState: 0 },
   tags: []
 }
@@ -100,25 +101,32 @@ const actions = {
       .catch(err => console.log(err))
   },
 
-  deleteNote({ dispatch, state }, id) {
-    const time = Date.parse(new Date()) / 1000
-    const data = {
-      modifyState: 3,
-      modifyDate: time
+  async deleteNote({ dispatch, state }, id) {
+    try {
+      const { modifyState } = await nModel.get(id)
+      if (modifyState == 1) {
+        await nModel.delete(id)
+      } else {
+        const time = Date.parse(new Date()) / 1000
+        const data = {
+          modifyState: 3,
+          modifyDate: time
+        }
+        await nModel.update(id, data)
+      }
+    } catch (err) {
+      console.log(err)
     }
-    return nModel
-      .update(id, data)
-      .then(() => {
-        //更新显示
-        dispatch('list/flash', {}, { root: true }).then(() => {
-          if (id == state.detail.id) {
-            dispatch('flash')
-          }
-        })
-        //同步服务器
-        dispatch('sync/sync', null, { root: true })
-      })
-      .catch(err => console.log(err))
+    //更新显示
+    dispatch('list/flash', {}, { root: true }).then(() => {
+      if (id == state.detail.id) {
+        dispatch('flash')
+      }
+    })
+    //同步服务器
+    dispatch('sync/sync', null, {
+      root: true
+    })
   }
 }
 

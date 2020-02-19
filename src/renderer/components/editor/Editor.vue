@@ -41,7 +41,7 @@ export default {
     listen() {
       //fix: mocano-editor大小不自动变化问题
       ipcRenderer.on('m::resize-editor', () => {
-        if (!this.$store.state.preview) this.monacoEditor.layout('auto')
+        if (!this.$store.state.preview) this.monacoEditor.layout('100%')
       })
     }
   }
