@@ -29,6 +29,17 @@ module.exports = {
   },
   pluginOptions: {
     electronBuilder: {
+      builderOptions: {
+        mac: {
+          icon: 'public/icons/mac/icon.icns'
+        },
+        win: {
+          icon: 'public/icons/win/icon.ico'
+        },
+        linux: {
+          icon: 'public/icons/mac/icon.icns'
+        }
+      },
       externals: ['sqlite3'],
       mainProcessFile: 'src/main/main.js',
       mainProcessWatch: ['src/main'],

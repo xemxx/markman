@@ -19,7 +19,6 @@
     "highlight.js": "^9.18.1",
     "marked": "^0.8.0",
     "monaco-editor": "^0.19.3",
-    "monaco-editor-webpack-plugin": "^1.8.2",
     "sqlite3": "^4.1.1",
     "uuid": "^3.4.0",
     "vue": "^2.6.10",
@@ -42,6 +41,7 @@
     "prettier": "^1.19.1",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
+    "monaco-editor-webpack-plugin": "^1.8.2",
     "vue-cli-plugin-electron-builder": "^1.4.4",
     "vue-template-compiler": "^2.6.10"
   }
