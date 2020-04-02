@@ -18,7 +18,7 @@
         v-for="item in notes"
         :key="item.id"
         @click="loadNote(item.id)"
-        @click.right="rightMenu(item.id)"
+        @click.right="rightMenu(item.id, item.bid)"
       >
         <div class="el-card__header">
           {{ item.title }}
@@ -26,6 +26,21 @@
         <div class="el-card__body">{{ item.content }}</div>
       </div>
     </el-main>
+    <el-dialog title="提示" :visible.sync="showMove" width="30%">
+      <el-select v-model="moveCheck">
+        <el-option
+          v-for="item in notebooks"
+          :key="item.guid"
+          :label="item.name"
+          :value="item.guid"
+        >
+        </el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showMove = false">取 消</el-button>
+        <el-button type="primary" @click="doMove">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -37,11 +52,18 @@ const { Menu, MenuItem } = remote
 
 export default {
   name: 'list',
+  data() {
+    return {
+      showMove: false,
+      moveCheck: 0
+    }
+  },
   computed: {
     ...mapState({
       notes: state => state.list.notes,
       showNew: state => state.list.type == 'note',
-      bid: state => state.list.flagId
+      bid: state => state.list.flagId,
+      notebooks: state => state.floder.notebooks
     })
   },
   created() {
@@ -55,12 +77,12 @@ export default {
       deleteNote: 'editor/deleteNote'
     }),
     //右键菜单
-    rightMenu(id) {
+    rightMenu(id, bid) {
       const menu = new Menu()
       menu.append(
         new MenuItem({
           label: '移动',
-          click: () => this.moveNote(id)
+          click: () => this.moveNote(id, bid)
         })
       )
       menu.append(
@@ -71,9 +93,17 @@ export default {
       )
       menu.popup({ window: remote.getCurrentWindow() })
     },
-    //TODO: 移动到新笔记本
-    moveNote(id) {
-      console.log(id)
+    moveNote(id, bid) {
+      this.moveNoteId = id
+      this.moveCheck = bid
+      this.showMove = true
+    },
+    doMove() {
+      this.$store.dispatch('list/moveNote', {
+        id: this.moveNoteId,
+        bid: this.moveCheck
+      })
+      this.showMove = false
     }
   }
 }

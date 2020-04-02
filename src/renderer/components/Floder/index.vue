@@ -41,7 +41,7 @@
         >
       </el-menu>
     </el-main>
-    <el-footer class="toolbar" height="auto">
+    <el-footer height="auto">
       <Footer />
     </el-footer>
   </el-container>
@@ -171,11 +171,6 @@ input
   &:focus
     border 0
     outline none
-
-.toolbar
-  background-color wheat
-  color black
-  text-align center
 
 .el-submenu .el-menu-item
   padding-right 0

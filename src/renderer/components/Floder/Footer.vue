@@ -1,5 +1,5 @@
 <template>
-  <div class="footer">
+  <div class="toolbar">
     <i @click="sync" class="el-icon-refresh"></i>
     <p v-if="isSyncing">同步中</p>
     <p v-else>同步完成</p>
@@ -29,7 +29,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.footer
+.toolbar
+  background-color wheat
+  color black
+  text-align center
   display flex
 
   p

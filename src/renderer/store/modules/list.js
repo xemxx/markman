@@ -41,6 +41,14 @@ const actions = {
         })
       })
       .catch(err => console.log(err))
+  },
+  moveNote({ dispatch }, { id, bid }) {
+    return nModel
+      .update(id, { bid })
+      .then(() => {
+        dispatch('flash')
+      })
+      .catch(err => console.log(err))
   }
 }
 
