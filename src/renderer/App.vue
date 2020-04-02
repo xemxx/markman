@@ -59,7 +59,7 @@ export default {
                   }, 1000)
                 } else {
                   //用户登录失效
-                  store.dispatch('user/unsetActiver')
+                  store.dispatch('user/unSetActiver')
                   setTimeout(() => {
                     this.$router.push('/sign/in').catch(err => err)
                   }, 1000)
@@ -67,7 +67,7 @@ export default {
               } catch (err) {
                 //可能token被串改不符合格式导致window.atob报错
                 console.log(err)
-                store.dispatch('user/unsetActiver')
+                store.dispatch('user/unSetActiver')
                 setTimeout(() => {
                   this.$router.push('/sign/in').catch(err => err)
                 }, 1000)

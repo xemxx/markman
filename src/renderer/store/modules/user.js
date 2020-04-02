@@ -55,9 +55,13 @@ const actions = {
     commit('update_token', token)
   },
 
-  unsetActiver({ state, commit }) {
+  unSetActiver({ state, commit }) {
     model.update(state.id, { state: 0 })
+    commit('update_id', '')
     commit('update_token', '')
+    commit('update_server', '')
+    commit('update_username', '')
+    commit('update_lastSC', '')
   },
 
   setActiver({ dispatch }, { username, token, server }) {

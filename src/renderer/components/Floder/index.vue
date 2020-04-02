@@ -11,12 +11,12 @@
             <i class="el-icon-plus" @click.stop="showAddNotebook"></i>
           </template>
           <el-menu-item v-show="notebookInput" index="1-new">
-            <el-input
+            <input
               ref="notebookInput"
               v-model="notebookName"
               @keyup.enter="doAddNotebook"
               @blur="blurAddNotebook"
-            ></el-input>
+            />
           </el-menu-item>
           <el-menu-item
             v-for="item in notebooks"
@@ -42,10 +42,7 @@
       </el-menu>
     </el-main>
     <el-footer class="toolbar" height="auto">
-      <div style="display:inline-block">
-        <p v-if="isSyncing">syncing</p>
-        <p v-else>sync finish</p>
-      </div>
+      <Footer />
     </el-footer>
   </el-container>
 </template>
@@ -55,6 +52,8 @@ import { mapState, mapActions } from 'vuex'
 
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
+
+import Footer from './Footer.vue'
 
 export default {
   name: 'floder',
@@ -72,13 +71,15 @@ export default {
           item.rename = false
           return item
         })
-      },
-      isSyncing: state => state.sync.isSyncing
+      }
     })
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
     this.loadNotebooks()
+  },
+  components: {
+    Footer
   },
   methods: {
     ...mapActions({

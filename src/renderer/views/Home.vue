@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import Floder from '@/components/Floder.vue'
+import Floder from '@/components/Floder'
 import List from '@/components/List.vue'
-import Editor from '@/components/editor'
+import Editor from '@/components/Editor'
 
 import { mapState } from 'vuex'
 
