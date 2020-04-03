@@ -16,10 +16,12 @@ export default class Notebook extends Model {
     return super.delete(id, 'notebook')
   }
 
-  deleteLocal(id) {
-    return this.update(id, { modifyState: 3 }).then(() => {
-      return db.exec(`update note set modifyState=3 where bid=${id}`)
-    })
+  deleteLocal(id, guid) {
+    return this.update(id, { modifyState: 3 })
+      .then(() => {
+        return db.run(`update note set modifyState=? where bid=?`, [3, guid])
+      })
+      .catch(err => console.log(err))
   }
 
   getLocalByServer(uid, serverData) {

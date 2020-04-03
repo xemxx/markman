@@ -47,12 +47,21 @@ const actions = {
       .catch(err => console.log(err))
   },
 
-  deleteNotebook({ dispatch }, id) {
+  deleteNotebook({ dispatch, state, rootState }, id) {
+    let guid = 0
+    for (let i = 0; i < state.notebooks.length; i++) {
+      if (state.notebooks[i].id == id) {
+        guid = state.notebooks[i].guid
+      }
+    }
     return model
-      .deleteLocal(id)
+      .deleteLocal(id, guid)
       .then(() => {
         //更新列表显示
         dispatch('flash')
+        if (rootState.list.type != 'all' && rootState.list.flagId == guid) {
+          dispatch('list/flash', { type: 'all' }, { root: true })
+        }
         //同步服务器
         dispatch('sync/sync', null, { root: true })
       })

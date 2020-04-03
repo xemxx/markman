@@ -30,6 +30,7 @@ const actions = {
       list = nModel.getAllByTag(uid, flagId)
     } else if (type === 'all') {
       list = nModel.getAll(uid)
+      flagId = ''
     }
 
     return list

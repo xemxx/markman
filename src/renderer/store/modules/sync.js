@@ -36,16 +36,16 @@ const actions = {
       } else {
         await dispatch('push')
       }
-      //更新完成刷新显示 不应该由这里控制
-      dispatch('floder/flash', null, { root: true })
-      dispatch('list/flash', {}, { root: true })
-      // dispatch('editor/flash', {}, { root: true })
-
       commit('update_isSyncing', false)
     } catch (err) {
       console.log(err)
       commit('update_isSyncing', false)
     }
+    //更新完成刷新显示
+    dispatch('floder/flash', null, { root: true })
+    dispatch('list/flash', {}, { root: true })
+    // dispatch('editor/flash', {}, { root: true })
+
     /**
      * 纯promise版本
      */
