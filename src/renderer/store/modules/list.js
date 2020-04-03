@@ -44,8 +44,9 @@ const actions = {
   },
   moveNote({ dispatch }, { id, bid }) {
     return nModel
-      .update(id, { bid })
+      .update(id, { bid, modifyState: 2 })
       .then(() => {
+        dispatch('sync/sync', null, { root: true })
         dispatch('flash')
       })
       .catch(err => console.log(err))

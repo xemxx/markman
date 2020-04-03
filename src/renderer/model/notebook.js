@@ -1,6 +1,7 @@
 import db from '../plugins/sqlite3/db.js'
 import Model from './base.js'
-
+//import Note from './note.js'
+//const nModel = new Note()
 export default class Notebook extends Model {
   getAll(uid) {
     return db.all(`select * from notebook where uid=? and modifyState<3`, [uid])
@@ -13,6 +14,12 @@ export default class Notebook extends Model {
   }
   delete(id) {
     return super.delete(id, 'notebook')
+  }
+
+  deleteLocal(id) {
+    return this.update(id, { modifyState: 3 }).then(() => {
+      return db.exec(`update note set modifyState=3 where bid=${id}`)
+    })
   }
 
   getLocalByServer(uid, serverData) {

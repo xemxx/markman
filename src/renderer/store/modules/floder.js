@@ -49,7 +49,7 @@ const actions = {
 
   deleteNotebook({ dispatch }, id) {
     return model
-      .update(id, { modifyState: 3 })
+      .deleteLocal(id)
       .then(() => {
         //更新列表显示
         dispatch('flash')
