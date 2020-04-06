@@ -5,6 +5,7 @@ import { isOsx, isLinux } from '../config.js'
 import { app, ipcMain } from 'electron'
 
 import EditorWindow from '../windows/editor'
+import SettingWindow from '../windows/setting'
 
 export default class App {
   constructor(Accessor) {
@@ -67,13 +68,10 @@ export default class App {
    * Create a new setting window.
    */
   _createSettingWindow() {
-    console.log('create')
-    // const setting = new SettingWindow(this._accessor)
-    // setting.createWindow()
-    // this._windowManager.add(setting)
-    // if (this._windowManager.windowCount === 1) {
-    //   this._accessor.menu.setActiveWindow(setting.id)
-    // }
+    const setting = new SettingWindow(this._accessor)
+    setting.createWindow()
+    this._windowManager.addSetting(setting)
+    this._accessor.menu.setActiveWindow(setting.id)
   }
 
   _openSettingsWindow() {

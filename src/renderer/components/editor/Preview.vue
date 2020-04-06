@@ -7,7 +7,7 @@ import marked from 'marked'
 import hljs from 'highlight.js'
 
 // import 'prismjs/themes/prism.css'
-import '@/assets/css/theme/default/default.styl'
+import '@/assets/theme/default/default.styl'
 import 'highlight.js/styles/atom-one-dark.css'
 
 export default {

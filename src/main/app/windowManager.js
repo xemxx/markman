@@ -29,9 +29,27 @@ class WindowManager extends EventEmitter {
       this._editor = null
     })
 
+    window.on('window-focus', () => {
+      this.setActiveWindow(window.id)
+    })
+    window.on('window-closed', () => {
+      this.remove(window.id)
+    })
+
     //fix: mocano-editor大小不自动变化问题
     browserWindow.on('resize', () => {
       browserWindow.webContents.send('m::resize-editor')
+    })
+  }
+
+  addSetting(window) {
+    this._setting = window
+
+    window.on('window-focus', () => {
+      this.setActiveWindow(window.id)
+    })
+    window.on('window-closed', () => {
+      this.remove(window.id)
     })
   }
 
@@ -42,32 +60,7 @@ class WindowManager extends EventEmitter {
     return this._setting
   }
 
-  /**
-   * Closes the browser window and associated application window without asking to save documents.
-   *
-   * @param {Electron.BrowserWindow} browserWindow The browser window.
-   */
-  forceClose(browserWindow) {
-    if (!browserWindow) {
-      return false
-    }
-
-    const { id: windowId } = browserWindow
-    const { _appMenu } = this
-
-    _appMenu.removeWindowMenu(windowId)
-
-    browserWindow.destroy()
-    return true
-  }
-
   _listenForIpcMain() {
-    // Force close a BrowserWindow
-    ipcMain.on('mt::close-window', e => {
-      const win = BrowserWindow.fromWebContents(e.sender)
-      this.forceClose(win)
-    })
-
     ipcMain.on('window-toggle-always-on-top', win => {
       const flag = !win.isAlwaysOnTop()
       win.setAlwaysOnTop(flag)

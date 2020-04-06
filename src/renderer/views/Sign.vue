@@ -21,9 +21,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.sign {
-  & .el-header {
-    text-align: center;
-  }
-}
+.sign
+  & .el-header
+    text-align center
 </style>

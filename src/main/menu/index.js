@@ -36,6 +36,16 @@ class AppMenu {
   }
 
   /**
+   * Add the settings menu to the given window.
+   *
+   * @param {BrowserWindow} window The settings browser window.
+   */
+  addSettingMenu(window) {
+    const { windowMenus } = this
+    windowMenus.set(window.id, this._buildSettingMenu())
+  }
+
+  /**
    * Remove menu from the given window.
    *
    * @param {number} windowId The window id.
@@ -78,20 +88,20 @@ class AppMenu {
   /**
    * Update all auto save entries from editor menus to the given state.
    */
-  updateAutoSaveMenu(autoSave) {
-    this.windowMenus.forEach(value => {
-      const { menu, type } = value
-      if (type !== MenuType.EDITOR) {
-        return
-      }
+  // updateAutoSaveMenu(autoSave) {
+  //   this.windowMenus.forEach(value => {
+  //     const { menu, type } = value
+  //     if (type !== MenuType.EDITOR) {
+  //       return
+  //     }
 
-      const autoSaveMenu = menu.getMenuItemById('autoSaveMenuItem')
-      if (!autoSaveMenu) {
-        return
-      }
-      autoSaveMenu.checked = autoSave
-    })
-  }
+  //     const autoSaveMenu = menu.getMenuItemById('autoSaveMenuItem')
+  //     if (!autoSaveMenu) {
+  //       return
+  //     }
+  //     autoSaveMenu.checked = autoSave
+  //   })
+  // }
 
   /**
    * Set the given window as last active.

@@ -90,14 +90,10 @@ class EditorWindow extends BaseWindow {
     })
 
     this.lifecycle = WindowLifecycle.LOADING
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
-      // Load the url of the dev server if in development mode
-      win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-      if (!process.env.IS_TEST) win.webContents.openDevTools()
-    } else {
-      createProtocol('app')
-      win.loadURL('app://./index.html')
-    }
+    createProtocol('app')
+
+    win.loadURL(this._buildUrlString() + '#/editor')
+
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win

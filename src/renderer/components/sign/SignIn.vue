@@ -81,7 +81,7 @@ export default {
                 type: 'success',
                 center: true
               })
-              router.push('/home')
+              router.push('/editor')
             })
         } else {
           msg({
