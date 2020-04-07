@@ -26,7 +26,6 @@ export default class App {
         activeWindow.bringToFront()
       }
     })
-
     app.on('ready', this.ready)
 
     app.on('activate', () => {
@@ -35,15 +34,12 @@ export default class App {
       // dock icon is clicked and there are no other windows open.
       if (this._windowManager.editor === null) {
         this.ready()
-      }
-    })
-
-    // Quit when all windows are closed.
-    app.on('window-all-closed', () => {
-      // On macOS it is common for applications and their menu bar
-      // to stay active until the user quits explicitly with Cmd + Q
-      if (!isOsx) {
-        app.quit()
+      } else {
+        const { _windowManager } = this
+        const activeWindow = _windowManager.editor
+        if (activeWindow) {
+          activeWindow.bringToFront()
+        }
       }
     })
 
@@ -71,7 +67,6 @@ export default class App {
     const setting = new SettingWindow(this._accessor)
     setting.createWindow()
     this._windowManager.addSetting(setting)
-    this._accessor.menu.setActiveWindow(setting.id)
   }
 
   _openSettingsWindow() {

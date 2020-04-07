@@ -1,6 +1,6 @@
 import path from 'path'
 import { BrowserWindow } from 'electron'
-import BaseWindow, { WindowLifecycle, WindowType } from './base'
+import BaseWindow, { WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   preferencesWinOptions,
@@ -41,21 +41,28 @@ class SettingWindow extends BaseWindow {
 
     // Create a menu for the current window
     appMenu.addSettingMenu(win)
+    appMenu.setActiveWindow(win.id)
 
     win.once('ready-to-show', () => {
-      this.lifecycle = WindowLifecycle.READY
-      this.emit('window-ready')
+      win.show()
+    })
+
+    // 当页面加载完成时
+    win.webContents.once('did-finish-load', () => {
+      // Restore and focus window
+      this.bringToFront()
+    })
+
+    win.on('focus', () => {
+      this.emit('window-focus')
     })
 
     // The window is now destroyed.
     win.on('closed', () => {
       this.emit('window-closed')
-
-      // Free window reference
       win = null
     })
 
-    this.lifecycle = WindowLifecycle.LOADING
     win.loadURL(this._buildUrlString() + '#/preference')
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 

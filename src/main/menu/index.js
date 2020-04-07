@@ -60,20 +60,6 @@ class AppMenu {
   }
 
   /**
-   * Returns the window menu.
-   *
-   * @param {number} windowId The window id.
-   * @returns {Electron.Menu} The menu.
-   */
-  getWindowMenuById(windowId) {
-    const menu = this.windowMenus.get(windowId)
-    if (!menu) {
-      throw new Error(`Cannot find window menu for id ${windowId}.`)
-    }
-    return menu.menu
-  }
-
-  /**
    * Update always on top menu item.
    *
    * @param {number} windowId The window id.
@@ -86,22 +72,18 @@ class AppMenu {
   }
 
   /**
-   * Update all auto save entries from editor menus to the given state.
+   * Returns the window menu.
+   *
+   * @param {number} windowId The window id.
+   * @returns {Electron.Menu} The menu.
    */
-  // updateAutoSaveMenu(autoSave) {
-  //   this.windowMenus.forEach(value => {
-  //     const { menu, type } = value
-  //     if (type !== MenuType.EDITOR) {
-  //       return
-  //     }
-
-  //     const autoSaveMenu = menu.getMenuItemById('autoSaveMenuItem')
-  //     if (!autoSaveMenu) {
-  //       return
-  //     }
-  //     autoSaveMenu.checked = autoSave
-  //   })
-  // }
+  getWindowMenuById(windowId) {
+    const menu = this.windowMenus.get(windowId)
+    if (!menu) {
+      throw new Error(`Cannot find window menu for id ${windowId}.`)
+    }
+    return menu.menu
+  }
 
   /**
    * Set the given window as last active.

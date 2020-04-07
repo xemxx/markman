@@ -2,14 +2,10 @@
 
 import App from './app'
 
-import { app, protocol } from 'electron'
+import { app } from 'electron'
 import Accessor from './app/accessor'
 import { isDevelopment, isWindows, userDataPath } from './config'
 import { installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
-
-protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } }
-])
 
 if (isDevelopment && !process.env.IS_TEST) {
   app.on('ready', async () => {

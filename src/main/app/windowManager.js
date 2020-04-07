@@ -11,6 +11,7 @@ class WindowManager extends EventEmitter {
 
     this._appMenu = appMenu
 
+    this._activeWindowId = null
     this._editor = null
     this._setting = null
 
@@ -24,32 +25,32 @@ class WindowManager extends EventEmitter {
    */
   addEditor(window) {
     this._editor = window
-    const { browserWindow } = window
-    browserWindow.on('window-closed', () => {
+
+    window.on('window-closed', () => {
+      this._appMenu.removeWindowMenu(window.id)
+      this._editor.destroy()
       this._editor = null
+      if (this._setting !== null) {
+        this._setting.emit('window-closed')
+      }
     })
 
     window.on('window-focus', () => {
       this.setActiveWindow(window.id)
-    })
-    window.on('window-closed', () => {
-      this.remove(window.id)
-    })
-
-    //fix: mocano-editor大小不自动变化问题
-    browserWindow.on('resize', () => {
-      browserWindow.webContents.send('m::resize-editor')
     })
   }
 
   addSetting(window) {
     this._setting = window
 
+    window.on('window-closed', () => {
+      this._appMenu.removeWindowMenu(window.id)
+      this._setting.destroy()
+      this._setting = null
+    })
+
     window.on('window-focus', () => {
       this.setActiveWindow(window.id)
-    })
-    window.on('window-closed', () => {
-      this.remove(window.id)
     })
   }
 
@@ -58,6 +59,13 @@ class WindowManager extends EventEmitter {
   }
   get setting() {
     return this._setting
+  }
+
+  setActiveWindow(windowId) {
+    if (this._activeWindowId !== windowId) {
+      this._activeWindowId = windowId
+      this._appMenu.setActiveWindow(windowId)
+    }
   }
 
   _listenForIpcMain() {

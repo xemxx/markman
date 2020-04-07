@@ -1,12 +1,11 @@
 import { BrowserWindow, dialog } from 'electron'
-import BaseWindow, { WindowLifecycle, WindowType } from './base'
+import BaseWindow, { WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   editorWinOptions,
   isWindows,
   isLinux
 } from '../config'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path'
 class EditorWindow extends BaseWindow {
   /**
@@ -50,16 +49,11 @@ class EditorWindow extends BaseWindow {
 
     // 当页面加载完成时
     win.webContents.once('did-finish-load', () => {
-      this.lifecycle = WindowLifecycle.READY
-      this.emit('window-ready')
-
       // Restore and focus window
-      this.bringToFront()
+      super.bringToFront()
     })
 
-    win.webContents.once('did-fail-load', () => {})
-
-    //防止意外关闭
+    //防止页面崩溃
     win.webContents.once('crashed', async (event, killed) => {
       const msg = `The renderer process has crashed unexpected or is killed (${killed}).`
 
@@ -80,20 +74,23 @@ class EditorWindow extends BaseWindow {
       }
     })
 
+    win.on('focus', () => {
+      this.emit('window-focus')
+    })
+
     // The window is now destroyed.
     win.on('closed', () => {
-      this.lifecycle = WindowLifecycle.QUITTED
       this.emit('window-closed')
-
       // Free window reference
       win = null
     })
 
-    this.lifecycle = WindowLifecycle.LOADING
-    createProtocol('app')
+    //fix: mocano-editor大小不自动变化问题
+    win.on('resize', () => {
+      win.webContents.send('m::resize-editor')
+    })
 
     win.loadURL(this._buildUrlString() + '#/editor')
-
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win
@@ -103,7 +100,6 @@ class EditorWindow extends BaseWindow {
     const { browserWindow } = this
 
     browserWindow.webContents.once('did-finish-load', () => {
-      this.lifecycle = WindowLifecycle.LOADING
       super.reload()
     })
   }

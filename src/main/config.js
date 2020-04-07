@@ -15,7 +15,7 @@ export const editorWinOptions = {
     nodeIntegration: true //提供完整的node环境支持
   },
   useContentSize: true,
-  show: true,
+  show: false,
   frame: true,
   titleBarStyle: 'hidden'
 }
@@ -32,7 +32,7 @@ export const preferencesWinOptions = {
   minimizable: false,
   maximizable: false,
   useContentSize: true,
-  show: true,
+  show: false,
   frame: true,
   thickFrame: !isOsx,
   titleBarStyle: 'hidden'
