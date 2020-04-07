@@ -1,5 +1,7 @@
 import VueRouter from 'vue-router'
 import Vue from 'vue'
+import Main from '@/views/Main'
+import Loding from '@/views/Loding'
 import Editor from '@/views/Editor.vue'
 import Sign from '@/views/Sign.vue'
 import Preference from '@/views/Preference.vue'
@@ -11,33 +13,50 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/sign',
-    component: Sign,
+    path: '/',
+    component: Main,
     children: [
       {
-        path: 'in',
-        component: SignIn
+        path: '',
+        component: Loding
       },
       {
-        path: 'up',
-        component: SignUp
+        path: '/editor',
+        name: 'editor',
+        component: Editor,
+        meta: { auth: true }
+      },
+      {
+        path: '/sign',
+        component: Sign,
+        children: [
+          {
+            path: 'in',
+            name: 'signin',
+            component: SignIn
+          },
+          {
+            path: 'up',
+            name: 'signup',
+            component: SignUp
+          }
+        ]
       }
     ]
   },
-  {
-    path: '/editor',
-    name: 'Editor',
-    component: Editor,
-    meta: { auth: true }
-  },
+
   {
     path: '/preference',
-    name: 'Preference',
     component: Preference,
     children: [
       {
         path: '',
         component: General
+      },
+      {
+        path: 'general',
+        component: General,
+        name: 'general'
       }
     ]
   }

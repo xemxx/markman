@@ -29,6 +29,7 @@ module.exports = {
   },
   pluginOptions: {
     electronBuilder: {
+      customFileProtocol: './',
       builderOptions: {
         mac: {
           icon: 'public/icons/mac/icon.icns'

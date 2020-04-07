@@ -54,7 +54,7 @@ class BaseWindow extends EventEmitter {
   _buildUrlString() {
     let baseUrl = process.env.WEBPACK_DEV_SERVER_URL
       ? process.env.WEBPACK_DEV_SERVER_URL
-      : `file://./index.html/`
+      : `file://${__dirname}/index.html`
     return baseUrl
   }
 }
