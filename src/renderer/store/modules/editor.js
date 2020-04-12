@@ -3,6 +3,8 @@ import uuid from 'uuid/v1'
 
 const nModel = new Note()
 
+const autoSaveTimers = new Map()
+
 const state = {
   isEdit: true,
   detail: { id: '', markdown: '', title: '', modifyState: 0 },
@@ -86,7 +88,7 @@ const actions = {
     const data = {
       content,
       title,
-      modifyState: modifyState == 0 ? 2 : modifyState, //如果是同步过的代表被修改需要同步，否则都是原来的样子，新建不变，
+      modifyState: modifyState == 0 ? 2 : modifyState, //如果是同步过的代表被修改需要同步，否则就是新建不变
       modifyDate: time
     }
 
@@ -127,6 +129,28 @@ const actions = {
     dispatch('sync/sync', null, {
       root: true
     })
+  },
+
+  handleAutoSave({ state, rootState }) {
+    const { autoSave, autoSaveDelay } = rootState.preference
+    const { id, title, modifyState, content } = state.detail
+    if (autoSave) {
+      if (autoSaveTimers.has(id)) {
+        clearTimeout(autoSaveTimers.get(id))
+        autoSaveTimers.delete(id)
+      }
+      const timeId = setTimeout(() => {
+        const data = {
+          content,
+          title,
+          modifyState: modifyState == 0 ? 2 : modifyState,
+          modifyDate: Date.parse(new Date()) / 1000
+        }
+        nModel.update(id, data)
+        autoSaveTimers.delete(id)
+      }, autoSaveDelay)
+      autoSaveTimers.set(id, timeId)
+    }
   }
 }
 

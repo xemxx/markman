@@ -33,7 +33,9 @@ export default {
     this.monacoEditor.onDidChangeModelContent(() => {
       let changeContent = this.monacoEditor.getValue()
       this.content = changeContent
-      this.$store.commit('editor/update_markdown', changeContent)
+      const { commit, dispatch } = this.$store
+      commit('update_markdown', changeContent)
+      dispatch('editor/handleAutoSave')
     })
     this.listen()
   },

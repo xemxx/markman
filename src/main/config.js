@@ -43,6 +43,6 @@ export const EXTENSION_HASN = {
   pdf: '.pdf'
 }
 
-export const TITLE_BAR_HEIGHT = isOsx ? 21 : 32
+export const TITLE_BAR_HEIGHT = 22
 
 export const URL_REG = /^http(s)?:\/\/([a-z0-9\-._~]+\.[a-z]{2,}|[0-9.]+|localhost|\[[a-f0-9.:]+\])(:[0-9]{1,5})?(\/[\S]+)?/i

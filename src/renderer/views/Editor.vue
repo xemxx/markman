@@ -57,8 +57,12 @@ export default {
   height 100%
 
 .sidebar
-  display flex
   flex 1
+  display flex
+  position relative
+  top -22px
+  height 100vh
+  padding-top 22px
   max-width 400px
   min-width 100px
 

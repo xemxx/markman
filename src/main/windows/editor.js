@@ -53,7 +53,7 @@ class EditorWindow extends BaseWindow {
       super.bringToFront()
     })
 
-    //防止页面崩溃
+    // 页面崩溃提示框
     win.webContents.once('crashed', async (event, killed) => {
       const msg = `The renderer process has crashed unexpected or is killed (${killed}).`
 

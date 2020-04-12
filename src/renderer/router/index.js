@@ -1,7 +1,6 @@
 import VueRouter from 'vue-router'
 import Vue from 'vue'
-import Main from '@/views/Main'
-import Loding from '@/views/Loding'
+import App from '@/views/App'
 import Editor from '@/views/Editor.vue'
 import Sign from '@/views/Sign.vue'
 import Preference from '@/views/Preference.vue'
@@ -14,12 +13,8 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    component: Main,
+    component: App,
     children: [
-      {
-        path: '',
-        component: Loding
-      },
       {
         path: '/editor',
         name: 'editor',

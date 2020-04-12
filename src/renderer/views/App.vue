@@ -1,11 +1,16 @@
 <template>
-  <transition>
-    <router-view></router-view>
-  </transition>
+  <div class="editor-container">
+    <TitleBar />
+    <router-view class="main"></router-view>
+  </div>
 </template>
 
 <script>
+import TitleBar from '@/components/TitleBar.vue'
 export default {
+  components: {
+    TitleBar
+  },
   created() {
     // 初始化editor窗口逻辑
     let store = this.$store
@@ -64,4 +69,12 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+.editor-container
+  font-family 'Avenir', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
+  color #2c3e50
+  height 100vh
+  overflow hidden
+</style>

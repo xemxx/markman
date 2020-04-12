@@ -28,9 +28,8 @@ const mutations = {
 const actions = {
   getLocal({ commit }) {
     ipcRenderer.send('m::get-user-pref')
-    ipcRenderer.send('mt::ask-for-user-data')
 
-    ipcRenderer.on('m::send-user-pref', (e, preferences) => {
+    ipcRenderer.on('m::user-pref', (e, preferences) => {
       commit('SET_PREFERENCE', preferences)
     })
   }

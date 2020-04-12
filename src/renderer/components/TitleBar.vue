@@ -38,7 +38,8 @@ export default {
   width 100%
   text-align center
   -webkit-app-region drag
-  background floder-bc
+  background transparent
+  z-index 2
 
   & .handle-bar
     float right

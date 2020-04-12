@@ -1,27 +1,27 @@
 <template>
   <el-container>
-    <el-main v-if="!isEdit"></el-main>
-    <el-container class="editor" v-if="isEdit">
-      <el-header height="auto">
-        <input v-model="title" class="editor-title" />
-      </el-header>
-      <el-main>
-        <div class="editor-wrapper">
-          <Editor :markdown="markdown"></Editor>
-        </div>
-        <div class="preview-wrapper" v-if="showPreview">
-          <div class="pick-line"></div>
-          <preview :markdown="markdown"></preview>
-        </div>
-      </el-main>
-      <el-footer height="auto">
+    <!-- <el-main v-if="!isEdit"></el-main>
+    <el-container class="editor" v-if="isEdit"> -->
+    <el-header height="auto">
+      <input v-model="title" class="editor-title" />
+    </el-header>
+    <el-main>
+      <div class="editor-wrapper">
+        <Editor :markdown="markdown"></Editor>
+      </div>
+      <div class="preview-wrapper" v-if="showPreview">
+        <div class="pick-line"></div>
+        <preview :markdown="markdown"></preview>
+      </div>
+    </el-main>
+    <!-- <el-footer height="auto">
         <div class="tags">
           <ul>
             <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
           </ul>
         </div>
       </el-footer>
-    </el-container>
+    </el-container> -->
   </el-container>
 </template>
 
@@ -51,6 +51,7 @@ export default {
       },
       set: function(newVal) {
         this.$store.commit('editor/update_title', newVal)
+        this.$store.dispatch('editor/handleAutoSave')
       }
     }
   },

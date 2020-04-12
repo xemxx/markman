@@ -104,7 +104,7 @@ class Preference extends EventEmitter {
       const win = BrowserWindow.fromWebContents(e.sender)
       win.webContents.send('m::send-user-pref', this.getAll())
     })
-    ipcMain.on('m::set-user-pref', (e, settings) => {
+    ipcMain.on('m::user-pref', (e, settings) => {
       this.setItems(settings)
     })
     ipcMain.on('m::cmd-toggle-autosave', () => {

@@ -54,7 +54,7 @@ export default {
   -webkit-app-region drag
   background var(--sideBarBgColor)
   width var(--prefSideBarWidth)
-  height 100vh
+  height calc(100vh - var(--titleBarHeight))
   padding-top 40px
   box-sizing border-box
 
