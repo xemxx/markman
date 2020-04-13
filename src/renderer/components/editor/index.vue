@@ -40,7 +40,7 @@ export default {
   },
   computed: {
     ...mapState({
-      showPreview: state => state.preview,
+      showPreview: state => state.preference.togglePreview,
       tags: state => state.editor.tags,
       markdown: state => state.editor.detail.markdown,
       isEdit: state => state.editor.isEdit

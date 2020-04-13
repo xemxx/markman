@@ -30,7 +30,7 @@ export default {
   },
   props: {
     description: String,
-    value: String || Number,
+    value: Number,
     min: Number,
     max: Number,
     onChange: Function,
@@ -62,7 +62,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .pref-range-item
   margin 20px 0
   font-size 14px

@@ -8,5 +8,15 @@
     "description": "General--The time in ms after a change that the file is saved.",
     "type": "number",
     "minimum": 1000
+  },
+  "toggleSidebar": {
+    "description": "View Menu--Sidebar status.",
+    "type": "boolean",
+    "default": true
+  },
+  "togglePreview": {
+    "description": "View Menu--Preview status.",
+    "type": "boolean",
+    "default": true
   }
 }

@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { ipcMain } from 'electron'
 import EventEmitter from 'events'
 
 class WindowManager extends EventEmitter {
@@ -73,6 +73,12 @@ class WindowManager extends EventEmitter {
       const flag = !win.isAlwaysOnTop()
       win.setAlwaysOnTop(flag)
       this._appMenu.updateAlwaysOnTopMenu(win.id, flag)
+    })
+    ipcMain.on('broadcast-pref-changed', prefs => {
+      if (this._editor !== null)
+        this._editor.browserWindow.webContents.send('m::user-pref', prefs)
+      if (this._setting !== null)
+        this._setting.browserWindow.webContents.send('m::user-pref', prefs)
     })
   }
 }

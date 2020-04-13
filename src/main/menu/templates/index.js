@@ -27,13 +27,13 @@ export const configSettingMenu = keybindings => {
  *
  * @param {Keybindings} keybindings The keybindings instance.
  */
-export const configEditorMenu = keybindings => {
+export const configEditorMenu = (keybindings, userPreference) => {
   return [
     ...(isOsx ? [markman(keybindings)] : []),
-    file(keybindings),
+    file(keybindings, userPreference),
     edit(keybindings),
     window(keybindings),
-    view(keybindings),
+    view(keybindings, userPreference),
     help()
   ]
 }

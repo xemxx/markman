@@ -9,7 +9,7 @@ class Accessor {
     let userDataPath = args.userDataPath
     this.preferences = new Preference(userDataPath)
     this.keybindings = new Keybindings(userDataPath)
-    this.menu = new AppMenu(this.keybindings, userDataPath)
+    this.menu = new AppMenu(this.keybindings, userDataPath, this.preferences)
     this.windowManager = new WindowManager(this.menu)
   }
 }

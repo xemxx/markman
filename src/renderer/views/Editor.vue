@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     ...mapState({
-      sidebar: state => state.sidebar
+      sidebar: state => state.preference.toggleSidebar
     })
   },
   created() {
@@ -46,6 +46,8 @@ export default {
       dispatch('listenSidebar')
       dispatch('listenFileSave')
       dispatch('listenPreview')
+      // 监听偏好设置即时生效
+      dispatch('preference/getLocal')
     }
   }
 }

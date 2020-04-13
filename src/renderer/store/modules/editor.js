@@ -133,7 +133,7 @@ const actions = {
 
   handleAutoSave({ state, rootState }) {
     const { autoSave, autoSaveDelay } = rootState.preference
-    const { id, title, modifyState, content } = state.detail
+    const { id, title, modifyState, markdown: content } = state.detail
     if (autoSave) {
       if (autoSaveTimers.has(id)) {
         clearTimeout(autoSaveTimers.get(id))

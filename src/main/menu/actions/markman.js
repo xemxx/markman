@@ -7,6 +7,7 @@ export const userSetting = () => {
 }
 
 export const checkUpdates = () => {
+  // TODO: 版本更新
   if (!runningUpdate) {
     runningUpdate = true
     console.log('update')

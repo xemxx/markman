@@ -1,6 +1,7 @@
 import { Menu } from 'electron'
 import { isOsx, isWindows, isLinux } from '../config'
 import { configEditorMenu, configSettingMenu } from '../menu/templates'
+import { ipcMain } from 'electron'
 
 export const MenuType = {
   DEFAULT: 0,
@@ -13,9 +14,10 @@ class AppMenu {
    * @param {Keybindings} keybindings The keybindings instances.
    * @param {string} userDataPath The user data path.
    */
-  constructor(keybindings, userDataPath) {
+  constructor(keybindings, userDataPath, userPreference) {
     this._keybindings = keybindings
     this._userDataPath = userDataPath
+    this._userPreference = userPreference
 
     this.isOsxOrWindows = isOsx || isWindows
     this.activeWindowId = -1
@@ -85,6 +87,51 @@ class AppMenu {
     return menu.menu
   }
 
+  updateAutoSaveMenu(autoSave) {
+    this.windowMenus.forEach(value => {
+      const { menu, type } = value
+      if (type !== MenuType.EDITOR) {
+        return
+      }
+
+      const menuItem = menu.getMenuItemById('autoSaveMenuItem')
+      if (!menuItem) {
+        return
+      }
+      menuItem.checked = autoSave
+    })
+  }
+
+  updateToggleSidebar(toggleSidebar) {
+    this.windowMenus.forEach(value => {
+      const { menu, type } = value
+      if (type !== MenuType.EDITOR) {
+        return
+      }
+
+      const menuItem = menu.getMenuItemById('sideBarMenuItem')
+      if (!menuItem) {
+        return
+      }
+      menuItem.checked = toggleSidebar
+    })
+  }
+
+  updateTogglePreview(togglePreview) {
+    this.windowMenus.forEach(value => {
+      const { menu, type } = value
+      if (type !== MenuType.EDITOR) {
+        return
+      }
+
+      const menuItem = menu.getMenuItemById('previewMenuItem')
+      if (!menuItem) {
+        return
+      }
+      menuItem.checked = togglePreview
+    })
+  }
+
   /**
    * Set the given window as last active.
    *
@@ -109,7 +156,10 @@ class AppMenu {
   }
 
   _buildEditorMenu() {
-    const menuTemplate = configEditorMenu(this._keybindings)
+    const menuTemplate = configEditorMenu(
+      this._keybindings,
+      this._userPreference
+    )
     const menu = Menu.buildFromTemplate(menuTemplate)
 
     return {
@@ -127,7 +177,15 @@ class AppMenu {
     return { menu: null, type: MenuType.SETTINGS }
   }
 
-  _listenForIpcMain() {}
+  _listenForIpcMain() {
+    ipcMain.on('broadcast-pref-changed', prefs => {
+      if (prefs.autoSave !== undefined) this.updateAutoSaveMenu(prefs.autoSave)
+      else if (prefs.toggleSidebar !== undefined)
+        this.updateToggleSidebar(prefs.toggleSidebar)
+      else if (prefs.togglePreview !== undefined)
+        this.updateTogglePreview(prefs.togglePreview)
+    })
+  }
 }
 
 /**

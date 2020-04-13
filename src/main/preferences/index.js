@@ -73,7 +73,7 @@ class Preference extends EventEmitter {
   }
 
   setItem(key, value) {
-    ipcMain.emit('broadcast-preferences-changed', { [key]: value })
+    ipcMain.emit('broadcast-pref-changed', { [key]: value })
     return this.store.set(key, value)
   }
 
@@ -102,9 +102,12 @@ class Preference extends EventEmitter {
   _listenForIpcMain() {
     ipcMain.on('m::get-user-pref', e => {
       const win = BrowserWindow.fromWebContents(e.sender)
-      win.webContents.send('m::send-user-pref', this.getAll())
+      win.webContents.send('m::user-pref', this.getAll())
     })
-    ipcMain.on('m::user-pref', (e, settings) => {
+    ipcMain.on('m::set-user-pref', (e, settings) => {
+      this.setItems(settings)
+    })
+    ipcMain.on('set-user-pref', settings => {
       this.setItems(settings)
     })
     ipcMain.on('m::cmd-toggle-autosave', () => {

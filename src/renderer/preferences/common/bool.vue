@@ -52,7 +52,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .pref-switch-item
   font-size 14px
   user-select none

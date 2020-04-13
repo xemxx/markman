@@ -1,4 +1,6 @@
 {
   "autoSave": false,
-  "autoSaveDelay": 5000
+  "autoSaveDelay": 5000,
+  "toggleSidebar": true,
+  "togglePreview": true
 }

@@ -3,7 +3,10 @@ import { ipcRenderer } from 'electron'
 // user preference
 const state = {
   autoSave: false,
-  autoSaveDelay: 5000
+  autoSaveDelay: 5000,
+  // menu status
+  toggleSidebar: false,
+  togglePreview: false
 }
 
 const mutations = {
@@ -32,6 +35,11 @@ const actions = {
     ipcRenderer.on('m::user-pref', (e, preferences) => {
       commit('SET_PREFERENCE', preferences)
     })
+  },
+  // eslint-disable-next-line no-empty-pattern
+  setOne({}, { type, value }) {
+    // save to electron-store
+    ipcRenderer.send('m::set-user-pref', { [type]: value })
   }
 }
 

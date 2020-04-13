@@ -1,6 +1,8 @@
-// import { isDevelopment } from '../../config'
+import { isDevelopment } from '../../config'
+import * as action from '../actions/view'
 
-export default function(keybindings) {
+export default function(keybindings, preference) {
+  const { toggleSidebar, togglePreview } = preference.getAll()
   const viewMenu = {
     label: 'View',
     submenu: [
@@ -9,19 +11,19 @@ export default function(keybindings) {
         id: 'sideBarMenuItem',
         accelerator: keybindings.getAccelerator('view.toggle-sidebar'),
         type: 'checkbox',
-        checked: true,
-        click(item, browserWindow) {
-          browserWindow.webContents.send('m::view-sidebar', item.checked)
+        checked: toggleSidebar,
+        click(item) {
+          action.toggleSidebar(item)
         }
       },
       {
         label: 'Toggle Preview',
-        id: 'sideBarMenuItem',
+        id: 'previewMenuItem',
         accelerator: keybindings.getAccelerator('view.toggle-preview'),
         type: 'checkbox',
-        checked: true,
-        click(item, browserWindow) {
-          browserWindow.webContents.send('m::view-preview', item.checked)
+        checked: togglePreview,
+        click(item) {
+          action.togglePreview(item)
         }
       },
       {
@@ -33,20 +35,20 @@ export default function(keybindings) {
     ]
   }
 
-  // if (isDevelopment) {
-  viewMenu.submenu.push({
-    type: 'separator'
-  })
-  viewMenu.submenu.push({
-    label: 'Toggle Developer Tools',
-    accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
-    role: 'toggledevtools'
-  })
-  viewMenu.submenu.push({
-    label: 'Reload',
-    accelerator: keybindings.getAccelerator('view.dev-reload'),
-    role: 'reload'
-  })
-  // }
+  if (isDevelopment) {
+    viewMenu.submenu.push({
+      type: 'separator'
+    })
+    viewMenu.submenu.push({
+      label: 'Toggle Developer Tools',
+      accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
+      role: 'toggledevtools'
+    })
+    viewMenu.submenu.push({
+      label: 'Reload',
+      accelerator: keybindings.getAccelerator('view.dev-reload'),
+      role: 'reload'
+    })
+  }
   return viewMenu
 }

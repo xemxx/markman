@@ -33,13 +33,13 @@ export default {
   },
   computed: {
     ...mapState({
-      autoSave: state => state.preferences.autoSave,
-      autoSaveDelay: state => state.preferences.autoSaveDelay
+      autoSave: state => state.preference.autoSave,
+      autoSaveDelay: state => state.preference.autoSaveDelay
     })
   },
   methods: {
     onSelectChange(type, value) {
-      this.$store.dispatch('SET_SINGLE_PREFERENCE', { type, value })
+      this.$store.dispatch('preference/setOne', { type, value })
     },
     selectDefaultDirectoryToOpen() {
       this.$store.dispatch('SELECT_DEFAULT_DIRECTORY_TO_OPEN')

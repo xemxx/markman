@@ -15,8 +15,8 @@ class Keybindings {
 
       // File menu
       ['file.save', 'CmdOrCtrl+S'],
-      ['file.preferences', 'CmdOrCtrl+,'], // marktext menu in macOS
-      ['file.close-window', 'CmdOrCtrl+Shift+W'],
+      ['file.preferences', 'CmdOrCtrl+,'],
+      ['file.close-window', 'CmdOrCtrl+W'],
       ['file.quit', 'CmdOrCtrl+Q'],
 
       // Edit menu
@@ -42,8 +42,8 @@ class Keybindings {
       // ["view.source-code-mode", "CmdOrCtrl+Alt+S"],
       // ["view.typewriter-mode", "CmdOrCtrl+Alt+T"],
       // ["view.focus-mode", "CmdOrCtrl+Shift+F"],
-      ['view.toggle-sidebar', 'CmdOrCtrl+Shift+E'],
-      ['view.toggle-preview', 'CmdOrCtrl+Shift+R'],
+      ['view.toggle-sidebar', 'Ctrl+1'],
+      ['view.toggle-preview', 'Ctrl+2'],
       // ["view.toggle-tabbar", "CmdOrCtrl+Alt+B"],
       ['view.toggle-dev-tools', 'CmdOrCtrl+Alt+I'],
       ['view.dev-reload', 'CmdOrCtrl+R']

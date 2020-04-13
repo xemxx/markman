@@ -6,7 +6,7 @@
         v-for="item of category"
         :key="item.name"
         class="item"
-        @click="handleCategoryItemClick(item)"
+        @click="handleCategoryItemClick(item.path)"
         :class="{ active: item.label === currentCategory }"
       >
         <svg :viewBox="item.icon.viewBox">
@@ -40,21 +40,19 @@ export default {
         path: `/preference/${item.category.toLowerCase()}`
       })
     },
-    handleCategoryItemClick(item) {
-      this.$router.push({
-        path: item.path
-      })
+    handleCategoryItemClick(path) {
+      this.$router.push(path).catch(err => err)
     }
   }
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .pref-sidebar
   -webkit-app-region drag
   background var(--sideBarBgColor)
   width var(--prefSideBarWidth)
-  height calc(100vh - var(--titleBarHeight))
+  height 100vh
   padding-top 40px
   box-sizing border-box
 
@@ -63,46 +61,6 @@ export default {
     font-weight 400
     text-align center
     color var(--sideBarColor)
-
-.search-wrapper
-  -webkit-app-region no-drag
-  padding 0 20px
-  margin 30px 0
-
-.el-autocomplete
-  width 280px
-
-  & .el-input__inner
-    background transparent
-    height 35px
-    line-height 35px
-
-.pref-autocomplete.el-autocomplete-suggestion
-  background var(--floatBgColor)
-  border-color var(--floatBorderColor)
-
-  & .el-autocomplete-suggestion__wrap li:hover
-    background var(--floatHoverColor)
-
-  & .popper__arrow
-    display none
-
-  & li
-    line-height normal
-    padding 7px
-    opacity 0.8
-
-    & .name
-      text-overflow ellipsis
-      overflow hidden
-      color var(--editorColor80)
-
-    & .addr
-      font-size 12px
-      color var(--editorColor)
-
-    & .highlighted .addr
-      color var(--editorColor)
 
 .category
   -webkit-app-region no-drag

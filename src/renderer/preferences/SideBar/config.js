@@ -5,6 +5,6 @@ export const category = [
     name: 'General',
     label: 'general',
     icon: GeneralIcon,
-    path: '/preference'
+    path: '/preference/general'
   }
 ]
