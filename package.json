@@ -11,9 +11,7 @@
   },
   "main": "background.js",
   "dependencies": {
-    "@codemirror/next": "^0.3.0",
     "axios": "^0.19.2",
-    "codemirror": "^5.51.0",
     "core-js": "^3.3.2",
     "electron-log": "^4.1.1",
     "electron-store": "^5.1.1",
