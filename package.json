@@ -1,7 +1,9 @@
 {
-  "name": "markman",
+  "name": "Markman",
   "version": "0.1.0",
-  "private": true,
+  "repository": "https://github.com/xemxx/markman-client",
+  "license": "GPL",
+  "author": "xem",
   "scripts": {
     "serve": "vue-cli-service electron:serve",
     "build": "vue-cli-service electron:build",
@@ -11,6 +13,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "about-window": "^1.13.2",
     "axios": "^0.19.2",
     "core-js": "^3.3.2",
     "electron-log": "^4.1.1",

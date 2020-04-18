@@ -32,9 +32,11 @@ module.exports = {
       customFileProtocol: './',
       builderOptions: {
         mac: {
+          target: ['dmg', 'zip'],
           icon: 'public/icons/mac/icon.icns'
         },
         win: {
+          target: ['nsis'],
           icon: 'public/icons/win/icon.ico'
         },
         linux: {
