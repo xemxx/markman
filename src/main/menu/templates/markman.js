@@ -1,17 +1,20 @@
 import { app } from 'electron'
-import { showAboutDialog } from '../actions/help'
 import { checkUpdates, userSetting } from '../actions/markman'
+
+import * as path from 'path'
+import About from 'electron-about'
+import pkg from '../../../../package.json'
 
 export default function(keybindings) {
   return {
     label: 'Markman',
     submenu: [
-      {
-        label: 'About Markman',
-        click(menuItem, browserWindow) {
-          showAboutDialog(browserWindow)
-        }
-      },
+      About.makeMenuItem('Markman', {
+        icon: `file://${path.join(__static, 'logo.png')}`,
+        appName: 'Markman',
+        version: `Version ${pkg.version}`,
+        copyright: 'Copyright © 2020 Xem'
+      }),
       {
         label: 'Check for updates...',
         click(menuItem, browserWindow) {

@@ -17,7 +17,7 @@ export default {
       return process.platform === 'win32'
     },
     title: () => {
-      return 'MarkMan'
+      return 'Markman'
     }
   },
   methods: {

@@ -19,7 +19,6 @@ module.exports = {
       alias: {
         map: [
           ['common', './src/common'],
-          // Normally only valid for renderer/
           ['@', './src/renderer']
         ],
         extensions: ['.js', '.vue', '.json', '.css', '.node']

@@ -33,7 +33,7 @@ class EditorWindow extends BaseWindow {
       options.frame = false // 创建一个frameless窗口，详情：https://electronjs.org/docs/api/frameless-window
     }
     if (isLinux) {
-      winOptions.icon = path.join(__static, 'logo-96px.png')
+      winOptions.icon = path.join(__static, 'icons/png/128x128.png')
     }
 
     let win = (this.browserWindow = new BrowserWindow(winOptions))
