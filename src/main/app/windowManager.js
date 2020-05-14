@@ -19,8 +19,7 @@ class WindowManager extends EventEmitter {
   }
 
   /**
-   * Add the given window to the window list.
-   *
+   * 添加主窗口用于管理
    * @param {IApplicationWindow} window The application window. We take ownership!
    */
   addEditor(window) {

@@ -50,36 +50,37 @@ export default class App {
     })
   }
 
-  /**
-   * Creates a new editor window.
-   */
+  // 创建主窗口.
   _createEditorWindow(options = {}) {
+    // 通过定义的窗口类创建
     const editor = new EditorWindow(this._accessor)
     editor.createWindow(options)
+    // 添加到窗口管理模块中
     this._windowManager.addEditor(editor)
     return editor
   }
 
-  /**
-   * Create a new setting window.
-   */
+  // 创建偏好设置窗口
   _createSettingWindow() {
+    // 通过定义的窗口类创建
     const setting = new SettingWindow(this._accessor)
     setting.createWindow()
+    // 添加到窗口管理模块中
     this._windowManager.addSetting(setting)
   }
 
+  // 打开偏好设置窗口
   _openSettingsWindow() {
     const settingWins = this._windowManager.setting
     if (settingWins !== null) {
-      // A setting window is already created
+      // 如果已经存在
       const browserSettingWindow = settingWins.browserWindow
       if (isLinux) {
         browserSettingWindow.focus()
       } else {
         browserSettingWindow.moveTop()
       }
-    } else this._createSettingWindow()
+    } else this._createSettingWindow() // 不存在则需要创建
   }
 
   _listenForIpcMain() {

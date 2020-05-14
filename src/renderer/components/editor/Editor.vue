@@ -21,6 +21,7 @@ export default {
     }
   },
   mounted() {
+    // 创建编辑区以及设置编辑选项
     this.monacoEditor = monaco.editor.create(this.$refs.markdown, {
       value: this.markdown,
       language: 'markdown',
@@ -30,15 +31,17 @@ export default {
       minimap: { enabled: false },
       wordWrap: 'on'
     })
+    // 监听内容改变事件
     this.monacoEditor.onDidChangeModelContent(() => {
       let changeContent = this.monacoEditor.getValue()
-      this.content = changeContent
+      this.content = changeContent //获取改变后的内容更新到本地
       const { commit, dispatch } = this.$store
-      commit('editor/update_markdown', changeContent)
-      dispatch('editor/handleAutoSave')
+      commit('editor/update_markdown', changeContent) // 更新数据到全局
+      dispatch('editor/handleAutoSave') // 处理自动保存事件
     })
-    this.listen()
+    this.listen() // 启动单独的监听事件
   },
+
   methods: {
     listen() {
       //fix: mocano-editor大小不自动变化问题

@@ -63,12 +63,14 @@ export default {
         const router = this.$router
         const store = this.$store
         if (valid) {
+          // 向服务器发起登录请求
           this.$axios
             .post(this.signIn.server + '/signIn', {
               username,
               password
             })
             .then(data => {
+              // 服务端成功返回数据，更新客户端的活动用户信息
               return store.dispatch('user/setActiver', {
                 username,
                 token: data.token,
@@ -76,6 +78,7 @@ export default {
               })
             })
             .then(() => {
+              // 显示消息框提示用户成功
               msg({
                 message: '登录成功:)',
                 type: 'success',
@@ -83,6 +86,7 @@ export default {
               })
               router.push('/editor')
             })
+          // 如果失败有后台封装的默认处理函数
         } else {
           msg({
             message: '验证错误，请检查输入',

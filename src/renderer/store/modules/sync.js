@@ -22,24 +22,29 @@ const mutations = {
 
 const actions = {
   async sync({ commit, dispatch, rootState }) {
+    // 防止用户重复点击
+    if (state.isSyncing) return
     commit('update_isSyncing', true)
     const uid = rootState.user.id
     const server = rootState.user.server
     try {
+      // 获取本地上次更新版本号
       const { lastSC: localSC = '' } = await userModel.getLastSC(uid)
+      // 获取服务端版本号
       const { SC: serverSC = '' } = await axios.get(
         `${server}/user/getLastSyncCount`
       )
-
+      // 如果需要更新则拉取
       if (serverSC > localSC) {
         await dispatch('pull', { localSC, serverSC })
       } else {
+        // 直接推送本地最新数据到服务端
         await dispatch('push')
       }
-      commit('update_isSyncing', false)
+      setTimeout(() => commit('update_isSyncing', false), 1000)
     } catch (err) {
       console.log(err)
-      commit('update_isSyncing', false)
+      setTimeout(() => commit('update_isSyncing', false), 1000)
     }
     //更新完成刷新显示
     dispatch('floder/flash', null, { root: true })

@@ -1,9 +1,9 @@
 <template>
   <div class="toolbar">
-    <i @click="sync" class="el-icon-refresh"></i>
+    <i @click.stop="sync" class="el-icon-refresh"></i>
     <p v-if="isSyncing">同步中</p>
     <p v-else>同步完成</p>
-    <i @click="quit" class="el-icon-switch-button"></i>
+    <i @click.stop="quit" class="el-icon-switch-button"></i>
   </div>
 </template>
 

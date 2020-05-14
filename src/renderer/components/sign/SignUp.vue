@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit('signUp')"
-          >登陆</el-button
+          >注册</el-button
         >
         <el-button @click="handleReset('signUp')" style="margin-left: 8px"
           >重置</el-button
@@ -69,7 +69,7 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.$axios
-            .post(this.signUp.server + '/signup', {
+            .post(this.signUp.server + '/signUp', {
               username: this.signUp.user,
               password: this.signUp.password
             })

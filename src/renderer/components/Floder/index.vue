@@ -36,9 +36,6 @@
             </div>
           </el-menu-item>
         </el-submenu>
-        <el-menu-item index="3" @click="loadList({ type: 'tag' })"
-          >Tag</el-menu-item
-        >
       </el-menu>
     </el-main>
     <el-footer height="auto">

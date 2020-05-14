@@ -39,6 +39,7 @@ export default {
   },
   methods: {
     onSelectChange(type, value) {
+      // 当选择项改变后，改变设置项
       this.$store.dispatch('preference/setOne', { type, value })
     },
     selectDefaultDirectoryToOpen() {
