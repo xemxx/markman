@@ -22,7 +22,7 @@ import Editor from '@/components/Editor'
 import { mapState } from 'vuex'
 
 export default {
-  name: 'index',
+  name: 'Base',
   components: {
     Floder,
     List,

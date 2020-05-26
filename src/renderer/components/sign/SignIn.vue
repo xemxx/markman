@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name: 'signin',
+  name: 'SignIn',
   data() {
     return {
       signIn: {
@@ -84,7 +84,7 @@ export default {
                 type: 'success',
                 center: true
               })
-              router.push('/editor')
+              router.push('/base')
             })
           // 如果失败有后台封装的默认处理函数
         } else {

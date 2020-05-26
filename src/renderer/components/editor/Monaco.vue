@@ -6,7 +6,7 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { ipcRenderer } from 'electron'
 export default {
-  name: 'editor',
+  name: 'Monaco',
   props: {
     markdown: {
       type: String,

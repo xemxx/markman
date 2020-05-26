@@ -7,7 +7,7 @@
     </el-header>
     <el-main>
       <div class="editor-wrapper">
-        <Editor :markdown="markdown"></Editor>
+        <Monaco :markdown="markdown"></Monaco>
       </div>
       <div class="preview-wrapper" v-if="showPreview">
         <div class="pick-line"></div>
@@ -28,10 +28,10 @@
 <script>
 import { mapState } from 'vuex'
 import Preview from './Preview.vue'
-import Editor from './Editor.vue'
+import Monaco from './Monaco.vue'
 
 export default {
-  name: 'editor',
+  name: 'Editor',
   data() {
     return {
       modifyState: false,
@@ -58,7 +58,7 @@ export default {
   methods: {},
   components: {
     Preview,
-    Editor
+    Monaco
   }
 }
 </script>

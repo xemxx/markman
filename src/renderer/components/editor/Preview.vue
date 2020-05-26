@@ -11,7 +11,7 @@ import '@/assets/theme/default/default.styl'
 import 'highlight.js/styles/atom-one-dark.css'
 
 export default {
-  name: 'preview',
+  name: 'Preview',
   props: {
     markdown: String
   },

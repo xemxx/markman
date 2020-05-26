@@ -53,7 +53,7 @@ const { Menu, MenuItem } = remote
 import Footer from './Footer.vue'
 
 export default {
-  name: 'floder',
+  name: 'Floder',
   data: function() {
     return {
       notebookInput: false,

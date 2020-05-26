@@ -1,11 +1,11 @@
 import VueRouter from 'vue-router'
 import Vue from 'vue'
 import App from '@/views/App'
-import Editor from '@/views/Editor.vue'
-import Sign from '@/views/Sign.vue'
-import Preference from '@/views/Preference.vue'
-import SignUp from '@/components/sign/SignUp.vue'
-import SignIn from '@/components/sign/SignIn.vue'
+import Base from '@/views/Base'
+import Sign from '@/views/Sign'
+import Preference from '@/views/Preference'
+import SignUp from '@/components/Sign/SignUp'
+import SignIn from '@/components/Sign/SignIn'
 import General from '@/preferences/General'
 
 Vue.use(VueRouter)
@@ -16,9 +16,9 @@ const routes = [
     component: App,
     children: [
       {
-        path: '/editor',
-        name: 'editor',
-        component: Editor,
+        path: '/base',
+        name: 'base',
+        component: Base,
         meta: { auth: true }
       },
       {

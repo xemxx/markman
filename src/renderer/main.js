@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Main from './Main.vue'
+import Index from './Index.vue'
 import router from './router'
 import store from './store'
 
@@ -29,5 +29,5 @@ router.beforeEach((to, from, next) => {
 new Vue({
   router,
   store,
-  render: h => h(Main)
+  render: h => h(Index)
 }).$mount('#app')
