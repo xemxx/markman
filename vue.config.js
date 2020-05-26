@@ -31,6 +31,16 @@ module.exports = {
     electronBuilder: {
       customFileProtocol: './',
       builderOptions: {
+        productName: 'Markman',
+        appId: 'com.xemxx.markman',
+        publish: [
+          {
+            provider: 'github',
+            owner: 'xemxx',
+            repo: 'markman-client',
+            releaseType: 'draft'
+          }
+        ],
         mac: {
           target: ['dmg', 'zip'],
           icon: 'public/icons/mac/icon.icns'
@@ -40,6 +50,7 @@ module.exports = {
           icon: 'public/icons/win/icon.ico'
         },
         linux: {
+          target: ['AppImage', 'deb'],
           icon: 'public/icons/mac/icon.icns'
         }
       },

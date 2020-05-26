@@ -3,10 +3,10 @@ import BaseWindow, { WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   editorWinOptions,
-  isWindows,
-  isLinux
+  isWindows
+  //  isLinux
 } from '../config'
-import path from 'path'
+// import path from 'path'
 class EditorWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
@@ -32,9 +32,9 @@ class EditorWindow extends BaseWindow {
     if (isWindows) {
       options.frame = false // 创建一个frameless窗口，详情：https://electronjs.org/docs/api/frameless-window
     }
-    if (isLinux) {
-      winOptions.icon = path.join(__static, 'icons/png/128x128.png')
-    }
+    // if (isLinux) {
+    //   winOptions.icon = path.join(__static, 'icons/png/128x128.png')
+    // }
 
     let win = (this.browserWindow = new BrowserWindow(winOptions))
     this.id = win.id

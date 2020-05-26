@@ -8,9 +8,9 @@ import { isDevelopment, isWindows, userDataPath } from './config'
 import { installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
 
 if (isDevelopment && !process.env.IS_TEST) {
-  app.on('ready', async () => {
+  app.on('ready', () => {
     try {
-      await installVueDevtools()
+      installVueDevtools()
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
