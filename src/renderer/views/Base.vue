@@ -17,7 +17,7 @@
 <script>
 import Floder from '@/components/Floder'
 import List from '@/components/List.vue'
-import Editor from '@/components/Editor'
+import Editor from '@/components/Editor/index.vue'
 
 import { mapState } from 'vuex'
 

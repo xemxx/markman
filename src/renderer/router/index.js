@@ -4,8 +4,8 @@ import App from '@/views/App'
 import Base from '@/views/Base'
 import Sign from '@/views/Sign'
 import Preference from '@/views/Preference'
-import SignUp from '@/components/Sign/SignUp'
-import SignIn from '@/components/Sign/SignIn'
+import SignUp from '@/components/Sign/SignUp.vue'
+import SignIn from '@/components/Sign/SignIn.vue'
 import General from '@/preferences/General'
 
 Vue.use(VueRouter)
