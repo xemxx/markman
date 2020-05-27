@@ -37,8 +37,8 @@ registry=https://registry.npm.taobao.org/
 
 或者直接通过 nrm 修改源
 
-## 运行
+## 开发
 
 ```
-npm run electron:serve
+npm run dev
 ```

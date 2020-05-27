@@ -1,3 +1,4 @@
+const path = require('path')
 module.exports = {
   root: true,
   env: {
@@ -18,8 +19,8 @@ module.exports = {
     'import/resolver': {
       alias: {
         map: [
-          ['common', './src/common'],
-          ['@', './src/renderer']
+          ['main', path.join(__dirname, 'src/main')],
+          ['@', path.join(__dirname, 'src/renderer')]
         ],
         extensions: ['.js', '.vue', '.json', '.css', '.node']
       }
