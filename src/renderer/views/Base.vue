@@ -66,12 +66,12 @@ export default {
   height 100vh
   padding-top 22px
   max-width 400px
-  min-width 100px
+  width 400px
 
 .floder, .list
   flex 1
   max-width 200px
-  min-width 50px
+  width 200px
 
 .floder
   background-color floder-bc
