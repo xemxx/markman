@@ -1,6 +1,6 @@
 {
   "name": "Markman",
-  "version": "0.1.0-beta.0",
+  "version": "0.0.1",
   "repository": "https://github.com/xemxx/markman-client",
   "private": true,
   "license": "GPL-3.0-or-later",
@@ -11,10 +11,7 @@
     "lint": "vue-cli-service lint",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "patch": "npm version patch && git push origin master && git push origin --tags",
-    "minor": "npm version minor && git push origin master && git push origin --tags",
-    "major": "npm version major && git push origin master && git push origin --tags",
-    "release": "vue-cli-service electron:build --publish always"
+    "release": "vue-cli-service electron:build --publish onTagOrDraft"
   },
   "main": "background.js",
   "dependencies": {
