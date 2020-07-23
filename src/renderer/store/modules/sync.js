@@ -50,30 +50,6 @@ const actions = {
     dispatch('floder/flash', null, { root: true })
     dispatch('list/flash', {}, { root: true })
     // dispatch('editor/flash', {}, { root: true })
-
-    /**
-     * 纯promise版本
-     */
-    // userModel.getLastSC(uid).then(({ lastSC }) => {
-    //   // 只获取比上次同步后更新的
-    //   return axios
-    //     .get(server + '/user/getLastSyncCount')
-    //     .then(data => {
-    //       const serverSC = data.SC
-    //       const localSC = lastSC
-    //       if (serverSC > localSC) {
-    //         return dispatch('pull', { localSC, serverSC })
-    //       }
-    //       return dispatch('push')
-    //     })
-    //     .then(() => {
-    //       commit('update_isSyncing', false)
-    //     })
-    //     .catch(err => {
-    //       console.log(err)
-    //       commit('update_isSyncing', false)
-    //     })
-    // })
   },
 
   pull({ dispatch, rootState }, { localSC, serverSC }) {
