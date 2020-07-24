@@ -131,15 +131,21 @@ const actions = {
     })
   },
 
-  handleAutoSave({ state, rootState }) {
+  handleAutoSave(
+    { state, dispatch, rootState },
+    { id, title, modifyState, markdown: content } = state.detail
+  ) {
     const { autoSave, autoSaveDelay } = rootState.preference
-    const { id, title, modifyState, markdown: content } = state.detail
+    if (rootState.sync.isSyncing) {
+      dispatch('handleAutoSave', { id, title, modifyState, markdown: content })
+      return
+    }
     if (autoSave) {
       if (autoSaveTimers.has(id)) {
         clearTimeout(autoSaveTimers.get(id))
         autoSaveTimers.delete(id)
       }
-      const timeId = setTimeout(() => {
+      const timeFunc = setTimeout(() => {
         const data = {
           content,
           title,
@@ -149,7 +155,7 @@ const actions = {
         nModel.update(id, data)
         autoSaveTimers.delete(id)
       }, autoSaveDelay)
-      autoSaveTimers.set(id, timeId)
+      autoSaveTimers.set(id, timeFunc)
     }
   }
 }

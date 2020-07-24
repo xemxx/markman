@@ -342,6 +342,8 @@ const actions = {
 
         userModel.update(uid, { lastSC: SC })
         return dispatch('_updateNotebooksToServer', { data, count: count + 1 })
+      } else {
+        console.log('not update')
       }
     })
   },
@@ -393,6 +395,8 @@ const actions = {
         commit('user/update_lastSC', SC, { root: true })
         userModel.update(uid, { lastSC: SC })
         return dispatch('_updateNotesToServer', { data, count: count + 1 })
+      } else {
+        console.log('not update')
       }
     })
   }
