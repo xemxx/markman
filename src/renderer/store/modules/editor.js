@@ -5,10 +5,18 @@ const nModel = new Note()
 
 const autoSaveTimers = new Map()
 
+const detailNote = {
+  id: '',
+  content: '',
+  title: '',
+  modifyState: 0,
+  modifyDate: ''
+}
+
 const state = {
   isEdit: true,
-  detail: { id: '', markdown: '', title: '', modifyState: 0 },
-  tags: []
+  detail: detailNote,
+  modify: false
 }
 
 const mutations = {
@@ -18,42 +26,32 @@ const mutations = {
   update_title(state, value) {
     state.detail.title = value
   },
-  update_tags(state, value) {
-    state.tags = value
-  },
-  update_markdown(state, value) {
-    state.detail.markdown = value
+  update_content(state, value) {
+    state.detail.content = value
   }
 }
 
 const actions = {
-  flash({ commit, rootState }) {
-    const { list } = rootState
-    if (list.notes[0] != undefined) {
-      const data = list.notes[0]
-      const detail = {
-        id: data.id,
-        markdown: data.content,
-        title: data.title,
-        modifyState: data.modifyState
-      }
-      commit('update_detail', detail)
-      commit('update_tags', '')
-    }
-  },
   // 加载编辑区域数据
-  loadNote({ commit }, id) {
-    // 获取到detail，直接在视图绑定detail
-    return nModel.get(id).then(data => {
-      const detail = {
-        id: data.id,
-        markdown: data.content,
-        title: data.title,
-        modifyState: data.modifyState
+  async loadNote({ commit, state, dispatch }, id = state.detail.id) {
+    const oldId = state.detail.id
+    if (oldId == id || (oldId == '' && id == '') || oldId == undefined) {
+      return
+    }
+    try {
+      // 处理自动保存定时器
+      if (autoSaveTimers.has(oldId)) {
+        clearTimeout(autoSaveTimers.get(oldId))
+        autoSaveTimers.delete(oldId)
+        // 立即保存
+        await dispatch('saveNote')
       }
-      commit('update_detail', detail)
-      commit('update_tags', '')
-    })
+      // 获取到detail，直接在视图绑定detail
+      const data = await nModel.get(id)
+      commit('update_detail', data)
+    } catch (err) {
+      console.log(err)
+    }
   },
 
   addNote({ rootState, dispatch }, bid) {
@@ -78,12 +76,16 @@ const actions = {
       .catch(err => console.log(err))
   },
 
-  async saveNote({ dispatch, state }) {
-    const { markdown: content, id, title } = state.detail
+  async saveNote({ dispatch, state }, sync = false) {
+    const { content, id, title } = state.detail
     if (id == undefined || id == '') {
       return
     }
-    const { modifyState } = await nModel.get(id)
+    const origin = await nModel.get(id)
+    if (origin.content == content && origin.title == title) {
+      return
+    }
+    const { modifyState } = origin
     const time = Date.parse(new Date()) / 1000
     const data = {
       content,
@@ -96,14 +98,14 @@ const actions = {
       .update(id, data)
       .then(() => {
         //更新显示
-        dispatch('list/flash', {}, { root: true })
+        dispatch('list/flash', undefined, { root: true })
         //同步服务器
-        dispatch('sync/sync', null, { root: true })
+        if (sync) dispatch('sync/sync', undefined, { root: true })
       })
       .catch(err => console.log(err))
   },
 
-  async deleteNote({ dispatch, state }, id) {
+  async deleteNote({ dispatch, state, commit }, id) {
     try {
       const { modifyState } = await nModel.get(id)
       if (modifyState == 1) {
@@ -122,37 +124,43 @@ const actions = {
     //更新显示
     dispatch('list/flash', {}, { root: true }).then(() => {
       if (id == state.detail.id) {
-        dispatch('flash')
+        commit('update_detail', detailNote)
       }
     })
     //同步服务器
-    dispatch('sync/sync', null, {
-      root: true
-    })
+    dispatch('sync/sync', undefined, { root: true })
   },
 
   handleAutoSave(
-    { state, dispatch, rootState },
-    { id, title, modifyState, markdown: content } = state.detail
+    { state, rootState, dispatch },
+    { id, title, content } = state.detail
   ) {
     const { autoSave, autoSaveDelay } = rootState.preference
-    if (rootState.sync.isSyncing) {
-      dispatch('handleAutoSave', { id, title, modifyState, markdown: content })
-      return
-    }
     if (autoSave) {
       if (autoSaveTimers.has(id)) {
         clearTimeout(autoSaveTimers.get(id))
         autoSaveTimers.delete(id)
       }
-      const timeFunc = setTimeout(() => {
-        const data = {
-          content,
-          title,
-          modifyState: modifyState == 0 ? 2 : modifyState,
-          modifyDate: Date.parse(new Date()) / 1000
+      const timeFunc = setTimeout(async () => {
+        try {
+          const origin = await nModel.get(id)
+          if (origin.content == content && origin.title == title) {
+            return
+          }
+          const { modifyState } = origin
+          const time = Date.parse(new Date()) / 1000
+          const data = {
+            content,
+            title,
+            modifyState: modifyState == 0 ? 2 : modifyState, //如果是同步过的代表被修改需要同步，否则就是新建不变
+            modifyDate: time
+          }
+
+          await nModel.update(id, data)
+          dispatch('list/flash', undefined, { root: true })
+        } catch (err) {
+          console.log(err)
         }
-        nModel.update(id, data)
         autoSaveTimers.delete(id)
       }, autoSaveDelay)
       autoSaveTimers.set(id, timeFunc)

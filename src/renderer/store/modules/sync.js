@@ -47,9 +47,9 @@ const actions = {
       setTimeout(() => commit('update_isSyncing', false), 1000)
     }
     //更新完成刷新显示
-    dispatch('floder/flash', null, { root: true })
-    dispatch('list/flash', {}, { root: true })
-    // dispatch('editor/flash', {}, { root: true })
+    dispatch('floder/flash', undefined, { root: true })
+    dispatch('list/flash', undefined, { root: true })
+    dispatch('editor/loadNote', undefined, { root: true })
   },
 
   pull({ dispatch, rootState }, { localSC, serverSC }) {

@@ -33,10 +33,10 @@ export default {
     })
     // 监听内容改变事件
     this.monacoEditor.onDidChangeModelContent(() => {
-      let changeContent = this.monacoEditor.getValue()
+      const changeContent = this.monacoEditor.getValue()
       this.content = changeContent //获取改变后的内容更新到本地
       const { commit, dispatch } = this.$store
-      commit('editor/update_markdown', changeContent) // 更新数据到全局
+      commit('editor/update_content', changeContent) // 更新数据到全局
       dispatch('editor/handleAutoSave') // 处理自动保存事件
     })
     this.listen() // 启动单独的监听事件
