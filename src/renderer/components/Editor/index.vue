@@ -27,8 +27,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import Preview from './Preview.vue'
-import Monaco from './Monaco.vue'
+import Preview from './Preview'
+import Monaco from './Monaco'
 
 export default {
   name: 'Editor',
@@ -42,7 +42,7 @@ export default {
     ...mapState({
       showPreview: state => state.preference.togglePreview,
       tags: state => state.editor.tags,
-      markdown: state => state.editor.detail.markdown,
+      markdown: state => state.editor.detail.content,
       isEdit: state => state.editor.isEdit
     }),
     title: {
