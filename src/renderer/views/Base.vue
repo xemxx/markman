@@ -43,9 +43,7 @@ export default {
   methods: {
     listen() {
       const { dispatch } = this.$store
-      dispatch('listenSidebar')
       dispatch('listenFileSave')
-      dispatch('listenPreview')
       // 监听偏好设置即时生效
       dispatch('preference/getLocal')
     }

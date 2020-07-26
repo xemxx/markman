@@ -4,7 +4,7 @@ import { ipcRenderer } from 'electron'
 const actions = {
   listenFileSave({ dispatch }) {
     ipcRenderer.on('m::file-save', () => {
-      dispatch('editor/saveNote', null, { root: true })
+      dispatch('editor/saveNote', true, { root: true })
     })
   }
 }

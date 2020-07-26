@@ -47,33 +47,9 @@ const actions = {
       setTimeout(() => commit('update_isSyncing', false), 1000)
     }
     //更新完成刷新显示
-    dispatch('floder/flash', null, { root: true })
-    dispatch('list/flash', {}, { root: true })
-    // dispatch('editor/flash', {}, { root: true })
-
-    /**
-     * 纯promise版本
-     */
-    // userModel.getLastSC(uid).then(({ lastSC }) => {
-    //   // 只获取比上次同步后更新的
-    //   return axios
-    //     .get(server + '/user/getLastSyncCount')
-    //     .then(data => {
-    //       const serverSC = data.SC
-    //       const localSC = lastSC
-    //       if (serverSC > localSC) {
-    //         return dispatch('pull', { localSC, serverSC })
-    //       }
-    //       return dispatch('push')
-    //     })
-    //     .then(() => {
-    //       commit('update_isSyncing', false)
-    //     })
-    //     .catch(err => {
-    //       console.log(err)
-    //       commit('update_isSyncing', false)
-    //     })
-    // })
+    dispatch('floder/flash', undefined, { root: true })
+    dispatch('list/flash', undefined, { root: true })
+    dispatch('editor/loadNote', undefined, { root: true })
   },
 
   pull({ dispatch, rootState }, { localSC, serverSC }) {
@@ -366,6 +342,8 @@ const actions = {
 
         userModel.update(uid, { lastSC: SC })
         return dispatch('_updateNotebooksToServer', { data, count: count + 1 })
+      } else {
+        console.log('not update')
       }
     })
   },
@@ -417,6 +395,8 @@ const actions = {
         commit('user/update_lastSC', SC, { root: true })
         userModel.update(uid, { lastSC: SC })
         return dispatch('_updateNotesToServer', { data, count: count + 1 })
+      } else {
+        console.log('not update')
       }
     })
   }
