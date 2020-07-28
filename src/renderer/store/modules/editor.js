@@ -1,5 +1,6 @@
 import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
+import { MessageBox } from 'element-ui'
 
 const nModel = new Note()
 
@@ -27,10 +28,14 @@ const mutations = {
   },
   update_title(state, value) {
     state.detail.title = value
+    state.modify = true
   },
   update_content(state, value) {
     state.detail.content = value
     state.modify = true
+  },
+  update_modify(state, value) {
+    state.modify = value
   }
 }
 
@@ -89,7 +94,7 @@ const actions = {
   },
 
   async saveNote(
-    { dispatch, state },
+    { dispatch, state, commit },
     { content, id, title, SC } = state.detail
   ) {
     if (id == undefined || id == '') {
@@ -100,7 +105,8 @@ const actions = {
       return
     }
     if (origin.SC != SC) {
-      await dispatch('__fixConflect')
+      console.log(123)
+      return await dispatch('__fixConflect')
     }
     const { modifyState } = origin
     const time = Date.parse(new Date()) / 1000
@@ -116,6 +122,7 @@ const actions = {
       .then(() => {
         //更新显示
         dispatch('list/flash', undefined, { root: true })
+        commit('update_modify', false)
       })
       .catch(err => console.log(err))
   },
@@ -164,9 +171,48 @@ const actions = {
     }
   },
 
-  __fixConflect() {
-    //TODO: 1、直接覆盖，2、生成冲突文件，用户修改完毕后保存
-    console.log('服务端有更新，请选择：1、覆盖本地修改，2、手动合并冲突')
+  __fixConflect({ state, dispatch, commit }) {
+    console.log(
+      '当前笔记服务端有更新，请选择：\n1、保留双方并解决冲突\n2、放弃当前修改，远端覆盖本地'
+    )
+    MessageBox.confirm(
+      '当前笔记服务端有更新，请选择：\n1、保留双方并解决冲突\n2、放弃当前修改，远端覆盖本地',
+      '提示',
+      {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '1、保留',
+        cancelButtonText: '2、放弃'
+      }
+    )
+      .then(async () => {
+        let local = state.detail
+        let server = await nModel.get(local.id)
+        let newTitle = `local:${local.title} [---] server:${server.title}`
+        let newContent = `local>>>>>>>>>>>>>>\n${local.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${server.content}`
+        let newModifyDate = Date.parse(new Date()) / 1000
+        return nModel
+          .update(local.id, {
+            title: newTitle,
+            content: newContent,
+            modifyDate: newModifyDate,
+            modifyState: 2
+          })
+          .then(() => {
+            //更新显示
+            dispatch('list/flash', undefined, { root: true })
+            local.title = newTitle
+            local.content = newContent
+            local.modifyState = 2
+            local.SC = server.SC
+            local.modifyDate = newModifyDate
+            commit('update_detail', local)
+          })
+          .catch(err => console.log(err))
+      })
+      .catch(async () => {
+        const data = await nModel.get(state.detail.id)
+        commit('update_detail', data)
+      })
   }
 }
 

@@ -37,10 +37,8 @@ const actions = {
       // 如果需要更新则拉取
       if (serverSC > localSC) {
         await dispatch('pull', { localSC, serverSC })
-      } else {
-        // 直接推送本地最新数据到服务端
-        await dispatch('push')
       }
+      await dispatch('push')
       setTimeout(() => commit('update_isSyncing', false), 1000)
     } catch (err) {
       console.log(err)
@@ -52,12 +50,12 @@ const actions = {
     dispatch('editor/loadNote', undefined, { root: true })
   },
 
-  pull({ dispatch, rootState }, { localSC, serverSC }) {
+  pull({ dispatch, rootState, commit }, { localSC, serverSC }) {
     const uid = rootState.user.id
     return dispatch('_pullNotebooks', localSC)
       .then(() => dispatch('_pullNotes', localSC))
       .then(() => userModel.update(uid, { lastSC: serverSC }))
-      .then(() => dispatch('push'))
+      .then(() => commit('user/update_lastSC', serverSC, { root: true }))
   },
 
   async push({ dispatch }) {

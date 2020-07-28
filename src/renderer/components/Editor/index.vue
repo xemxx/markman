@@ -14,14 +14,6 @@
         <preview :markdown="markdown"></preview>
       </div>
     </el-main>
-    <!-- <el-footer height="auto">
-        <div class="tags">
-          <ul>
-            <li v-for="item in tags" :key="item.id">{{ item.name }}</li>
-          </ul>
-        </div>
-      </el-footer>
-    </el-container> -->
   </el-container>
 </template>
 

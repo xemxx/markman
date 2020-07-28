@@ -17,10 +17,7 @@ const mutations = {
 
 const actions = {
   //更新state中的list，视图将自动更新
-  flash(
-    { commit, rootState },
-    { type = state.type, flagId = state.flagId } = {}
-  ) {
+  flash({ commit, rootState }, { type, flagId } = state) {
     const uid = rootState.user.id
     let list = {}
 

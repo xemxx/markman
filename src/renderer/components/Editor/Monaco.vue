@@ -4,6 +4,7 @@
 
 <script>
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import bus from '@/bus'
 import { ipcRenderer } from 'electron'
 export default {
   name: 'Monaco',
@@ -15,31 +16,33 @@ export default {
       }
     }
   },
-  watch: {
-    markdown: function(newVal) {
-      if (this.content != newVal) this.monacoEditor.setValue(newVal)
-    }
-  },
-  mounted() {
-    // 创建编辑区以及设置编辑选项
-    this.monacoEditor = monaco.editor.create(this.$refs.markdown, {
-      value: this.markdown,
-      language: 'markdown',
-      formatOnPaste: true,
-      lineNumbers: 'on',
-      automaticLayout: true,
-      minimap: { enabled: false },
-      wordWrap: 'on'
+  watch: {},
+  created() {
+    this.$nextTick(() => {
+      // listen for bus events.
+      bus.$on('note-loaded', this.setMarkdownToEditor)
+
+      // create monaco editor
+      this.monacoEditor = monaco.editor.create(this.$refs.markdown, {
+        value: this.markdown,
+        language: 'markdown',
+        formatOnPaste: true,
+        lineNumbers: 'on',
+        automaticLayout: true,
+        minimap: { enabled: false },
+        wordWrap: 'on'
+      })
+      // listen for monaco editor content changed
+      this.monacoEditor.onDidChangeModelContent(() => {
+        const changeContent = this.monacoEditor.getValue()
+        this.content = changeContent
+        const { commit, dispatch } = this.$store
+        commit('editor/update_content', changeContent) // 更新数据到全局
+        dispatch('editor/handleAutoSave') // 处理自动保存事件
+      })
+      // listen for main thread ipc message
+      this.listen()
     })
-    // 监听内容改变事件
-    this.monacoEditor.onDidChangeModelContent(() => {
-      const changeContent = this.monacoEditor.getValue()
-      this.content = changeContent //获取改变后的内容更新到本地
-      const { commit, dispatch } = this.$store
-      commit('editor/update_content', changeContent) // 更新数据到全局
-      dispatch('editor/handleAutoSave') // 处理自动保存事件
-    })
-    this.listen() // 启动单独的监听事件
   },
 
   methods: {
@@ -48,6 +51,14 @@ export default {
       ipcRenderer.on('m::resize-editor', () => {
         if (!this.$store.state.preview) this.monacoEditor.layout('100%')
       })
+    },
+
+    // listen for checkout a new note.
+    setMarkdownToEditor({ markdown }) {
+      const { monacoEditor } = this
+      if (monacoEditor) {
+        monacoEditor.setValue(markdown)
+      }
     }
   }
 }
