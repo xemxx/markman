@@ -34,11 +34,10 @@ export default {
       })
       // listen for monaco editor content changed
       this.monacoEditor.onDidChangeModelContent(() => {
-        const changeContent = this.monacoEditor.getValue()
-        this.content = changeContent
-        const { commit, dispatch } = this.$store
-        commit('editor/update_content', changeContent) // 更新数据到全局
-        dispatch('editor/handleAutoSave') // 处理自动保存事件
+        const { dispatch } = this.$store
+        dispatch('editor/listenContentChange', {
+          content: this.monacoEditor.getValue()
+        })
       })
       // listen for main thread ipc message
       this.listen()
@@ -49,7 +48,7 @@ export default {
     listen() {
       //fix: mocano-editor大小不自动变化问题
       ipcRenderer.on('m::resize-editor', () => {
-        if (!this.$store.state.preview) this.monacoEditor.layout('100%')
+        if (!this.$store.state.preview) this.monacoEditor.layout('50%')
       })
     },
 

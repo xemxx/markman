@@ -80,11 +80,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadList: 'list/flash',
-      loadNotebooks: 'floder/flash',
-      addNotebook: 'floder/addNotebook',
-      deleteNotebook: 'floder/deleteNotebook',
-      updateNotebook: 'floder/updateNotebook'
+      loadList: 'sidebar/loadNotes',
+      loadNotebooks: 'sidebar/LoadNotebooks',
+      addNotebook: 'sidebar/addNotebook',
+      deleteNotebook: 'sidebar/deleteNotebook',
+      updateNotebook: 'sidebar/updateNotebook'
     }),
     showAddNotebook() {
       this.$refs['menu'].open(2)

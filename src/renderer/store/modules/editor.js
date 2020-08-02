@@ -8,34 +8,28 @@ const autoSaveTimers = new Map()
 
 const defaultNote = {
   id: '',
-  content: '',
+  markdown: '',
   title: '',
   modifyState: 0,
-  modifyDate: '',
-  SC: 0
+  SC: 0,
+  isSave: true
 }
 
 const state = {
   isEdit: true,
-  detail: defaultNote,
+  currentNote: defaultNote,
   modify: false
 }
 
 const mutations = {
-  update_detail(state, value) {
-    state.detail = value
-    state.modify = false
+  set_current_note(state, value) {
+    state.currentNote = value
   },
-  update_title(state, value) {
-    state.detail.title = value
-    state.modify = true
+  set_title(state, value) {
+    state.currentNote.title = value
   },
-  update_content(state, value) {
-    state.detail.content = value
-    state.modify = true
-  },
-  update_modify(state, value) {
-    state.modify = value
+  set_markdown(state, value) {
+    state.currentNote.markdown = value
   }
 }
 
@@ -87,7 +81,7 @@ const actions = {
     return nModel
       .add(note)
       .then(id => {
-        dispatch('list/flash', {}, { root: true })
+        dispatch('sidebar/loadNotes', {}, { root: true })
         dispatch('loadNote', id)
       })
       .catch(err => console.log(err))
@@ -121,7 +115,7 @@ const actions = {
       .update(id, data)
       .then(() => {
         //更新显示
-        dispatch('list/flash', undefined, { root: true })
+        dispatch('sidebar/loadNotes', undefined, { root: true })
         commit('update_modify', false)
       })
       .catch(err => console.log(err))
@@ -144,13 +138,19 @@ const actions = {
       console.log(err)
     }
     //更新显示
-    dispatch('list/flash', {}, { root: true }).then(() => {
+    dispatch('sidebar/loadNotes', {}, { root: true }).then(() => {
       if (id == state.detail.id) {
         commit('update_detail', defaultNote)
       }
     })
     //同步服务器
     dispatch('sync/sync', undefined, { root: true })
+  },
+
+  // listen the content change and apply to state
+  listenContentChange({ dispatch, commit }, { content }) {
+    commit('set_markdown')
+    dispatch('handleAutoSave', { content })
   },
 
   handleAutoSave(
@@ -199,7 +199,7 @@ const actions = {
           })
           .then(() => {
             //更新显示
-            dispatch('list/flash', undefined, { root: true })
+            dispatch('sidebar/loadNotes', undefined, { root: true })
             local.title = newTitle
             local.content = newContent
             local.modifyState = 2

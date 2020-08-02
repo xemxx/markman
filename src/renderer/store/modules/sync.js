@@ -45,8 +45,8 @@ const actions = {
       setTimeout(() => commit('update_isSyncing', false), 1000)
     }
     //更新完成刷新显示
-    dispatch('floder/flash', undefined, { root: true })
-    dispatch('list/flash', undefined, { root: true })
+    dispatch('sidebar/loadNotebooks', undefined, { root: true })
+    dispatch('sidebar/loadNotes', undefined, { root: true })
     dispatch('editor/loadNote', undefined, { root: true })
   },
 

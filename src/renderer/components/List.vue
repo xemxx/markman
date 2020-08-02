@@ -72,7 +72,7 @@ export default {
   methods: {
     ...mapActions({
       loadNote: 'editor/loadNote',
-      loadList: 'list/flash',
+      loadList: 'siderbar/loadNotes',
       addNote: 'editor/addNote',
       deleteNote: 'editor/deleteNote'
     }),
@@ -99,7 +99,7 @@ export default {
       this.showMove = true
     },
     doMove() {
-      this.$store.dispatch('list/moveNote', {
+      this.$store.dispatch('sidebar/moveNote', {
         id: this.moveNoteId,
         bid: this.moveCheck
       })
