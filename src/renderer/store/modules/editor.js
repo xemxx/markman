@@ -1,6 +1,7 @@
 import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
 import { MessageBox } from 'element-ui'
+import bus from '@/bus'
 
 const nModel = new Note()
 
@@ -35,8 +36,8 @@ const mutations = {
 
 const actions = {
   // 加载编辑区域数据
-  async loadNote({ commit, state, dispatch }, id = state.detail.id) {
-    const oldId = state.detail.id
+  async loadNote({ commit, state, dispatch }, id = state.currentNote.id) {
+    const oldId = state.currentNote.id
     try {
       if (oldId != id && oldId != undefined) {
         // 处理自动保存定时器
@@ -44,20 +45,27 @@ const actions = {
           clearTimeout(autoSaveTimers.get(oldId))
           autoSaveTimers.delete(oldId)
           // 立即保存
-          await dispatch('saveNote', state.detail)
+          await dispatch('saveNote', state.currentNote)
         }
       }
       // 获取到detail，直接在视图绑定detail
       const data = await nModel.get(id)
       if (data == undefined) return
 
-      if (oldId != id) return commit('update_detail', data)
+      if (oldId != id) {
+        commit('set_current_note', data)
+        bus.$emit('note-loaded', { markdown: data.content })
+      }
 
       // oldId==id 需要判断是否刷新加载
-      if (data.SC == state.detail.SC) return
+      if (data.SC == state.currentNote.SC) return
 
       // 本地无改变，更新当前内容
-      if (!state.modify) commit('update_detail', data)
+      if (!state.modify) {
+        commit('set_current_note', data)
+        bus.$emit('note-loaded', data)
+      }
+
       // 本地改变，并且远端有更新到本地的内容，出现冲突
       else await dispatch('__fixConflect')
     } catch (err) {
@@ -89,7 +97,7 @@ const actions = {
 
   async saveNote(
     { dispatch, state, commit },
-    { content, id, title, SC } = state.detail
+    { content, id, title, SC } = state.currentNote
   ) {
     if (id == undefined || id == '') {
       return
@@ -139,8 +147,8 @@ const actions = {
     }
     //更新显示
     dispatch('sidebar/loadNotes', {}, { root: true }).then(() => {
-      if (id == state.detail.id) {
-        commit('update_detail', defaultNote)
+      if (id == state.currentNote.id) {
+        commit('set_current_note', defaultNote)
       }
     })
     //同步服务器
@@ -155,7 +163,7 @@ const actions = {
 
   handleAutoSave(
     { state, rootState, dispatch },
-    { id, title, content, SC } = state.detail
+    { id, title, content, SC } = state.currentNote
   ) {
     const { autoSave, autoSaveDelay } = rootState.preference
     if (autoSave) {
@@ -185,7 +193,7 @@ const actions = {
       }
     )
       .then(async () => {
-        let local = state.detail
+        let local = state.currentNote
         let server = await nModel.get(local.id)
         let newTitle = `local:${local.title} [---] server:${server.title}`
         let newContent = `local>>>>>>>>>>>>>>\n${local.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${server.content}`
@@ -205,13 +213,13 @@ const actions = {
             local.modifyState = 2
             local.SC = server.SC
             local.modifyDate = newModifyDate
-            commit('update_detail', local)
+            commit('set_current_note', local)
           })
           .catch(err => console.log(err))
       })
       .catch(async () => {
-        const data = await nModel.get(state.detail.id)
-        commit('update_detail', data)
+        const data = await nModel.get(state.currentNote.id)
+        commit('set_current_note', data)
       })
   }
 }

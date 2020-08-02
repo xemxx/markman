@@ -1,29 +1,25 @@
 <template>
-  <el-container>
-    <!-- <el-main v-if="!isEdit"></el-main>
-    <el-container class="editor" v-if="isEdit"> -->
+  <el-container class="editor">
     <el-header height="auto">
       <input v-model="title" class="editor-title" />
     </el-header>
     <el-main>
       <div class="editor-wrapper">
-        <Monaco :markdown="markdown"></Monaco>
+        <Editor :markdown="markdown"></Editor>
       </div>
-      <div class="preview-wrapper" v-if="showPreview">
+      <!-- <div class="preview-wrapper" v-if="showPreview">
         <div class="pick-line"></div>
         <preview :markdown="markdown"></preview>
-      </div>
+      </div> -->
     </el-main>
   </el-container>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import Preview from './Preview'
-import Monaco from './Monaco'
+import Editor from './editor'
 
 export default {
-  name: 'Editor',
   data() {
     return {
       modifyState: false,
@@ -34,12 +30,12 @@ export default {
     ...mapState({
       showPreview: state => state.preference.togglePreview,
       tags: state => state.editor.tags,
-      markdown: state => state.editor.detail.content,
+      markdown: state => state.editor.currentNote.content,
       isEdit: state => state.editor.isEdit
     }),
     title: {
       get: function() {
-        return this.$store.state.editor.detail.title
+        return this.$store.state.editor.currentNote.title
       },
       set: function(newVal) {
         this.$store.commit('editor/update_title', newVal)
@@ -49,13 +45,15 @@ export default {
   },
   methods: {},
   components: {
-    Preview,
-    Monaco
+    Editor
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+.editor
+  flex 1
+
 .editor, .editor-title
   background-color editor-bc
 

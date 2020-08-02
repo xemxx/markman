@@ -1,5 +1,6 @@
 {
-  "name": "Markman",
+  "name": "markman",
+  "displayName": "Markman",
   "version": "0.0.1",
   "repository": "https://github.com/xemxx/markman-client",
   "private": true,
@@ -23,7 +24,6 @@
     "element-ui": "^2.4.5",
     "highlight.js": "^9.18.1",
     "marked": "^0.8.0",
-    "monaco-editor": "^0.19.3",
     "sqlite3": "^4.1.1",
     "uuid": "^3.4.0",
     "vditor": "^3.4.1",
@@ -47,7 +47,6 @@
     "prettier": "^1.19.1",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
-    "monaco-editor-webpack-plugin": "^1.8.2",
     "vue-cli-plugin-electron-builder": "^1.4.4",
     "vue-template-compiler": "^2.6.10"
   }

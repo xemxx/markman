@@ -51,7 +51,7 @@ import { remote } from 'electron'
 const { Menu, MenuItem } = remote
 
 export default {
-  name: 'list',
+  name: 'Notes',
   data() {
     return {
       showMove: false,
@@ -60,10 +60,10 @@ export default {
   },
   computed: {
     ...mapState({
-      notes: state => state.list.notes,
-      showNew: state => state.list.type == 'note',
-      bid: state => state.list.flagId,
-      notebooks: state => state.floder.notebooks
+      notes: state => state.sidebar.notes,
+      showNew: state => state.sidebar.type == 'note',
+      bid: state => state.sidebar.flagId,
+      notebooks: state => state.sidebar.notebooks
     })
   },
   created() {
@@ -72,7 +72,7 @@ export default {
   methods: {
     ...mapActions({
       loadNote: 'editor/loadNote',
-      loadList: 'siderbar/loadNotes',
+      loadList: 'sidebar/loadNotes',
       addNote: 'editor/addNote',
       deleteNote: 'editor/deleteNote'
     }),

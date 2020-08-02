@@ -58,7 +58,7 @@ const actions = {
       .catch(err => console.log(err))
   },
 
-  deleteNotebook({ dispatch, state, rootState }, id) {
+  deleteNotebook({ dispatch, state }, id) {
     let guid = 0
     for (let i = 0; i < state.notebooks.length; i++) {
       if (state.notebooks[i].id == id) {
@@ -70,7 +70,7 @@ const actions = {
       .then(() => {
         //更新列表显示
         dispatch('loadNotebooks')
-        if (rootState.list.type != 'all' && rootState.list.flagId == guid) {
+        if (state.type != 'all' && state.flagId == guid) {
           dispatch('sidebar/loadNotes', { type: 'all' }, { root: true })
         }
         //同步服务器
@@ -109,11 +109,13 @@ const actions = {
     } else if (type === 'all') {
       list = nModel.getAll(uid)
       flagId = ''
+    } else {
+      return
     }
 
     return list
       .then(notes => {
-        commit('update_list', {
+        commit('update_notes', {
           type,
           flagId,
           notes: notes

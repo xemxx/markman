@@ -83,7 +83,6 @@ const actions = {
       .get(`${server}/notebook/getSync?afterSC=${afterSC}&maxCount=10`)
       .then(data => {
         const notebooks = data.notebooks
-        console.log(notebooks)
         if (notebooks.length > 0) {
           dispatch('_updateNotebooksToLocal', notebooks)
         }

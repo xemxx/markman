@@ -1,5 +1,5 @@
 const path = require('path')
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
+
 module.exports = {
   //mode: 'production'
   configureWebpack: {
@@ -12,12 +12,7 @@ module.exports = {
         '@': path.join(__dirname, 'src/renderer')
       }
     },
-    plugins: [
-      new MonacoWebpackPlugin({
-        languages: ['markdown'],
-        output: './js/monaco-editor'
-      })
-    ]
+    plugins: []
   },
   css: {
     loaderOptions: {
