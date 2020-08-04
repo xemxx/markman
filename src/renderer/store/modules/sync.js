@@ -47,7 +47,7 @@ const actions = {
     //更新完成刷新显示
     dispatch('sidebar/loadNotebooks', undefined, { root: true })
     dispatch('sidebar/loadNotes', undefined, { root: true })
-    dispatch('editor/loadNote', undefined, { root: true })
+    dispatch('editor/flashNote', undefined, { root: true })
   },
 
   pull({ dispatch, rootState, commit }, { localSC, serverSC }) {

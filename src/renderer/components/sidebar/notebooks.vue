@@ -140,7 +140,6 @@ export default {
       this.blurRenameNotebook(id)
     },
     blurRenameNotebook(id) {
-      console.log('n')
       let index = this.notebooks.findIndex(item => id === item.id)
       this.notebooks[index].rename = false
       this.notebookName = ''
