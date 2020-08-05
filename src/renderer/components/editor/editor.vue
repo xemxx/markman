@@ -21,6 +21,7 @@ export default {
     this.$nextTick(() => {
       // listen for bus events.
       bus.$on('note-loaded', this.setMarkdownToEditor)
+      bus.$on('query-close-note', this.showCloseQuery)
 
       const options = {
         value: this.markdown,
@@ -34,8 +35,9 @@ export default {
         tab: '\t',
         counter: {
           enable: true,
-          type: 'text'
+          type: 'md'
         },
+        typewriterMode: true,
         cache: { enable: false },
         input: value => {
           const { dispatch } = this.$store
@@ -53,6 +55,8 @@ export default {
   },
   beforeDestroy() {
     bus.$off('note-loaded', this.setMarkdownToEditor)
+    bus.$off('query-close-note', this.showCloseQuery)
+
     this.vditor.destroy()
   },
 
@@ -65,6 +69,12 @@ export default {
       if (vditor) {
         vditor.setValue(markdown, true)
       }
+    },
+    //TODO: ask user if note need save and do something
+    showCloseQuery(id) {
+      this.$store.dispatch('editor/saveNote').then(() => {
+        this.$store.dispatch('editor/loadNote', id)
+      })
     }
   }
 }
