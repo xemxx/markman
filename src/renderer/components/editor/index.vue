@@ -38,8 +38,10 @@ export default {
         return this.$store.state.editor.currentNote.title
       },
       set: function(newVal) {
-        this.$store.commit('editor/update_title', newVal)
-        this.$store.dispatch('editor/handleAutoSave')
+        const { dispatch } = this.$store
+        dispatch('editor/listenContentChange', {
+          title: newVal
+        })
       }
     }
   },
