@@ -14,17 +14,19 @@ module.exports = {
     },
     plugins: []
   },
+
   css: {
     loaderOptions: {
-      // 全局stylus变量
       stylus: {
         import: '~@/assets/css/imports.styl'
       }
     }
   },
+
   pluginOptions: {
     electronBuilder: {
       customFileProtocol: './',
+      nodeIntegration: true,
       builderOptions: {
         productName: 'Markman',
         appId: 'com.xemxx.markman',
@@ -57,5 +59,7 @@ module.exports = {
       // Note that it is ignored when --debug flag is used with "electron:serve", as you must launch Electron yourself
       mainProcessArgs: []
     }
-  }
+  },
+
+  productionSourceMap: false
 }
