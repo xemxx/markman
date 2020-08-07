@@ -42,7 +42,7 @@ export default {
         input: value => {
           const { dispatch } = this.$store
           dispatch('editor/listenContentChange', {
-            content: value
+            markdown: value
           })
         }
       }

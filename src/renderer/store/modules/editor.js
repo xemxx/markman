@@ -192,28 +192,33 @@ const actions = {
   },
 
   // listen the content change and apply to state
-  listenContentChange({ dispatch, commit, state }, { content }) {
-    if (content != state.currentNote.markdown) {
-      commit('set_save_status', false)
+  listenContentChange({ dispatch, commit, state }, { title, markdown }) {
+    let { isSave } = state.currentNote
+    if (title && title != state.currentNote.title) {
+      commit('set_title', title)
+      isSave = false
     }
-    commit('set_markdown', content)
+    if (markdown && markdown != state.currentNote.markdown) {
+      commit('set_markdown', markdown)
+      isSave = false
+    }
+    commit('set_save_status', isSave)
     dispatch('handleAutoSave', state.currentNote)
   },
 
   handleAutoSave({ rootState, dispatch }, { id, title, markdown, SC, isSave }) {
-    console.log(id)
     const { autoSave, autoSaveDelay } = rootState.preference
-    if (autoSave) {
-      if (autoSaveTimers.has(id)) {
-        clearTimeout(autoSaveTimers.get(id))
-        autoSaveTimers.delete(id)
-      }
-      const timeFunc = setTimeout(async () => {
-        await dispatch('saveNote', { id, title, markdown, SC, isSave })
-        autoSaveTimers.delete(id)
-      }, autoSaveDelay)
-      autoSaveTimers.set(id, timeFunc)
+    if (!autoSave) return
+
+    if (autoSaveTimers.has(id)) {
+      clearTimeout(autoSaveTimers.get(id))
+      autoSaveTimers.delete(id)
     }
+    const timeFunc = setTimeout(async () => {
+      autoSaveTimers.delete(id)
+      await dispatch('saveNote', { id, title, markdown, SC, isSave })
+    }, autoSaveDelay)
+    autoSaveTimers.set(id, timeFunc)
   },
 
   //no feel to conflict
