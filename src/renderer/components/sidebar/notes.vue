@@ -17,7 +17,7 @@
         shadow="hover"
         v-for="item in notes"
         :key="item.id"
-        @click="loadNote(item.id)"
+        @click="checkoutNote(item.id)"
         @click.right="rightMenu(item.id, item.bid)"
       >
         <div class="el-card__header">
@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadNote: 'editor/loadNote',
+      checkoutNote: 'editor/checkoutNote',
       loadList: 'sidebar/loadNotes',
       addNote: 'editor/addNote',
       deleteNote: 'editor/deleteNote'

@@ -70,14 +70,32 @@ export default {
         vditor.setValue(markdown, true)
       }
     },
-    //TODO: ask user if note need save and do something
+
     showCloseQuery(id) {
-      this.$store.dispatch('editor/saveNote').then(() => {
-        this.$store.dispatch('editor/loadNote', id)
+      this.$confirm('当前笔记改动是否保存？', '提示', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '是',
+        cancelButtonText: '否'
       })
+        .then(
+          () => {
+            return this.$store.dispatch('editor/saveNote')
+          },
+          action => {
+            return action
+          }
+        )
+        .then(action => {
+          console.log(123)
+          if (action == 'cancel' || action == undefined)
+            this.$store.dispatch('editor/loadNote', id)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   }
 }
 </script>
 
-<style lang="stylus" scope="this api replaced by slot-scope in 2.5.0+"></style>
+<style lang="stylus" slot-scope></style>

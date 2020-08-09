@@ -68,26 +68,29 @@ const actions = {
   },
 
   // click note to load note from sqlite
-  async loadNote({ commit, state }, id) {
+  checkoutNote({ state, dispatch }, id) {
     const { id: oldId, isSave } = state.currentNote
     if (id == oldId) {
       return
     }
 
-    try {
-      // close and save old note
-      if (oldId != id && oldId != undefined) {
-        if (autoSaveTimers.has(oldId)) {
-          clearTimeout(autoSaveTimers.get(oldId))
-          autoSaveTimers.delete(oldId)
-          // ask user if note need save
-          if (!isSave) {
-            bus.$emit('query-close-note', id)
-            return
-          }
-        }
+    // close and save old note
+    if (oldId != id && oldId != undefined) {
+      // ask user if note need save
+      if (!isSave) {
+        bus.$emit('query-close-note', id)
+        return
       }
+      // if (autoSaveTimers.has(oldId)) {
+      //   clearTimeout(autoSaveTimers.get(oldId))
+      //   autoSaveTimers.delete(oldId)
+      // }
+    }
+    dispatch('loadNote', id)
+  },
 
+  async loadNote({ commit }, id) {
+    try {
       // load new note
       const data = await nModel.get(id)
       if (data == undefined) return
