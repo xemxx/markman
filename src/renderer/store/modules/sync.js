@@ -204,7 +204,7 @@ const actions = {
         modifyDate = Date.parse(modifyDate) / 1000
 
         if (local != undefined) {
-          if (server.is_del == 1) {
+          if (server.isDel == 1) {
             model.delete(local.id)
           } else
             switch (local.modifyState) {
@@ -311,11 +311,11 @@ const actions = {
         break
       }
     }
-    return result.then(({ isErr, SC, isRepect }) => {
+    return result.then(({ isErr, SC, isRepeat }) => {
       if (isErr) {
         // 在修改过程中，另一服务端进行了修改，产生了冲突，需要重新获取新的更新并在本地解决冲突
         return Promise.reject({ rePull: true })
-      } else if (isRepect) {
+      } else if (isRepeat) {
         //不唯一，需要修改guid重新发送改变
         data[count].guid = uuid()
         notebookModel.update(local.id, {
@@ -368,11 +368,11 @@ const actions = {
         break
       }
     }
-    return result.then(({ isErr, SC, isRepect }) => {
+    return result.then(({ isErr, SC, isRepeat }) => {
       if (isErr) {
         // 在修改过程中，另一服务端进行了修改，产生了冲突，需要重新获取新的更新并在本地解决冲突
         return Promise.reject({ rePull: true })
-      } else if (isRepect) {
+      } else if (isRepeat) {
         //不唯一，需要修改guid重新发送改变
         data[count].guid = uuid()
         noteModel.update(local.id, {

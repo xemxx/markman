@@ -81,10 +81,6 @@ const actions = {
         bus.$emit('query-close-note', id)
         return
       }
-      // if (autoSaveTimers.has(oldId)) {
-      //   clearTimeout(autoSaveTimers.get(oldId))
-      //   autoSaveTimers.delete(oldId)
-      // }
     }
     dispatch('loadNote', id)
   },
