@@ -4,6 +4,8 @@ dist: trusty
 language: node_js
 node_js: '12'
 
+if: tag IS present
+
 env:
   global:
     - ELECTRON_CACHE=$HOME/.cache/electron
@@ -20,10 +22,8 @@ cache:
     - $HOME/.cache/electron-builder
     - $HOME/.npm/_prebuilds
 
-script:
+install:
   - npm i
-  - npm run release
 
-branches:
-  only:
-    - master
+script:
+  - npm run release
