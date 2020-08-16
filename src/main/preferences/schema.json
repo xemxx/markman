@@ -13,10 +13,5 @@
     "description": "View Menu--Sidebar status.",
     "type": "boolean",
     "default": true
-  },
-  "togglePreview": {
-    "description": "View Menu--Preview status.",
-    "type": "boolean",
-    "default": true
   }
 }

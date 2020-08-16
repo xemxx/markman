@@ -50,10 +50,10 @@ import { mapState, mapActions } from 'vuex'
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
 
-import Footer from './Footer.vue'
+import Footer from './footer.vue'
 
 export default {
-  name: 'Floder',
+  name: 'Notebooks',
   data: function() {
     return {
       notebookInput: false,
@@ -64,10 +64,7 @@ export default {
   computed: {
     ...mapState({
       notebooks: state => {
-        return state.floder.notebooks.map(item => {
-          item.rename = false
-          return item
-        })
+        return state.sidebar.notebooks
       }
     })
   },
@@ -80,11 +77,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadList: 'list/flash',
-      loadNotebooks: 'floder/flash',
-      addNotebook: 'floder/addNotebook',
-      deleteNotebook: 'floder/deleteNotebook',
-      updateNotebook: 'floder/updateNotebook'
+      loadList: 'sidebar/loadNotes',
+      loadNotebooks: 'sidebar/loadNotebooks',
+      addNotebook: 'sidebar/addNotebook',
+      deleteNotebook: 'sidebar/deleteNotebook',
+      updateNotebook: 'sidebar/updateNotebook'
     }),
     showAddNotebook() {
       this.$refs['menu'].open(2)
@@ -143,7 +140,6 @@ export default {
       this.blurRenameNotebook(id)
     },
     blurRenameNotebook(id) {
-      console.log('n')
       let index = this.notebooks.findIndex(item => id === item.id)
       this.notebooks[index].rename = false
       this.notebookName = ''
@@ -153,7 +149,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .menu
-  background-color floder-bc
+  background-color notebooks-bc
 
 .add
   display flex

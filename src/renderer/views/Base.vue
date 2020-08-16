@@ -1,40 +1,22 @@
 <template>
   <div class="layout">
-    <div v-show="sidebar" class="sidebar">
-      <div class="floder">
-        <Floder />
-      </div>
-      <div class="list">
-        <List />
-      </div>
-    </div>
-    <div class="editor">
-      <Editor />
-    </div>
+    <Sidebar />
+    <Editor />
   </div>
 </template>
 
 <script>
-import Floder from '@/components/Floder'
-import List from '@/components/List.vue'
-import Editor from '@/components/Editor'
-
-import { mapState } from 'vuex'
+import Sidebar from '@/components/sidebar'
+import Editor from '@/components/editor'
 
 export default {
   name: 'Base',
   components: {
-    Floder,
-    List,
+    Sidebar,
     Editor
   },
   data: () => {
     return {}
-  },
-  computed: {
-    ...mapState({
-      sidebar: state => state.preference.toggleSidebar
-    })
   },
   created() {
     this.$store.dispatch('sync/sync')
@@ -55,28 +37,4 @@ export default {
   display flex
   flex-direction row
   height 100%
-
-.sidebar
-  flex 1
-  display flex
-  position relative
-  top -22px
-  height 100vh
-  padding-top 22px
-  max-width 400px
-  width 400px
-
-.floder, .list
-  flex 1
-  max-width 200px
-  width 200px
-
-.floder
-  background-color floder-bc
-
-.list
-  background-color list-bc
-
-.editor
-  flex 1
 </style>

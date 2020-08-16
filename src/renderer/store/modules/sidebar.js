@@ -1,19 +1,30 @@
 import Notebook from '@/model/notebook.js'
+import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
 
 const model = new Notebook()
 
+const nModel = new Note()
+
 const state = {
-  notebooks: []
+  notebooks: [],
+  type: 'all',
+  flagId: '',
+  notes: ''
 }
 
 const mutations = {
   update_notebooks(state, value) {
     state.notebooks = value
+  },
+  update_notes(state, { type, flagId, notes }) {
+    state.type = type ? type : state.type
+    state.flagId = flagId ? flagId : state.tid
+    state.notes = notes ? notes : state.notes
   }
 }
 const actions = {
-  flash({ commit, rootState }) {
+  loadNotebooks({ commit, rootState }) {
     return model
       .getAll(rootState.user.id)
       .then(notebooks => {
@@ -40,14 +51,14 @@ const actions = {
       })
       .then(() => {
         //更新列表显示
-        dispatch('flash')
+        dispatch('loadNotebooks')
         //同步服务器
         dispatch('sync/sync', null, { root: true })
       })
       .catch(err => console.log(err))
   },
 
-  deleteNotebook({ dispatch, state, rootState }, id) {
+  deleteNotebook({ dispatch, state }, id) {
     let guid = 0
     for (let i = 0; i < state.notebooks.length; i++) {
       if (state.notebooks[i].id == id) {
@@ -58,9 +69,9 @@ const actions = {
       .deleteLocal(id, guid)
       .then(() => {
         //更新列表显示
-        dispatch('flash')
-        if (rootState.list.type != 'all' && rootState.list.flagId == guid) {
-          dispatch('list/flash', { type: 'all' }, { root: true })
+        dispatch('loadNotebooks')
+        if (state.type != 'all' && state.flagId == guid) {
+          dispatch('sidebar/loadNotes', { type: 'all' }, { root: true })
         }
         //同步服务器
         dispatch('sync/sync', null, { root: true })
@@ -78,12 +89,49 @@ const actions = {
         })
         .then(() => {
           //更新列表显示
-          dispatch('flash')
+          dispatch('loadNotebooks')
           //同步服务器
           dispatch('sync/sync', null, { root: true })
         })
         .catch(err => console.log(err))
     }
+  },
+
+  //更新state中的list，视图将自动更新
+  loadNotes({ commit, rootState }, { type, flagId } = state) {
+    const uid = rootState.user.id
+    let list = {}
+
+    if (type === 'note') {
+      list = nModel.getAllByBook(uid, flagId)
+    } else if (type === 'tag') {
+      list = nModel.getAllByTag(uid, flagId)
+    } else if (type === 'all') {
+      list = nModel.getAll(uid)
+      flagId = ''
+    } else {
+      return
+    }
+
+    return list
+      .then(notes => {
+        commit('update_notes', {
+          type,
+          flagId,
+          notes: notes
+        })
+      })
+      .catch(err => console.log(err))
+  },
+
+  moveNote({ dispatch }, { id, bid }) {
+    return nModel
+      .update(id, { bid, modifyState: 2 })
+      .then(() => {
+        dispatch('sync/sync', null, { root: true })
+        dispatch('loadNotebooks')
+      })
+      .catch(err => console.log(err))
   }
 }
 

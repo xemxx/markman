@@ -1,54 +1,106 @@
 import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
 
+import bus from '@/bus'
+
 const nModel = new Note()
 
 const autoSaveTimers = new Map()
 
-const detailNote = {
+const defaultNote = {
   id: '',
-  content: '',
+  markdown: '',
   title: '',
   modifyState: 0,
-  modifyDate: ''
+  SC: 0,
+  isSave: true
 }
 
 const state = {
   isEdit: true,
-  detail: detailNote,
+  currentNote: defaultNote,
   modify: false
 }
 
 const mutations = {
-  update_detail(state, value) {
-    state.detail = value
+  set_current_note(state, currentNote) {
+    state.currentNote = currentNote
+    bus.$emit('note-loaded', currentNote)
   },
-  update_title(state, value) {
-    state.detail.title = value
+  set_save_status(state, status) {
+    state.currentNote.isSave = status
   },
-  update_content(state, value) {
-    state.detail.content = value
+  set_title(state, value) {
+    state.currentNote.title = value
+  },
+  set_markdown(state, value) {
+    state.currentNote.markdown = value
   }
 }
 
 const actions = {
-  // 加载编辑区域数据
-  async loadNote({ commit, state, dispatch }, id = state.detail.id) {
-    const oldId = state.detail.id
-    if (oldId == id || (oldId == '' && id == '') || oldId == undefined) {
+  // flash note
+  async flashNote({ commit, state, dispatch }) {
+    const { id, isSave, SC } = state.currentNote
+    try {
+      const data = await nModel.get(id)
+      if (data == undefined) return
+      // current note has no updated
+      if (data.SC == SC) return
+
+      // flash current note from server new version
+      if (isSave) {
+        let current = {
+          id: data.id,
+          markdown: data.content,
+          title: data.title,
+          modifyState: data.modifyState,
+          SC: data.SC,
+          isSave: true
+        }
+        commit('set_current_note', current)
+      }
+      // local has changed and server has changed too,need fix conflict
+      else await dispatch('__fixConflict')
+    } catch (err) {
+      console.log(err)
+    }
+  },
+
+  // click note to load note from sqlite
+  checkoutNote({ state, dispatch }, id) {
+    const { id: oldId, isSave } = state.currentNote
+    if (id == oldId) {
       return
     }
-    try {
-      // 处理自动保存定时器
-      if (autoSaveTimers.has(oldId)) {
-        clearTimeout(autoSaveTimers.get(oldId))
-        autoSaveTimers.delete(oldId)
-        // 立即保存
-        await dispatch('saveNote')
+
+    // close and save old note
+    if (oldId != id && oldId != undefined) {
+      // ask user if note need save
+      if (!isSave) {
+        bus.$emit('query-close-note', id)
+        return
       }
-      // 获取到detail，直接在视图绑定detail
+    }
+    dispatch('loadNote', id)
+  },
+
+  async loadNote({ commit }, id) {
+    try {
+      // load new note
       const data = await nModel.get(id)
-      commit('update_detail', data)
+      if (data == undefined) return
+
+      let current = {
+        id: data.id,
+        markdown: data.content,
+        title: data.title,
+        modifyState: data.modifyState,
+        SC: data.SC,
+        isSave: true
+      }
+
+      commit('set_current_note', current)
     } catch (err) {
       console.log(err)
     }
@@ -70,37 +122,46 @@ const actions = {
     return nModel
       .add(note)
       .then(id => {
-        dispatch('list/flash', {}, { root: true })
+        dispatch('sidebar/loadNotes', {}, { root: true })
         dispatch('loadNote', id)
       })
       .catch(err => console.log(err))
   },
 
-  async saveNote({ dispatch, state }, sync = false) {
-    const { content, id, title } = state.detail
+  // save note to sqlite
+  async saveNote(
+    { dispatch, state, commit },
+    { markdown, id, title, SC, isSave } = state.currentNote
+  ) {
     if (id == undefined || id == '') {
       return
     }
-    const origin = await nModel.get(id)
-    if (origin.content == content && origin.title == title) {
+    if (isSave) {
       return
     }
+    const origin = await nModel.get(id)
+    if (origin.content == markdown && origin.title == title) {
+      return
+    }
+    // server have new version and local note be changed
+    if (origin.SC != SC) {
+      return dispatch('__fixConflict')
+    }
+    // update sqlite
     const { modifyState } = origin
     const time = Date.parse(new Date()) / 1000
     const data = {
-      content,
+      content: markdown,
       title,
-      modifyState: modifyState == 0 ? 2 : modifyState, //如果是同步过的代表被修改需要同步，否则就是新建不变
+      modifyState: modifyState == 0 ? 2 : modifyState,
       modifyDate: time
     }
 
     return nModel
       .update(id, data)
       .then(() => {
-        //更新显示
-        dispatch('list/flash', undefined, { root: true })
-        //同步服务器
-        if (sync) dispatch('sync/sync', undefined, { root: true })
+        dispatch('sidebar/loadNotes', undefined, { root: true })
+        commit('set_save_status', true)
       })
       .catch(err => console.log(err))
   },
@@ -118,52 +179,72 @@ const actions = {
         }
         await nModel.update(id, data)
       }
+      dispatch('sidebar/loadNotes', undefined, { root: true }).then(() => {
+        if (id == state.currentNote.id) {
+          commit('set_current_note', defaultNote)
+        }
+      })
+      dispatch('sync/sync', undefined, { root: true })
     } catch (err) {
       console.log(err)
     }
-    //更新显示
-    dispatch('list/flash', {}, { root: true }).then(() => {
-      if (id == state.detail.id) {
-        commit('update_detail', detailNote)
-      }
-    })
-    //同步服务器
-    dispatch('sync/sync', undefined, { root: true })
   },
 
-  handleAutoSave(
-    { state, rootState, dispatch },
-    { id, title, content } = state.detail
-  ) {
-    const { autoSave, autoSaveDelay } = rootState.preference
-    if (autoSave) {
-      if (autoSaveTimers.has(id)) {
-        clearTimeout(autoSaveTimers.get(id))
-        autoSaveTimers.delete(id)
-      }
-      const timeFunc = setTimeout(async () => {
-        try {
-          const origin = await nModel.get(id)
-          if (origin.content == content && origin.title == title) {
-            return
-          }
-          const { modifyState } = origin
-          const time = Date.parse(new Date()) / 1000
-          const data = {
-            content,
-            title,
-            modifyState: modifyState == 0 ? 2 : modifyState, //如果是同步过的代表被修改需要同步，否则就是新建不变
-            modifyDate: time
-          }
+  // listen the content change and apply to state
+  listenContentChange({ dispatch, commit, state }, { title, markdown }) {
+    let { isSave } = state.currentNote
+    if (title && title != state.currentNote.title) {
+      commit('set_title', title)
+      isSave = false
+    }
+    if (markdown && markdown != state.currentNote.markdown) {
+      commit('set_markdown', markdown)
+      isSave = false
+    }
+    commit('set_save_status', isSave)
+    dispatch('handleAutoSave', state.currentNote)
+  },
 
-          await nModel.update(id, data)
-          dispatch('list/flash', undefined, { root: true })
-        } catch (err) {
-          console.log(err)
-        }
-        autoSaveTimers.delete(id)
-      }, autoSaveDelay)
-      autoSaveTimers.set(id, timeFunc)
+  handleAutoSave({ rootState, dispatch }, { id, title, markdown, SC, isSave }) {
+    const { autoSave, autoSaveDelay } = rootState.preference
+    if (!autoSave) return
+
+    if (autoSaveTimers.has(id)) {
+      clearTimeout(autoSaveTimers.get(id))
+      autoSaveTimers.delete(id)
+    }
+    const timeFunc = setTimeout(async () => {
+      autoSaveTimers.delete(id)
+      await dispatch('saveNote', { id, title, markdown, SC, isSave })
+    }, autoSaveDelay)
+    autoSaveTimers.set(id, timeFunc)
+  },
+
+  //no feel to conflict
+  async __fixConflict({ state, dispatch, commit }) {
+    try {
+      let local = state.currentNote
+      let server = await nModel.get(local.id)
+      let newTitle = `local:${local.title} [---] server:${server.title}`
+      let newContent = `local>>>>>>>>>>>>>>\n${local.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${server.content}`
+      let newModifyDate = Date.parse(new Date()) / 1000
+      await nModel.update(local.id, {
+        title: newTitle,
+        content: newContent,
+        modifyDate: newModifyDate,
+        modifyState: 2
+      })
+
+      local.title = newTitle
+      local.markdown = newContent
+      local.modifyState = 2
+      local.SC = server.SC
+      local.isSave = true
+      commit('set_current_note', local)
+
+      dispatch('sidebar/loadNotes', undefined, { root: true })
+    } catch (err) {
+      console.log(err)
     }
   }
 }

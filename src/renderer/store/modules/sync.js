@@ -37,27 +37,25 @@ const actions = {
       // 如果需要更新则拉取
       if (serverSC > localSC) {
         await dispatch('pull', { localSC, serverSC })
-      } else {
-        // 直接推送本地最新数据到服务端
-        await dispatch('push')
       }
+      await dispatch('push')
       setTimeout(() => commit('update_isSyncing', false), 1000)
     } catch (err) {
       console.log(err)
       setTimeout(() => commit('update_isSyncing', false), 1000)
     }
     //更新完成刷新显示
-    dispatch('floder/flash', undefined, { root: true })
-    dispatch('list/flash', undefined, { root: true })
-    dispatch('editor/loadNote', undefined, { root: true })
+    dispatch('sidebar/loadNotebooks', undefined, { root: true })
+    dispatch('sidebar/loadNotes', undefined, { root: true })
+    dispatch('editor/flashNote', undefined, { root: true })
   },
 
-  pull({ dispatch, rootState }, { localSC, serverSC }) {
+  pull({ dispatch, rootState, commit }, { localSC, serverSC }) {
     const uid = rootState.user.id
     return dispatch('_pullNotebooks', localSC)
       .then(() => dispatch('_pullNotes', localSC))
       .then(() => userModel.update(uid, { lastSC: serverSC }))
-      .then(() => dispatch('push'))
+      .then(() => commit('user/update_lastSC', serverSC, { root: true }))
   },
 
   async push({ dispatch }) {
@@ -85,7 +83,6 @@ const actions = {
       .get(`${server}/notebook/getSync?afterSC=${afterSC}&maxCount=10`)
       .then(data => {
         const notebooks = data.notebooks
-        console.log(notebooks)
         if (notebooks.length > 0) {
           dispatch('_updateNotebooksToLocal', notebooks)
         }
@@ -207,7 +204,7 @@ const actions = {
         modifyDate = Date.parse(modifyDate) / 1000
 
         if (local != undefined) {
-          if (server.is_del == 1) {
+          if (server.isDel == 1) {
             model.delete(local.id)
           } else
             switch (local.modifyState) {
@@ -314,11 +311,11 @@ const actions = {
         break
       }
     }
-    return result.then(({ isErr, SC, isRepect }) => {
+    return result.then(({ isErr, SC, isRepeat }) => {
       if (isErr) {
         // 在修改过程中，另一服务端进行了修改，产生了冲突，需要重新获取新的更新并在本地解决冲突
         return Promise.reject({ rePull: true })
-      } else if (isRepect) {
+      } else if (isRepeat) {
         //不唯一，需要修改guid重新发送改变
         data[count].guid = uuid()
         notebookModel.update(local.id, {
@@ -371,11 +368,11 @@ const actions = {
         break
       }
     }
-    return result.then(({ isErr, SC, isRepect }) => {
+    return result.then(({ isErr, SC, isRepeat }) => {
       if (isErr) {
         // 在修改过程中，另一服务端进行了修改，产生了冲突，需要重新获取新的更新并在本地解决冲突
         return Promise.reject({ rePull: true })
-      } else if (isRepect) {
+      } else if (isRepeat) {
         //不唯一，需要修改guid重新发送改变
         data[count].guid = uuid()
         noteModel.update(local.id, {

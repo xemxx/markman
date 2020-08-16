@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import TitleBar from '@/components/TitleBar.vue'
+import TitleBar from '@/components/titleBar'
 export default {
   components: {
     TitleBar
