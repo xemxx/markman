@@ -1,5 +1,8 @@
 # markman
 
+[![Build Status](https://travis-ci.org/xemxx/markman-client.svg?branch=master)](https://travis-ci.org/xemxx/markman-client)
+
+
 ## 配置开发环境
 
 ```
