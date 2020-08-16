@@ -43,7 +43,6 @@ class Keybindings {
       // ["view.typewriter-mode", "CmdOrCtrl+Alt+T"],
       // ["view.focus-mode", "CmdOrCtrl+Shift+F"],
       ['view.toggle-sidebar', 'Ctrl+1'],
-      ['view.toggle-preview', 'Ctrl+2'],
       // ["view.toggle-tabbar", "CmdOrCtrl+Alt+B"],
       ['view.toggle-dev-tools', 'CmdOrCtrl+Alt+I'],
       ['view.dev-reload', 'CmdOrCtrl+R']

@@ -2,7 +2,7 @@ import { isDevelopment } from '../../config'
 import * as action from '../actions/view'
 
 export default function(keybindings, preference) {
-  const { toggleSidebar, togglePreview } = preference.getAll()
+  const { toggleSidebar } = preference.getAll()
   const viewMenu = {
     label: 'View',
     submenu: [
@@ -14,16 +14,6 @@ export default function(keybindings, preference) {
         checked: toggleSidebar,
         click(item) {
           action.toggleSidebar(item)
-        }
-      },
-      {
-        label: 'Toggle Preview',
-        id: 'previewMenuItem',
-        accelerator: keybindings.getAccelerator('view.toggle-preview'),
-        type: 'checkbox',
-        checked: togglePreview,
-        click(item) {
-          action.togglePreview(item)
         }
       },
       {

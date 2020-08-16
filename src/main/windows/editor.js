@@ -85,7 +85,6 @@ class EditorWindow extends BaseWindow {
       win = null
     })
 
-    //fix: mocano-editor大小不自动变化问题
     win.on('resize', () => {
       win.webContents.send('m::resize-editor')
     })

@@ -12,7 +12,7 @@ export const editorWinOptions = {
   minHeight: 350,
   center: true,
   webPreferences: {
-    nodeIntegration: true //提供完整的node环境支持
+    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION //提供完整的node环境支持
   },
   useContentSize: true,
   show: false,
@@ -24,7 +24,7 @@ export const preferencesWinOptions = {
   width: 950,
   height: 650,
   webPreferences: {
-    nodeIntegration: true
+    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
   },
   fullscreenable: false,
   fullscreen: false,

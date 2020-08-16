@@ -3,10 +3,9 @@ import { ipcRenderer } from 'electron'
 // user preference
 const state = {
   autoSave: false,
-  autoSaveDelay: 5000,
+  autoSaveDelay: 1000,
   // menu status
-  toggleSidebar: false,
-  togglePreview: false
+  toggleSidebar: false
 }
 
 const mutations = {

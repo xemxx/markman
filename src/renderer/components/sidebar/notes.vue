@@ -17,7 +17,7 @@
         shadow="hover"
         v-for="item in notes"
         :key="item.id"
-        @click="loadNote(item.id)"
+        @click="checkoutNote(item.id)"
         @click.right="rightMenu(item.id, item.bid)"
       >
         <div class="el-card__header">
@@ -51,7 +51,7 @@ import { remote } from 'electron'
 const { Menu, MenuItem } = remote
 
 export default {
-  name: 'list',
+  name: 'Notes',
   data() {
     return {
       showMove: false,
@@ -60,10 +60,10 @@ export default {
   },
   computed: {
     ...mapState({
-      notes: state => state.list.notes,
-      showNew: state => state.list.type == 'note',
-      bid: state => state.list.flagId,
-      notebooks: state => state.floder.notebooks
+      notes: state => state.sidebar.notes,
+      showNew: state => state.sidebar.type == 'note',
+      bid: state => state.sidebar.flagId,
+      notebooks: state => state.sidebar.notebooks
     })
   },
   created() {
@@ -71,8 +71,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadNote: 'editor/loadNote',
-      loadList: 'list/flash',
+      checkoutNote: 'editor/checkoutNote',
+      loadList: 'sidebar/loadNotes',
       addNote: 'editor/addNote',
       deleteNote: 'editor/deleteNote'
     }),
@@ -99,7 +99,7 @@ export default {
       this.showMove = true
     },
     doMove() {
-      this.$store.dispatch('list/moveNote', {
+      this.$store.dispatch('sidebar/moveNote', {
         id: this.moveNoteId,
         bid: this.moveCheck
       })
