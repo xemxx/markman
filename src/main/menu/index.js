@@ -6,7 +6,7 @@ import { ipcMain } from 'electron'
 export const MenuType = {
   DEFAULT: 0,
   EDITOR: 1,
-  SETTINGS: 2
+  SETTINGS: 2,
 }
 
 class AppMenu {
@@ -164,7 +164,7 @@ class AppMenu {
 
     return {
       menu,
-      type: MenuType.EDITOR
+      type: MenuType.EDITOR,
     }
   }
 

@@ -18,7 +18,7 @@ export default {
     },
     title: () => {
       return 'Markman'
-    }
+    },
   },
   methods: {
     minimizeWindow() {
@@ -28,8 +28,8 @@ export default {
     closeWindow() {
       const window = remote.getCurrentWindow()
       window.close()
-    }
-  }
+    },
+  },
 }
 </script>
 

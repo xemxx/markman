@@ -55,7 +55,7 @@ export default {
   data() {
     return {
       showMove: false,
-      moveCheck: 0
+      moveCheck: 0,
     }
   },
   computed: {
@@ -63,8 +63,8 @@ export default {
       notes: state => state.sidebar.notes,
       showNew: state => state.sidebar.type == 'note',
       bid: state => state.sidebar.flagId,
-      notebooks: state => state.sidebar.notebooks
-    })
+      notebooks: state => state.sidebar.notebooks,
+    }),
   },
   created() {
     this.loadList({ type: 'all' })
@@ -74,7 +74,7 @@ export default {
       checkoutNote: 'editor/checkoutNote',
       loadList: 'sidebar/loadNotes',
       addNote: 'editor/addNote',
-      deleteNote: 'editor/deleteNote'
+      deleteNote: 'editor/deleteNote',
     }),
     //右键菜单
     rightMenu(id, bid) {
@@ -82,13 +82,13 @@ export default {
       menu.append(
         new MenuItem({
           label: '移动',
-          click: () => this.moveNote(id, bid)
+          click: () => this.moveNote(id, bid),
         })
       )
       menu.append(
         new MenuItem({
           label: '删除',
-          click: () => this.deleteNote(id)
+          click: () => this.deleteNote(id),
         })
       )
       menu.popup({ window: remote.getCurrentWindow() })
@@ -101,11 +101,11 @@ export default {
     doMove() {
       this.$store.dispatch('sidebar/moveNote', {
         id: this.moveNoteId,
-        bid: this.moveCheck
+        bid: this.moveCheck,
       })
       this.showMove = false
-    }
-  }
+    },
+  },
 }
 </script>
 

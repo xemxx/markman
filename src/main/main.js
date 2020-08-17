@@ -42,7 +42,7 @@ if (isDevelopment) {
 }
 
 const accessor = new Accessor({
-  userDataPath: userDataPath
+  userDataPath: userDataPath,
 })
 
 const markman = new App(accessor)

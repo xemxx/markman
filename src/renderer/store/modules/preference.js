@@ -5,7 +5,7 @@ const state = {
   autoSave: false,
   autoSaveDelay: 1000,
   // menu status
-  toggleSidebar: false
+  toggleSidebar: false,
 }
 
 const mutations = {
@@ -24,7 +24,7 @@ const mutations = {
   },
   TOGGLE_VIEW_MODE(state, entryName) {
     state[entryName] = !state[entryName]
-  }
+  },
 }
 
 const actions = {
@@ -39,12 +39,12 @@ const actions = {
   setOne({}, { type, value }) {
     // save to electron-store
     ipcRenderer.send('m::set-user-pref', { [type]: value })
-  }
+  },
 }
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 }

@@ -54,26 +54,26 @@ import Footer from './footer.vue'
 
 export default {
   name: 'Notebooks',
-  data: function() {
+  data: function () {
     return {
       notebookInput: false,
       notebookName: '',
-      isCollapse: false
+      isCollapse: false,
     }
   },
   computed: {
     ...mapState({
       notebooks: state => {
         return state.sidebar.notebooks
-      }
-    })
+      },
+    }),
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
     this.loadNotebooks()
   },
   components: {
-    Footer
+    Footer,
   },
   methods: {
     ...mapActions({
@@ -81,7 +81,7 @@ export default {
       loadNotebooks: 'sidebar/loadNotebooks',
       addNotebook: 'sidebar/addNotebook',
       deleteNotebook: 'sidebar/deleteNotebook',
-      updateNotebook: 'sidebar/updateNotebook'
+      updateNotebook: 'sidebar/updateNotebook',
     }),
     showAddNotebook() {
       this.$refs['menu'].open(2)
@@ -112,13 +112,13 @@ export default {
       menu.append(
         new MenuItem({
           label: '重命名',
-          click: () => this.renameNotebook(id)
+          click: () => this.renameNotebook(id),
         })
       )
       menu.append(
         new MenuItem({
           label: '删除',
-          click: () => this.deleteNotebook(id)
+          click: () => this.deleteNotebook(id),
         })
       )
       menu.popup({ window: remote.getCurrentWindow() })
@@ -143,8 +143,8 @@ export default {
       let index = this.notebooks.findIndex(item => id === item.id)
       this.notebooks[index].rename = false
       this.notebookName = ''
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="stylus" scoped>

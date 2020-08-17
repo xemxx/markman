@@ -20,7 +20,7 @@ class Preference extends EventEmitter {
     )
     this.store = new Store({
       schema,
-      name: PREFERENCES_FILE_NAME
+      name: PREFERENCES_FILE_NAME,
     })
 
     this.staticPath = path.join(__static, 'preference.json')

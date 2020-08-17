@@ -19,7 +19,7 @@ import { shell } from 'electron'
 export default {
   data() {
     return {
-      status: this.bool
+      status: this.bool,
     }
   },
   props: {
@@ -29,15 +29,15 @@ export default {
     more: String,
     disable: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   watch: {
-    bool: function(value, oldValue) {
+    bool: function (value, oldValue) {
       if (value !== oldValue) {
         this.status = value
       }
-    }
+    },
   },
   methods: {
     handleMoreClick() {
@@ -47,8 +47,8 @@ export default {
     },
     handleSwitchChange(value) {
       this.onChange(value)
-    }
-  }
+    },
+  },
 }
 </script>
 

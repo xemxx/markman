@@ -9,7 +9,7 @@
 import TitleBar from '@/components/titleBar'
 export default {
   components: {
-    TitleBar
+    TitleBar,
   },
   created() {
     // 初始化editor窗口逻辑
@@ -64,8 +64,8 @@ export default {
       let store = this.$store
       store.dispatch('user/unSetActiver')
       this.$router.push('/sign/in').catch(err => err)
-    }
-  }
+    },
+  },
 }
 </script>
 

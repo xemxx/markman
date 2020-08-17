@@ -10,7 +10,7 @@ export default class User extends Model {
     return db
       .get(`select id from user where username = ? and server =?`, [
         username,
-        server
+        server,
       ])
       .then(data => {
         if (data != undefined) {

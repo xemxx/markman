@@ -8,7 +8,7 @@ const state = {
   token: getCookie('token') ? getCookie('token') : '',
   username: getCookie('username') ? getCookie('username') : '',
   server: getCookie('server') ? getCookie('server') : '',
-  lastSC: getCookie('lastSC') ? getCookie('lastSC') : ''
+  lastSC: getCookie('lastSC') ? getCookie('lastSC') : '',
 }
 
 const mutations = {
@@ -31,7 +31,7 @@ const mutations = {
   update_lastSC(state, value) {
     setCookie('lastSC', value)
     state.lastSC = value
-  }
+  },
 }
 
 const actions = {
@@ -85,12 +85,12 @@ const actions = {
           console.log(err)
         })
     })
-  }
+  },
 }
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 }

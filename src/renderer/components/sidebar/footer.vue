@@ -12,19 +12,19 @@ import { mapState, mapActions } from 'vuex'
 export default {
   computed: {
     ...mapState({
-      isSyncing: state => state.sync.isSyncing
-    })
+      isSyncing: state => state.sync.isSyncing,
+    }),
   },
   methods: {
     ...mapActions({
-      sync: 'sync/sync'
+      sync: 'sync/sync',
     }),
     quit() {
       this.$store.dispatch('user/unSetActiver').then(() => {
         this.$router.push('/sign/in').catch(err => err)
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

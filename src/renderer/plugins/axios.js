@@ -9,7 +9,7 @@ const errCode = {
   SUCCESS: 200, //请求成功
   ErrorAuthCheckTokenFail: 20001, //"Token无效"
   ErrorAuthCheckTokenTimeout: 20002, //""Token已超时""
-  ErrorAuthToken: 20003 //"Token参数错误"
+  ErrorAuthToken: 20003, //"Token参数错误"
 }
 
 axios.defaults.withCredentials = false
@@ -43,7 +43,7 @@ axios.interceptors.response.use(
           Message({
             message: '登录失效，请重新登录,ERROR：' + msg,
             type: 'error',
-            center: true
+            center: true,
           })
           store.commit('user/update_token', '')
           router.push('/sign/in').catch(err => err)
@@ -52,7 +52,7 @@ axios.interceptors.response.use(
           Message({
             message: 'ERROR：' + msg,
             type: 'error',
-            center: true
+            center: true,
           })
           return Promise.reject(res)
       }
@@ -60,7 +60,7 @@ axios.interceptors.response.use(
       Message({
         message: '服务器出错了:(，ERROR：' + res.data,
         type: 'error',
-        center: true
+        center: true,
       })
       return Promise.reject(res)
     }
@@ -73,7 +73,7 @@ axios.interceptors.response.use(
       Message({
         message: '服务器错误，ERROR：' + err,
         type: 'error',
-        center: true
+        center: true,
       })
     } else if (!err.request) {
       //发送请求失败，可能是用户url地址错误或者代码错误
@@ -85,7 +85,7 @@ axios.interceptors.response.use(
         Message({
           message: '网络错误，请检查，ERROR：' + err,
           type: 'error',
-          center: true
+          center: true,
         })
       }
     }

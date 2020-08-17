@@ -6,14 +6,14 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     online: navigator.onLine,
-    platform: process.env.platform
+    platform: process.env.platform,
   },
   mutations: {
     update_online(state, value) {
       state.online = value
-    }
+    },
   },
-  modules
+  modules,
 })
 
 //添加对联网状态的更新

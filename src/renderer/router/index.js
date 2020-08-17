@@ -19,7 +19,7 @@ const routes = [
         path: '/base',
         name: 'base',
         component: Base,
-        meta: { auth: true }
+        meta: { auth: true },
       },
       {
         path: '/sign',
@@ -28,16 +28,16 @@ const routes = [
           {
             path: 'in',
             name: 'signin',
-            component: SignIn
+            component: SignIn,
           },
           {
             path: 'up',
             name: 'signup',
-            component: SignUp
-          }
-        ]
-      }
-    ]
+            component: SignUp,
+          },
+        ],
+      },
+    ],
   },
 
   {
@@ -46,21 +46,21 @@ const routes = [
     children: [
       {
         path: '',
-        component: General
+        component: General,
       },
       {
         path: 'general',
         component: General,
-        name: 'general'
-      }
-    ]
-  }
+        name: 'general',
+      },
+    ],
+  },
 ]
 
 const router = new VueRouter({
   mode: 'hash',
   base: process.env.BASE_URL,
-  routes
+  routes,
 })
 
 export default router

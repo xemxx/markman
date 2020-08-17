@@ -24,7 +24,7 @@ export default {
   data() {
     this.category = category
     return {
-      currentCategory: 'general'
+      currentCategory: 'general',
     }
   },
   watch: {
@@ -32,18 +32,18 @@ export default {
       if (to.name !== from.name) {
         this.currentCategory = to.name
       }
-    }
+    },
   },
   methods: {
     handleSelect(item) {
       this.$router.push({
-        path: `/preference/${item.category.toLowerCase()}`
+        path: `/preference/${item.category.toLowerCase()}`,
       })
     },
     handleCategoryItemClick(path) {
       this.$router.push(path).catch(err => err)
-    }
-  }
+    },
+  },
 }
 </script>
 

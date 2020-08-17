@@ -12,19 +12,19 @@ export const editorWinOptions = {
   minHeight: 350,
   center: true,
   webPreferences: {
-    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION //提供完整的node环境支持
+    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION, //提供完整的node环境支持
   },
   useContentSize: true,
   show: false,
   frame: true,
-  titleBarStyle: 'hidden'
+  titleBarStyle: 'hidden',
 }
 
 export const preferencesWinOptions = {
   width: 950,
   height: 650,
   webPreferences: {
-    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
   },
   fullscreenable: false,
   fullscreen: false,
@@ -35,12 +35,12 @@ export const preferencesWinOptions = {
   show: false,
   frame: true,
   thickFrame: !isOsx,
-  titleBarStyle: 'hidden'
+  titleBarStyle: 'hidden',
 }
 
 export const EXTENSION_HASN = {
   styledHtml: '.html',
-  pdf: '.pdf'
+  pdf: '.pdf',
 }
 
 export const TITLE_BAR_HEIGHT = 22

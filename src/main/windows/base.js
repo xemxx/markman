@@ -11,7 +11,7 @@ import { isLinux } from '../config'
 export const WindowType = {
   BASE: 'base', // You shold never create a `BASE` window.
   EDITOR: 'editor',
-  SETTINGS: 'settings'
+  SETTINGS: 'settings',
 }
 
 class BaseWindow extends EventEmitter {
