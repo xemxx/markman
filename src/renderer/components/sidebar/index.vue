@@ -15,13 +15,13 @@ export default {
   name: 'Sidebar',
   computed: {
     ...mapState({
-      sidebar: state => state.preference.toggleSidebar
-    })
+      sidebar: state => state.preference.toggleSidebar,
+    }),
   },
   components: {
     Notebooks,
-    Notes
-  }
+    Notes,
+  },
 }
 </script>
 

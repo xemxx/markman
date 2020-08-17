@@ -31,7 +31,7 @@
         <el-button type="primary" @click="handleSubmit('signUp')"
           >注册</el-button
         >
-        <el-button @click="handleReset('signUp')" style="margin-left: 8px"
+        <el-button @click="handleReset('signUp')" style="margin-left: 8px;"
           >重置</el-button
         >
       </el-form-item>
@@ -47,19 +47,19 @@ export default {
       signUp: {
         server: '',
         user: '',
-        password: ''
+        password: '',
       },
       signUpRules: {
         server: [
           { required: true, trigger: 'blur' },
-          { type: 'url', trigger: 'blur' }
+          { type: 'url', trigger: 'blur' },
         ],
         user: [{ required: true, trigger: 'blur' }],
         password: [
           { required: true, trigger: 'blur' },
-          { min: 6, message: '密码至少6位', trigger: 'blur' }
-        ]
-      }
+          { min: 6, message: '密码至少6位', trigger: 'blur' },
+        ],
+      },
     }
   },
   methods: {
@@ -71,13 +71,13 @@ export default {
           this.$axios
             .post(this.signUp.server + '/signUp', {
               username: this.signUp.user,
-              password: this.signUp.password
+              password: this.signUp.password,
             })
             .then(() => {
               msg({
                 message: '注册成功!请手动登录:)',
                 type: 'success',
-                center: true
+                center: true,
               })
               router.push('/sign/in')
             })
@@ -85,14 +85,14 @@ export default {
           msg({
             message: '验证错误，请检查输入',
             type: 'warning',
-            center: true
+            center: true,
           })
         }
       })
     },
     handleReset(name) {
       this.$refs[name].resetFields()
-    }
-  }
+    },
+  },
 }
 </script>

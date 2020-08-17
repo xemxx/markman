@@ -17,14 +17,14 @@ export default {
     return {}
   },
   components: {
-    SideBar
+    SideBar,
   },
   computed: {},
   created() {
     this.$nextTick(() => {
       this.$store.dispatch('preference/getLocal')
     })
-  }
+  },
 }
 </script>
 

@@ -3,7 +3,7 @@ import BaseWindow, { WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   editorWinOptions,
-  isWindows
+  isWindows,
   //  isLinux
 } from '../config'
 // import path from 'path'
@@ -61,7 +61,7 @@ class EditorWindow extends BaseWindow {
         type: 'warning',
         buttons: ['Close', 'Reload', 'Keep It Open'],
         message: 'Mark Text has crashed',
-        detail: msg
+        detail: msg,
       })
 
       if (win.id) {

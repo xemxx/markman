@@ -7,9 +7,9 @@ const actions = {
       await dispatch('editor/saveNote', undefined, { root: true })
       await dispatch('sync/sync', undefined, { root: true })
     })
-  }
+  },
 }
 
 export default {
-  actions
+  actions,
 }

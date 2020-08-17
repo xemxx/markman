@@ -45,7 +45,7 @@ class Keybindings {
       ['view.toggle-sidebar', 'Ctrl+1'],
       // ["view.toggle-tabbar", "CmdOrCtrl+Alt+B"],
       ['view.toggle-dev-tools', 'CmdOrCtrl+Alt+I'],
-      ['view.dev-reload', 'CmdOrCtrl+R']
+      ['view.dev-reload', 'CmdOrCtrl+R'],
     ])
   }
 

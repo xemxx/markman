@@ -13,7 +13,7 @@ export default {
   name: 'Base',
   components: {
     Sidebar,
-    Editor
+    Editor,
   },
   data: () => {
     return {}
@@ -28,8 +28,8 @@ export default {
       dispatch('listenFileSave')
       // 监听偏好设置即时生效
       dispatch('preference/getLocal')
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="stylus" scoped>

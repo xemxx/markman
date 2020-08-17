@@ -25,7 +25,7 @@ import { shell } from 'electron'
 export default {
   data() {
     return {
-      selectValue: this.value
+      selectValue: this.value,
     }
   },
   props: {
@@ -39,15 +39,15 @@ export default {
     more: String,
     disable: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   watch: {
-    value: function(value, oldValue) {
+    value: function (value, oldValue) {
       if (value !== oldValue) {
         this.selectValue = value
       }
-    }
+    },
   },
   methods: {
     handleMoreClick() {
@@ -57,8 +57,8 @@ export default {
     },
     select(value) {
       this.onChange(value)
-    }
-  }
+    },
+  },
 }
 </script>
 

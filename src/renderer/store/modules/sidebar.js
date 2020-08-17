@@ -10,7 +10,7 @@ const state = {
   notebooks: [],
   type: 'all',
   flagId: '',
-  notes: ''
+  notes: '',
 }
 
 const mutations = {
@@ -21,7 +21,7 @@ const mutations = {
     state.type = type ? type : state.type
     state.flagId = flagId ? flagId : state.tid
     state.notes = notes ? notes : state.notes
-  }
+  },
 }
 const actions = {
   loadNotebooks({ commit, rootState }) {
@@ -47,7 +47,7 @@ const actions = {
         sort: 1, //暂时不用
         sortType: 1, //暂时不用
         addDate: time,
-        modifyDate: time
+        modifyDate: time,
       })
       .then(() => {
         //更新列表显示
@@ -85,7 +85,7 @@ const actions = {
       return model
         .update(id, {
           name,
-          modifyState: modifyState === 0 ? 2 : modifyState
+          modifyState: modifyState === 0 ? 2 : modifyState,
         })
         .then(() => {
           //更新列表显示
@@ -118,7 +118,7 @@ const actions = {
         commit('update_notes', {
           type,
           flagId,
-          notes: notes
+          notes: notes,
         })
       })
       .catch(err => console.log(err))
@@ -132,12 +132,12 @@ const actions = {
         dispatch('loadNotebooks')
       })
       .catch(err => console.log(err))
-  }
+  },
 }
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 }

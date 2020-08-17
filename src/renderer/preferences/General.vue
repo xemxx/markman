@@ -26,7 +26,7 @@ import Bool from './common/bool'
 export default {
   components: {
     Bool,
-    Range
+    Range,
   },
   data() {
     return {}
@@ -34,8 +34,8 @@ export default {
   computed: {
     ...mapState({
       autoSave: state => state.preference.autoSave,
-      autoSaveDelay: state => state.preference.autoSaveDelay
-    })
+      autoSaveDelay: state => state.preference.autoSaveDelay,
+    }),
   },
   methods: {
     onSelectChange(type, value) {
@@ -44,8 +44,8 @@ export default {
     },
     selectDefaultDirectoryToOpen() {
       this.$store.dispatch('SELECT_DEFAULT_DIRECTORY_TO_OPEN')
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import Index from './Index.vue'
 import router from './router'
 import store from './store'
 
@@ -16,7 +15,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(m => m.meta.auth)) {
     if (store.state.user.token === '') {
       next({
-        path: '/sign/in'
+        path: '/sign/in',
       })
     } else {
       next()
@@ -29,5 +28,5 @@ router.beforeEach((to, from, next) => {
 new Vue({
   router,
   store,
-  render: h => h(Index)
+  render: h => h('router-view'),
 }).$mount('#app')

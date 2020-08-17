@@ -1,7 +1,7 @@
 import { isDevelopment } from '../../config'
 import * as action from '../actions/view'
 
-export default function(keybindings, preference) {
+export default function (keybindings, preference) {
   const { toggleSidebar } = preference.getAll()
   const viewMenu = {
     label: 'View',
@@ -14,30 +14,30 @@ export default function(keybindings, preference) {
         checked: toggleSidebar,
         click(item) {
           action.toggleSidebar(item)
-        }
+        },
       },
       {
-        type: 'separator'
+        type: 'separator',
       },
       { role: 'resetzoom' },
       { role: 'zoomin' },
-      { role: 'zoomout' }
-    ]
+      { role: 'zoomout' },
+    ],
   }
 
   if (isDevelopment) {
     viewMenu.submenu.push({
-      type: 'separator'
+      type: 'separator',
     })
     viewMenu.submenu.push({
       label: 'Toggle Developer Tools',
       accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
-      role: 'toggledevtools'
+      role: 'toggledevtools',
     })
     viewMenu.submenu.push({
       label: 'Reload',
       accelerator: keybindings.getAccelerator('view.dev-reload'),
-      role: 'reload'
+      role: 'reload',
     })
   }
   return viewMenu

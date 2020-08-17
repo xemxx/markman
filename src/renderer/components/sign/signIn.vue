@@ -40,19 +40,19 @@ export default {
       signIn: {
         server: '',
         username: '',
-        password: ''
+        password: '',
       },
       signInRules: {
         server: [
           { required: true, trigger: 'blur' },
-          { type: 'url', trigger: 'blur' }
+          { type: 'url', trigger: 'blur' },
         ],
         username: [{ required: true, trigger: 'blur' }],
         password: [
           { required: true, trigger: 'blur' },
-          { min: 6, message: '密码至少6位', trigger: 'blur' }
-        ]
-      }
+          { min: 6, message: '密码至少6位', trigger: 'blur' },
+        ],
+      },
     }
   },
   methods: {
@@ -67,14 +67,14 @@ export default {
           this.$axios
             .post(this.signIn.server + '/signIn', {
               username,
-              password
+              password,
             })
             .then(data => {
               // 服务端成功返回数据，更新客户端的活动用户信息
               return store.dispatch('user/setActiver', {
                 username,
                 token: data.token,
-                server
+                server,
               })
             })
             .then(() => {
@@ -82,7 +82,7 @@ export default {
               msg({
                 message: '登录成功:)',
                 type: 'success',
-                center: true
+                center: true,
               })
               router.push('/base')
             })
@@ -91,12 +91,12 @@ export default {
           msg({
             message: '验证错误，请检查输入',
             type: 'warning',
-            center: true
+            center: true,
           })
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

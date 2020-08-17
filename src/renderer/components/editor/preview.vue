@@ -13,17 +13,17 @@ import 'highlight.js/styles/atom-one-dark.css'
 export default {
   name: 'Preview',
   props: {
-    markdown: String
+    markdown: String,
   },
   computed: {
-    preview: function() {
+    preview: function () {
       return marked(this.markdown)
-    }
+    },
   },
   created() {
     marked.setOptions({
       renderer: new marked.Renderer(),
-      highlight: function(code) {
+      highlight: function (code) {
         try {
           return hljs.highlightAuto(code).value
         } catch (err) {
@@ -38,8 +38,8 @@ export default {
       sanitize: false,
       smartLists: true,
       smartypants: false,
-      xhtml: false
+      xhtml: false,
     })
-  }
+  },
 }
 </script>
