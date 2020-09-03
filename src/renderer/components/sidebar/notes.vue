@@ -26,7 +26,7 @@
         <div class="el-card__body">{{ item.content }}</div>
       </div>
     </el-main>
-    <el-dialog title="提示" :visible.sync="showMove" width="30%">
+    <el-dialog title="提示" :visible="showMove" width="30%">
       <el-select v-model="moveCheck">
         <el-option
           v-for="item in notebooks"
@@ -36,10 +36,10 @@
         >
         </el-option>
       </el-select>
-      <span slot="footer" class="dialog-footer">
+      <template v-slot:footer class="dialog-footer">
         <el-button @click="showMove = false">取 消</el-button>
         <el-button type="primary" @click="doMove">确 定</el-button>
-      </span>
+      </template>
     </el-dialog>
   </el-container>
 </template>
@@ -83,13 +83,13 @@ export default {
         new MenuItem({
           label: '移动',
           click: () => this.moveNote(id, bid),
-        })
+        }),
       )
       menu.append(
         new MenuItem({
           label: '删除',
           click: () => this.deleteNote(id),
-        })
+        }),
       )
       menu.popup({ window: remote.getCurrentWindow() })
     },

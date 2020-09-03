@@ -1,5 +1,4 @@
-import VueRouter from 'vue-router'
-import Vue from 'vue'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import App from '@/views/App'
 import Base from '@/views/Base'
 import Sign from '@/views/Sign'
@@ -7,8 +6,6 @@ import Preference from '@/views/Preference'
 import SignUp from '@/components/sign/signUp.vue'
 import SignIn from '@/components/sign/signIn.vue'
 import General from '@/preferences/General'
-
-Vue.use(VueRouter)
 
 const routes = [
   {
@@ -57,9 +54,8 @@ const routes = [
   },
 ]
 
-const router = new VueRouter({
-  mode: 'hash',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHashHistory(process.env.BASE_URL),
   routes,
 })
 

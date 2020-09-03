@@ -131,7 +131,7 @@ const actions = {
   // save note to sqlite
   async saveNote(
     { dispatch, state, commit },
-    { markdown, id, title, SC, isSave } = state.currentNote
+    { markdown, id, title, SC, isSave } = state.currentNote,
   ) {
     if (id == undefined || id == '') {
       return

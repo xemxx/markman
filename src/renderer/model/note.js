@@ -8,13 +8,13 @@ export default class Note extends Model {
   getAllByBook(uid, bid) {
     return db.all(
       `select * from note where uid=? and bid=? and modifyState<3`,
-      [uid, bid]
+      [uid, bid],
     )
   }
   getAllByTag(uid, tid) {
     return db.all(
       `select b.* from note_tag as a left join note as b on a.nid=b.id where a.tid=? and b.uid=? and modifyState<3`,
-      [tid, uid]
+      [tid, uid],
     )
   }
   getAll(uid) {
@@ -39,9 +39,9 @@ export default class Note extends Model {
     return db.all(
       `select * from note where guid in (${sql.substr(
         0,
-        sql.length - 1
+        sql.length - 1,
       )}) and uid = ?`,
-      guids
+      guids,
     )
   }
   getModify(uid) {

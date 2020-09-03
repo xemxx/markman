@@ -21,7 +21,7 @@ export default {
         //先自身解析token是否超时
         try {
           let data = JSON.parse(
-            decodeURIComponent(escape(window.atob(ustate.token.split('.')[1])))
+            decodeURIComponent(escape(window.atob(ustate.token.split('.')[1]))),
           )
           if (data.exp > Date.parse(new Date()) / 1000) {
             if (data.exp - Date.parse(new Date()) / 1000 < 60 * 60 * 24 * 30) {

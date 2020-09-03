@@ -26,7 +26,7 @@ class EditorWindow extends BaseWindow {
     const winOptions = Object.assign(
       { width: 1200, height: 800 },
       editorWinOptions,
-      options
+      options,
     )
 
     if (isWindows) {

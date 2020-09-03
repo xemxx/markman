@@ -38,7 +38,7 @@ const checkVersion = async () => {
             if (res === 0) {
               shell.openExternal(downloadUrl)
             }
-          }
+          },
         )
       } else {
         dialog.showMessageBoxSync({

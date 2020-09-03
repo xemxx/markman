@@ -6,6 +6,7 @@
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import bus from '@/bus'
+import { nextTick } from 'vue'
 
 export default {
   props: {
@@ -18,7 +19,7 @@ export default {
   },
   watch: {},
   created() {
-    this.$nextTick(() => {
+    nextTick(() => {
       // listen for bus events.
       bus.$on('note-loaded', this.setMarkdownToEditor)
       bus.$on('query-close-note', this.showCloseQuery)
@@ -53,7 +54,7 @@ export default {
       this.listen()
     })
   },
-  beforeDestroy() {
+  beforeUnmount() {
     bus.$off('note-loaded', this.setMarkdownToEditor)
     bus.$off('query-close-note', this.showCloseQuery)
 
@@ -83,7 +84,7 @@ export default {
           },
           action => {
             return action
-          }
+          },
         )
         .then(action => {
           console.log(123)

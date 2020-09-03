@@ -38,7 +38,7 @@ export default function () {
         click(menuItem, browserWindow) {
           showAboutDialog(browserWindow)
         },
-      }
+      },
     )
   }
   return helpMenu

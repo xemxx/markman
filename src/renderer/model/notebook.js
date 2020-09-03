@@ -34,9 +34,9 @@ export default class Notebook extends Model {
     return db.all(
       `select * from notebook where guid in (${sql.substr(
         0,
-        sql.length - 1
+        sql.length - 1,
       )}) and uid = ?`,
-      guids
+      guids,
     )
   }
 
