@@ -6,7 +6,7 @@
           >所有笔记</el-menu-item
         >
         <el-submenu index="2">
-          <template slot="title">
+          <template v-slot:title>
             笔记本
             <i class="el-icon-plus" @click.stop="showAddNotebook"></i>
           </template>
@@ -46,6 +46,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import { nextTick } from 'vue'
 
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
@@ -86,7 +87,7 @@ export default {
     showAddNotebook() {
       this.$refs['menu'].open(2)
       this.notebookInput = true
-      this.$nextTick(() => {
+      nextTick(() => {
         this.$refs['notebookInput'].focus()
       })
     },
@@ -113,13 +114,13 @@ export default {
         new MenuItem({
           label: '重命名',
           click: () => this.renameNotebook(id),
-        })
+        }),
       )
       menu.append(
         new MenuItem({
           label: '删除',
           click: () => this.deleteNotebook(id),
-        })
+        }),
       )
       menu.popup({ window: remote.getCurrentWindow() })
     },
@@ -128,7 +129,7 @@ export default {
       this.notebooks[index].rename = true
       this.notebookName = this.notebooks[index].name
       this.renameOld = this.notebooks[index].name
-      this.$nextTick(() => {
+      nextTick(() => {
         console.log(this.$refs)
         this.$refs.renameInput[0].focus()
       })

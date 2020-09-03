@@ -16,7 +16,7 @@ class Preference extends EventEmitter {
 
     this.preferencesPath = preferencesPath
     this.hasPreferencesFile = fs.existsSync(
-      path.join(this.preferencesPath, `./${PREFERENCES_FILE_NAME}.json`)
+      path.join(this.preferencesPath, `./${PREFERENCES_FILE_NAME}.json`),
     )
     this.store = new Store({
       schema,
@@ -89,7 +89,7 @@ class Preference extends EventEmitter {
   setItems(settings) {
     if (!settings) {
       log.error(
-        'Cannot change settings without entires: object is undefined or null.'
+        'Cannot change settings without entires: object is undefined or null.',
       )
       return
     }

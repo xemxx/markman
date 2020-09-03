@@ -158,7 +158,7 @@ class AppMenu {
   _buildEditorMenu() {
     const menuTemplate = configEditorMenu(
       this._keybindings,
-      this._userPreference
+      this._userPreference,
     )
     const menu = Menu.buildFromTemplate(menuTemplate)
 

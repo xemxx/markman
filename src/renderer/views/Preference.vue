@@ -10,6 +10,7 @@
 <script>
 import SideBar from '@/preferences/SideBar'
 import { isOsx } from '@/tools'
+import { nextTick } from 'vue'
 
 export default {
   data() {
@@ -21,7 +22,7 @@ export default {
   },
   computed: {},
   created() {
-    this.$nextTick(() => {
+    nextTick(() => {
       this.$store.dispatch('preference/getLocal')
     })
   },

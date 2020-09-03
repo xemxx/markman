@@ -1,14 +1,13 @@
-import Vue from 'vue'
-import router from './router'
-import store from './store'
+import { createApp } from 'vue'
+import router from '@/router'
+import store from '@/store'
+import App from '@/App.vue'
 
-import './plugins/sqlite3/init.js'
-import './plugins/axios.js'
-import './plugins/element.js'
+import '@/plugins/sqlite3/init.js'
+import Axios from '@/plugins/axios.js'
+import Antd from '@/plugins/antd.js'
 
-import './assets/css/index.styl'
-
-Vue.config.productionTip = false
+import '@/assets/css/index.styl'
 
 // 全局拦截，检测token
 router.beforeEach((to, from, next) => {
@@ -25,8 +24,9 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-new Vue({
-  router,
-  store,
-  render: h => h('router-view'),
-}).$mount('#app')
+const app = createApp(App)
+
+app.config.productionTip = false
+app.config.globalProperties.$axios = Axios
+
+app.use(router).use(store).use(Antd).mount('#app')
