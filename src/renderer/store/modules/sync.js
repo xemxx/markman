@@ -32,7 +32,7 @@ const actions = {
       const { lastSC: localSC = '' } = await userModel.getLastSC(uid)
       // 获取服务端版本号
       const { SC: serverSC = '' } = await axios.get(
-        `${server}/user/getLastSyncCount`
+        `${server}/user/getLastSyncCount`,
       )
       // 如果需要更新则拉取
       if (serverSC > localSC) {
