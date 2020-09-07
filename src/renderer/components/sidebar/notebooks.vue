@@ -1,27 +1,28 @@
 <template>
-  <el-container>
-    <el-main>
-      <el-menu ref="menu" :collapse="isCollapse" class="menu">
-        <el-menu-item index="1" @click="loadList({ type: 'all' })"
-          >所有笔记</el-menu-item
+  <a-layout>
+    <a-layout-content>
+      <a-menu ref="menu" mode="inline">
+        <a-menu-item key="sub1" @click="loadList({ type: 'all' })"
+          >所有笔记</a-menu-item
         >
-        <el-submenu index="2">
+        <a-sub-menu key="sub2">
           <template v-slot:title>
-            笔记本
-            <i class="el-icon-plus" @click.stop="showAddNotebook"></i>
+            <span
+              ><span>笔记本</span>
+              <PlusCircleOutlined @click.stop="showAddNotebook" />
+            </span>
           </template>
-          <el-menu-item v-show="notebookInput" index="1-new">
+          <a-menu-item v-show="notebookInput" key="0">
             <input
               ref="notebookInput"
-              v-model="notebookName"
+              :value="notebookName"
               @keyup.enter="doAddNotebook"
               @blur="blurAddNotebook"
             />
-          </el-menu-item>
-          <el-menu-item
+          </a-menu-item>
+          <a-menu-item
             v-for="item in notebooks"
-            :key="item.id"
-            :index="item.id + ''"
+            :key="item.id + ''"
             @click="loadList({ type: 'note', flagId: item.guid })"
           >
             <div class="notebook-item" @click.right="rightMenu(item.id)">
@@ -29,24 +30,25 @@
               <input
                 ref="renameInput"
                 v-if="item.rename"
-                v-model="notebookName"
+                :value="notebookName"
                 @blur="blurRenameNotebook(item.id)"
                 @keyup.enter="doRenameNotebook(item.id)"
               />
             </div>
-          </el-menu-item>
-        </el-submenu>
-      </el-menu>
-    </el-main>
-    <el-footer height="auto">
+          </a-menu-item>
+        </a-sub-menu>
+      </a-menu>
+    </a-layout-content>
+    <a-layout-footer height="auto">
       <Footer />
-    </el-footer>
-  </el-container>
+    </a-layout-footer>
+  </a-layout>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
 import { nextTick } from 'vue'
+import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
@@ -55,11 +57,10 @@ import Footer from './footer.vue'
 
 export default {
   name: 'Notebooks',
-  data: function () {
+  data() {
     return {
       notebookInput: false,
       notebookName: '',
-      isCollapse: false,
     }
   },
   computed: {
@@ -75,6 +76,7 @@ export default {
   },
   components: {
     Footer,
+    PlusCircleOutlined,
   },
   methods: {
     ...mapActions({
@@ -85,7 +87,7 @@ export default {
       updateNotebook: 'sidebar/updateNotebook',
     }),
     showAddNotebook() {
-      this.$refs['menu'].open(2)
+      //this.$refs['menu'].open(2)
       this.notebookInput = true
       nextTick(() => {
         this.$refs['notebookInput'].focus()
@@ -103,7 +105,7 @@ export default {
       }
     },
     blurAddNotebook() {
-      this.$refs['menu'].close(2)
+      //this.$refs['menu'].close(2)
       this.notebookInput = false
       this.notebookName = ''
     },
@@ -166,7 +168,7 @@ input
     border 0
     outline none
 
-.el-submenu .el-menu-item
+.a-sub-menu .a-menu-item
   padding-right 0
   min-width 100px
 </style>

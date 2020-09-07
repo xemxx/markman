@@ -1,42 +1,33 @@
 <template>
-  <div>
-    <el-form
-      :model="signUp"
-      :rules="signUpRules"
-      ref="signUp"
-      label-width="100px"
-    >
-      <el-form-item label="服务器地址" prop="server">
-        <el-input
-          type="text"
-          v-model="signUp.server"
-          placeholder="http(s)://127.0.0.1:8000"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="用户名" prop="user">
-        <el-input
-          type="text"
-          v-model="signUp.user"
-          placeholder="xem"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input
-          type="password"
-          v-model="signUp.password"
-          placeholder="xemxem"
-        ></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleSubmit('signUp')"
-          >注册</el-button
-        >
-        <el-button @click="handleReset('signUp')" style="margin-left: 8px;"
-          >重置</el-button
-        >
-      </el-form-item>
-    </el-form>
-  </div>
+  <a-form :model="signUp" :rules="signUpRules" ref="signUp" label-width="100px">
+    <a-form-item label="服务器地址" name="server">
+      <a-input
+        type="text"
+        v-model:value="signUp.server"
+        placeholder="http(s)://127.0.0.1:8000"
+      ></a-input>
+    </a-form-item>
+    <a-form-item label="用户名" name="user">
+      <a-input
+        type="text"
+        v-model:value="signUp.user"
+        placeholder="xem"
+      ></a-input>
+    </a-form-item>
+    <a-form-item label="密码" name="password">
+      <a-input
+        type="password"
+        v-model:value="signUp.password"
+        placeholder="xemxem"
+      ></a-input>
+    </a-form-item>
+    <a-form-item>
+      <a-button type="primary" @click="handleSubmit('signUp')">注册</a-button>
+      <a-button @click="handleReset('signUp')" style="margin-left: 8px;"
+        >重置</a-button
+      >
+    </a-form-item>
+  </a-form>
 </template>
 
 <script>
@@ -66,29 +57,20 @@ export default {
     handleSubmit(name) {
       let msg = this.$message
       let router = this.$router
-      this.$refs[name].validate(valid => {
-        if (valid) {
+      this.$refs[name]
+        .validate()
+        .then(() => {
           this.$axios
             .post(this.signUp.server + '/signUp', {
               username: this.signUp.user,
               password: this.signUp.password,
             })
             .then(() => {
-              msg({
-                message: '注册成功!请手动登录:)',
-                type: 'success',
-                center: true,
-              })
+              msg.success('注册成功!请手动登录:)')
               router.push('/sign/in')
             })
-        } else {
-          msg({
-            message: '验证错误，请检查输入',
-            type: 'warning',
-            center: true,
-          })
-        }
-      })
+        })
+        .catch()
     },
     handleReset(name) {
       this.$refs[name].resetFields()

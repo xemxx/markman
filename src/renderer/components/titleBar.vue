@@ -3,8 +3,8 @@
     {{ title }}
     <!-- 如果是windows平台 -->
     <div class="handle-bar" v-if="isWin">
-      <i class="el-icon-minus" @click="minimizeWindow"></i>
-      <i class="el-icon-close" @click="closeWindow"></i>
+      <i class="a-icon-minus" @click="minimizeWindow"></i>
+      <i class="a-icon-close" @click="closeWindow"></i>
     </div>
   </div>
 </template>

@@ -5,7 +5,7 @@
 <script>
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
-import bus from '@/bus'
+import emitter from '@/emitter'
 import { nextTick } from 'vue'
 
 export default {
@@ -20,9 +20,9 @@ export default {
   watch: {},
   created() {
     nextTick(() => {
-      // listen for bus events.
-      bus.$on('note-loaded', this.setMarkdownToEditor)
-      bus.$on('query-close-note', this.showCloseQuery)
+      // listen for emitter events.
+      emitter.on('note-loaded', this.setMarkdownToEditor)
+      emitter.on('query-close-note', this.showCloseQuery)
 
       const options = {
         value: this.markdown,
@@ -55,8 +55,8 @@ export default {
     })
   },
   beforeUnmount() {
-    bus.$off('note-loaded', this.setMarkdownToEditor)
-    bus.$off('query-close-note', this.showCloseQuery)
+    emitter.off('note-loaded', this.setMarkdownToEditor)
+    emitter.off('query-close-note', this.showCloseQuery)
 
     this.vditor.destroy()
   },

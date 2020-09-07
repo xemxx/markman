@@ -1,6 +1,6 @@
 <template>
   <div class="pref-container">
-    <side-bar></side-bar>
+    <SideBar />
     <div class="pref-content">
       <router-view class="pref-setting"></router-view>
     </div>
