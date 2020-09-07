@@ -5,17 +5,17 @@
         >{{ description }}:
         <span class="value">{{ selectValue + (unit ? unit : '') }}</span></span
       >
-      <i class="el-icon-info" v-if="more" @click="handleMoreClick"></i>
+      <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
     </div>
-    <el-slider
-      v-model="selectValue"
+    <a-slider
+      v-model:value="selectValue"
       @change="select"
       :min="min"
       :max="max"
       :format-tooltip="value => value + (unit ? unit : '')"
       :step="step"
     >
-    </el-slider>
+    </a-slider>
   </section>
 </template>
 
@@ -68,17 +68,17 @@ export default {
   font-size 14px
   color var(--editorColor)
 
-  & .el-slider
+  & .a-slider
     width 300px
 
-  & .el-slider__runway, & .el-slider__bar
+  & .a-slider__runway, & .a-slider__bar
     height 4px
 
-  & .el-slider__button
+  & .a-slider__button
     width 12px
     height 12px
 
-  & .el-slider__button-wrapper
+  & .a-slider__button-wrapper
     width 20px
     height 20px
     top -9px

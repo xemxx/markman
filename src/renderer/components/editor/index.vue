@@ -1,9 +1,9 @@
 <template>
-  <el-container class="editor">
-    <el-header height="auto">
+  <a-layout class="editor">
+    <a-layout-header height="auto">
       <input v-model="title" class="editor-title" />
-    </el-header>
-    <el-main>
+    </a-layout-header>
+    <a-layout-content>
       <div class="editor-wrapper">
         <Editor :markdown="markdown"></Editor>
       </div>
@@ -11,8 +11,8 @@
         <div class="pick-line"></div>
         <preview :markdown="markdown"></preview>
       </div> -->
-    </el-main>
-  </el-container>
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <script>
@@ -70,7 +70,7 @@ export default {
     border none
     outline none
 
-.el-main
+.a-layout-content
   display flex
   overflow hidden
 

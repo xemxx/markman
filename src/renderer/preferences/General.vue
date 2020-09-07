@@ -62,7 +62,7 @@ export default {
     margin 20px 0
     color var(--editorColor)
 
-    & .el-button--small
+    & .a-button--small
       margin-left 25px
 
     & label
