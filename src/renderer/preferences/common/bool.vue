@@ -2,14 +2,14 @@
   <section class="pref-switch-item" :class="{ 'ag-underdevelop': disable }">
     <div class="description">
       <span>{{ description }}</span>
-      <i class="el-icon-info" v-if="more" @click="handleMoreClick"></i>
+      <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
     </div>
-    <el-switch
-      v-model="status"
+    <a-switch
+      v-model:value="status"
       @change="handleSwitchChange"
       :active-text="status ? 'On' : 'Off'"
     >
-    </el-switch>
+    </a-switch>
   </section>
 </template>
 
@@ -70,20 +70,20 @@ export default {
   & i:hover
     color var(--themeColor)
 
-span.el-switch__core::after
+span.a-switch__core::after
   top 3px
   left 7px
   width 10px
   height 10px
 
-.el-switch .el-switch__core
+.a-switch .a-switch__core
   border 2px solid var(--iconColor)
   background transparent
   box-sizing border-box
 
-span.el-switch__label
+span.a-switch__label
   color var(--editorColor50)
 
-.el-switch:not(.is-checked) .el-switch__core::after
+.a-switch:not(.is-checked) .a-switch__core::after
   background var(--iconColor)
 </style>

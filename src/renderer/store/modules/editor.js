@@ -1,7 +1,7 @@
 import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
 
-import bus from '@/bus'
+import emitter from '@/emitter'
 
 const nModel = new Note()
 
@@ -25,7 +25,7 @@ const state = {
 const mutations = {
   set_current_note(state, currentNote) {
     state.currentNote = currentNote
-    bus.$emit('note-loaded', currentNote)
+    emitter.emit('note-loaded', currentNote)
   },
   set_save_status(state, status) {
     state.currentNote.isSave = status
@@ -78,7 +78,7 @@ const actions = {
     if (oldId != id && oldId != undefined) {
       // ask user if note need save
       if (!isSave) {
-        bus.$emit('query-close-note', id)
+        emitter.emit('query-close-note', id)
         return
       }
     }
