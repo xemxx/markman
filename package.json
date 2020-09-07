@@ -21,6 +21,7 @@
     "electron-store": "^6.0.0",
     "highlight.js": "^9.18.3",
     "marked": "^1.1.1",
+    "mitt": "^2.1.0",
     "regenerator-runtime": "^0.13.7",
     "sqlite3": "^5.0.0",
     "uuid": "^3.4.0",

@@ -1,47 +1,43 @@
 <template>
-  <el-container>
-    <el-header height="auto" class="toolbar">
-      <transition name="el-zoom-in-top">
-        <el-button
-          v-show="showNew"
-          type="text"
-          class="new"
-          @click="addNote(bid)"
-          >新建笔记</el-button
+  <a-layout>
+    <a-layout-header height="auto" class="toolbar">
+      <transition name="a-zoom-in-top">
+        <a-button v-show="showNew" type="text" class="new" @click="addNote(bid)"
+          >新建笔记</a-button
         >
       </transition>
-    </el-header>
-    <el-main class="list">
+    </a-layout-header>
+    <a-layout-content class="list">
       <div
-        class="el-card is-hover-shadow card"
+        class="a-card is-hover-shadow card"
         shadow="hover"
         v-for="item in notes"
         :key="item.id"
         @click="checkoutNote(item.id)"
         @click.right="rightMenu(item.id, item.bid)"
       >
-        <div class="el-card__header">
+        <div class="a-card__header">
           {{ item.title }}
         </div>
-        <div class="el-card__body">{{ item.content }}</div>
+        <div class="a-card__body">{{ item.content }}</div>
       </div>
-    </el-main>
-    <el-dialog title="提示" :visible="showMove" width="30%">
-      <el-select v-model="moveCheck">
-        <el-option
+    </a-layout-content>
+    <a-dialog title="提示" :visible="showMove" width="30%">
+      <a-select v-model:value="moveCheck">
+        <a-option
           v-for="item in notebooks"
           :key="item.guid"
           :label="item.name"
           :value="item.guid"
         >
-        </el-option>
-      </el-select>
+        </a-option>
+      </a-select>
       <template v-slot:footer class="dialog-footer">
-        <el-button @click="showMove = false">取 消</el-button>
-        <el-button type="primary" @click="doMove">确 定</el-button>
+        <a-button @click="showMove = false">取 消</a-button>
+        <a-button type="primary" @click="doMove">确 定</a-button>
       </template>
-    </el-dialog>
-  </el-container>
+    </a-dialog>
+  </a-layout>
 </template>
 
 <script>
@@ -125,7 +121,7 @@ export default {
 .card
   margin 5px
 
-.el-card__body
+.a-card__body
   font-size 14px
   max-height 50px
 
