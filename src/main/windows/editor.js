@@ -89,7 +89,7 @@ class EditorWindow extends BaseWindow {
       win.webContents.send('m::resize-editor')
     })
 
-    win.loadURL(this._buildUrlString() + '#/')
+    win.loadURL(this._buildUrlString() + '#/editor')
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win
