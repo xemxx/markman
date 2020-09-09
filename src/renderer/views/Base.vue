@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="container">
     <Sidebar />
     <Editor />
   </div>
@@ -33,8 +33,8 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.layout
+.container
   display flex
   flex-direction row
-  height 100%
+  height 'calc(100% - %s)' % titleBarHeight
 </style>

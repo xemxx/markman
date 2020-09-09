@@ -3,9 +3,9 @@
     <a-layout-header height="auto">
       <input v-model="title" class="editor-title" />
     </a-layout-header>
-    <a-layout-content>
+    <a-layout-content class="editor-wrapper">
       <div class="editor-wrapper">
-        <Editor :markdown="markdown"></Editor>
+        <Editor :markdown="markdown" />
       </div>
       <!-- <div class="preview-wrapper" v-if="showPreview">
         <div class="pick-line"></div>
@@ -70,17 +70,12 @@ export default {
     border none
     outline none
 
-.a-layout-content
-  display flex
-  overflow hidden
-
 .editor-wrapper
-  display flex
+  height 100%
   flex 1
   min-width 150px
 
 .preview-wrapper
-  display flex
   flex 1
   min-width 150px
 
