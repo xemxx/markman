@@ -1,42 +1,39 @@
 <template>
   <a-layout>
     <a-layout-header height="auto" class="toolbar">
-      <transition name="a-zoom-in-top">
-        <a-button v-show="showNew" type="text" class="new" @click="addNote(bid)"
-          >新建笔记</a-button
-        >
-      </transition>
+      <a-button v-show="showNew" type="text" class="new" @click="addNote(bid)"
+        >新建笔记</a-button
+      >
     </a-layout-header>
     <a-layout-content class="list">
-      <div
-        class="a-card is-hover-shadow card"
-        shadow="hover"
+      <a-card
+        class="card"
         v-for="item in notes"
         :key="item.id"
         @click="checkoutNote(item.id)"
         @click.right="rightMenu(item.id, item.bid)"
       >
-        <div class="a-card__header">
-          {{ item.title }}
-        </div>
-        <div class="a-card__body">{{ item.content }}</div>
-      </div>
+        <template v-slot:title>
+          <div class="card-title">{{ item.title }}</div>
+        </template>
+        <div class="card-content">{{ item.content }}</div>
+      </a-card>
     </a-layout-content>
-    <a-dialog title="提示" :visible="showMove" width="30%">
+    <a-modal title="移动笔记" v-model:visible="showMove" width="30%">
       <a-select v-model:value="moveCheck">
-        <a-option
+        <a-select-option
           v-for="item in notebooks"
           :key="item.guid"
-          :label="item.name"
           :value="item.guid"
         >
-        </a-option>
+          {{ item.name }}
+        </a-select-option>
       </a-select>
-      <template v-slot:footer class="dialog-footer">
-        <a-button @click="showMove = false">取 消</a-button>
-        <a-button type="primary" @click="doMove">确 定</a-button>
+      <template v-slot:footer>
+        <a-button key="back" @click="showMove = false">取 消</a-button>
+        <a-button key="submit" type="primary" @click="doMove">确 定</a-button>
       </template>
-    </a-dialog>
+    </a-modal>
   </a-layout>
 </template>
 
@@ -112,9 +109,14 @@ export default {
 .card
   margin 5px
 
-.a-card__body
+.card-title
+  margin -6px 0
+
+.card-content
   font-size 14px
   max-height 50px
+  margin -10px
+  overflow hidden
 
 .toolbar
   background-color #ffffff
