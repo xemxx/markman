@@ -36,6 +36,7 @@ export default {
 <style lang="stylus" scoped>
 .title-bar
   width 100%
+  height titleBarHeight
   text-align center
   -webkit-app-region drag
   background notebooks-bc
