@@ -99,4 +99,4 @@ export default {
 }
 </script>
 
-<style lang="stylus" slot-scope></style>
+<style lang="stylus" scope></style>

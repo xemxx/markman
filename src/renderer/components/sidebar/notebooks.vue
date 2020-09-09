@@ -12,7 +12,7 @@
               <PlusCircleOutlined @click.stop="showAddNotebook" />
             </span>
           </template>
-          <a-menu-item v-show="notebookInput" key="0">
+          <a-menu-item v-if="notebookInput" key="addNotebook">
             <input
               ref="notebookInput"
               :value="notebookName"
@@ -29,7 +29,7 @@
               <span v-if="!item.rename">{{ item.name }} </span>
               <input
                 ref="renameInput"
-                v-if="item.rename"
+                v-else
                 :value="notebookName"
                 @blur="blurRenameNotebook(item.id)"
                 @keyup.enter="doRenameNotebook(item.id)"
@@ -87,7 +87,6 @@ export default {
       updateNotebook: 'sidebar/updateNotebook',
     }),
     showAddNotebook() {
-      //this.$refs['menu'].open(2)
       this.notebookInput = true
       nextTick(() => {
         this.$refs['notebookInput'].focus()
@@ -105,7 +104,6 @@ export default {
       }
     },
     blurAddNotebook() {
-      //this.$refs['menu'].close(2)
       this.notebookInput = false
       this.notebookName = ''
     },
@@ -132,8 +130,7 @@ export default {
       this.notebookName = this.notebooks[index].name
       this.renameOld = this.notebooks[index].name
       nextTick(() => {
-        console.log(this.$refs)
-        this.$refs.renameInput[0].focus()
+        this.$refs.renameInput.focus()
       })
     },
     doRenameNotebook(id) {
