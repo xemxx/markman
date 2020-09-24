@@ -111,7 +111,16 @@ export default {
 
 <style lang="stylus" scoped>
 .list
-  overflow-y auto
+  &::-webkit-scrollbar
+    width 10px
+
+  &::-webkit-scrollbar-thumb
+    -webkit-box-shadow inset 0 0 5px rgba(0, 0, 0, 0.2)
+    background #535353
+
+  &::-webkit-scrollbar-track
+    -webkit-box-shadow inset 0 0 5px rgba(0, 0, 0, 0.2)
+    background #EDEDED
 
 .card
   margin 5px
