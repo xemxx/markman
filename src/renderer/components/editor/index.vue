@@ -49,6 +49,8 @@ export default {
 <style lang="stylus" scoped>
 .editor
   flex 1
+  min-width 0
+  max-width 100%
 
 .editor, .editor-title
   background-color editor-bc
