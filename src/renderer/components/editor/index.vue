@@ -4,13 +4,7 @@
       <input v-model="title" class="editor-title" />
     </a-layout-header>
     <a-layout-content class="editor-wrapper">
-      <div class="editor-wrapper">
-        <Editor :markdown="markdown" />
-      </div>
-      <!-- <div class="preview-wrapper" v-if="showPreview">
-        <div class="pick-line"></div>
-        <preview :markdown="markdown"></preview>
-      </div> -->
+      <Editor :markdown="markdown" />
     </a-layout-content>
   </a-layout>
 </template>
@@ -71,16 +65,9 @@ export default {
     outline none
 
 .editor-wrapper
+  display flex
   height 100%
-  flex 1
   min-width 150px
-
-.preview-wrapper
-  flex 1
-  min-width 150px
-
-  .pick-line
-    border black 1px solid
 
 .tags
   bottom 0px

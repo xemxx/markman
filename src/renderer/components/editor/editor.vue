@@ -28,17 +28,16 @@ export default {
         value: this.markdown,
         height: '100%',
         width: '100%',
-        toolbar: [],
         toolbarConfig: {
           hide: false,
-          pin: true,
+          pin: false,
         },
         tab: '\t',
         counter: {
           enable: true,
           type: 'md',
         },
-        typewriterMode: true,
+        typewriterMode: false,
         cache: { enable: false },
         input: value => {
           const { dispatch } = this.$store
@@ -87,7 +86,6 @@ export default {
           },
         )
         .then(action => {
-          console.log(123)
           if (action == 'cancel' || action == undefined)
             this.$store.dispatch('editor/loadNote', id)
         })
