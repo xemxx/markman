@@ -23,7 +23,7 @@
     </a-form-item>
     <a-form-item>
       <a-button type="primary" @click="handleSubmit('signUp')">注册</a-button>
-      <a-button @click="handleReset('signUp')" style="margin-left: 8px;"
+      <a-button @click="handleReset('signUp')" style="margin-left: 8px"
         >重置</a-button
       >
     </a-form-item>
