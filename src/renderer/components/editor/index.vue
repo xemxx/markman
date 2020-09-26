@@ -67,17 +67,8 @@ export default {
     outline none
 
 .editor-wrapper
-<<<<<<< HEAD
-  height 100%
-  flex 1
-  min-width 150px
-
-.preview-wrapper
-  flex 1
-=======
   display flex
   height 100%
->>>>>>> a031196273886b3631285c89141829fab4d9e679
   min-width 150px
 
 .tags
