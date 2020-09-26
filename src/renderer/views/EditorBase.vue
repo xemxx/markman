@@ -10,7 +10,7 @@ import Sidebar from '@/components/sidebar'
 import Editor from '@/components/editor'
 
 export default {
-  name: 'Base',
+  name: 'EditorBase',
   components: {
     Sidebar,
     Editor,

@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import App from '@/views/App'
-import Base from '@/views/Base'
+import Base from '@/views/EditorBase'
 import Sign from '@/views/Sign'
 import Preference from '@/views/Preference'
 import SignUp from '@/components/sign/signUp.vue'
@@ -13,8 +13,8 @@ const routes = [
     component: App,
     children: [
       {
-        path: '/base',
-        name: 'base',
+        path: '/editorBase',
+        name: 'editorBase',
         component: Base,
         meta: { auth: true },
       },

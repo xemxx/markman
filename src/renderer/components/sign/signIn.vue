@@ -71,7 +71,7 @@ export default {
           .then(() => {
             // 显示消息框提示用户成功
             msg.success('登录成功:)')
-            router.push('/base')
+            router.push('/editorBase')
           })
         // 如果失败有后台封装的默认处理函数
       })
