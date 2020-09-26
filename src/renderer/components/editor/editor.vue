@@ -11,10 +11,10 @@ export default {
   props: {
     markdown: {
       type: String,
-      default: function() {
+      default: function () {
         return ''
-      }
-    }
+      },
+    },
   },
   watch: {},
   created() {
@@ -30,21 +30,21 @@ export default {
         toolbar: [],
         toolbarConfig: {
           hide: false,
-          pin: true
+          pin: true,
         },
         tab: '\t',
         counter: {
           enable: true,
-          type: 'md'
+          type: 'md',
         },
         typewriterMode: true,
         cache: { enable: false },
-        input: value => {
+        input: (value) => {
           const { dispatch } = this.$store
           dispatch('editor/listenContentChange', {
-            markdown: value
+            markdown: value,
           })
-        }
+        },
       }
 
       this.vditor = new Vditor(this.$refs.markdown, options)
@@ -75,26 +75,26 @@ export default {
       this.$confirm('当前笔记改动是否保存？', '提示', {
         distinguishCancelAndClose: true,
         confirmButtonText: '是',
-        cancelButtonText: '否'
+        cancelButtonText: '否',
       })
         .then(
           () => {
             return this.$store.dispatch('editor/saveNote')
           },
-          action => {
+          (action) => {
             return action
           }
         )
-        .then(action => {
+        .then((action) => {
           console.log(123)
           if (action == 'cancel' || action == undefined)
             this.$store.dispatch('editor/loadNote', id)
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err)
         })
-    }
-  }
+    },
+  },
 }
 </script>
 

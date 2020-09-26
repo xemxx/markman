@@ -23,32 +23,32 @@ export default {
   data() {
     return {
       modifyState: false,
-      editor: null
+      editor: null,
     }
   },
   computed: {
     ...mapState({
-      showPreview: state => state.preference.togglePreview,
-      tags: state => state.editor.tags,
-      markdown: state => state.editor.currentNote.content,
-      isEdit: state => state.editor.isEdit
+      showPreview: (state) => state.preference.togglePreview,
+      tags: (state) => state.editor.tags,
+      markdown: (state) => state.editor.currentNote.content,
+      isEdit: (state) => state.editor.isEdit,
     }),
     title: {
-      get: function() {
+      get: function () {
         return this.$store.state.editor.currentNote.title
       },
-      set: function(newVal) {
+      set: function (newVal) {
         const { dispatch } = this.$store
         dispatch('editor/listenContentChange', {
-          title: newVal
+          title: newVal,
         })
-      }
-    }
+      },
+    },
   },
   methods: {},
   components: {
-    Editor
-  }
+    Editor,
+  },
 }
 </script>
 
