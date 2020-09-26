@@ -33,7 +33,7 @@ export default {
                   .then(data => {
                     //刷新成功，直接进入
                     store.dispatch('user/flashToken', data.token)
-                    this.$router.push('/base').catch(err => err)
+                    this.$router.push('/editorBase').catch(err => err)
                   })
                   .catch(res => {
                     //处理请求时原有token出现问题，可能数据被串改，需要重新登录
@@ -44,7 +44,7 @@ export default {
               }
             } else {
               // 不需要刷新token
-              this.$router.push('/base').catch(err => err)
+              this.$router.push('/editorBase').catch(err => err)
             }
           } else {
             // 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
