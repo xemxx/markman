@@ -9,7 +9,7 @@
 import TitleBar from '@/components/titleBar'
 export default {
   components: {
-    TitleBar
+    TitleBar,
   },
   created() {
     // 初始化editor窗口逻辑
@@ -21,7 +21,7 @@ export default {
         //先自身解析token是否超时
         try {
           let data = JSON.parse(
-            decodeURIComponent(escape(window.atob(ustate.token.split('.')[1])))
+            decodeURIComponent(escape(window.atob(ustate.token.split('.')[1]))),
           )
           if (data.exp > Date.parse(new Date()) / 1000) {
             if (data.exp - Date.parse(new Date()) / 1000 < 60 * 60 * 24 * 30) {
@@ -33,7 +33,7 @@ export default {
                   .then(data => {
                     //刷新成功，直接进入
                     store.dispatch('user/flashToken', data.token)
-                    this.$router.push('/base').catch(err => err)
+                    this.$router.push('/editorBase').catch(err => err)
                   })
                   .catch(res => {
                     //处理请求时原有token出现问题，可能数据被串改，需要重新登录
@@ -44,7 +44,7 @@ export default {
               }
             } else {
               // 不需要刷新token
-              this.$router.push('/base').catch(err => err)
+              this.$router.push('/editorBase').catch(err => err)
             }
           } else {
             // 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
@@ -64,8 +64,8 @@ export default {
       let store = this.$store
       store.dispatch('user/unSetActiver')
       this.$router.push('/sign/in').catch(err => err)
-    }
-  }
+    },
+  },
 }
 </script>
 

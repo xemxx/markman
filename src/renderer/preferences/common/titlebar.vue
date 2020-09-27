@@ -25,8 +25,8 @@ export default {
   methods: {
     handleCloseClick() {
       remote.getCurrentWindow().close()
-    }
-  }
+    },
+  },
 }
 </script>
 

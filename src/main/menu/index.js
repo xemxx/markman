@@ -6,7 +6,7 @@ import { ipcMain } from 'electron'
 export const MenuType = {
   DEFAULT: 0,
   EDITOR: 1,
-  SETTINGS: 2
+  SETTINGS: 2,
 }
 
 class AppMenu {
@@ -158,13 +158,13 @@ class AppMenu {
   _buildEditorMenu() {
     const menuTemplate = configEditorMenu(
       this._keybindings,
-      this._userPreference
+      this._userPreference,
     )
     const menu = Menu.buildFromTemplate(menuTemplate)
 
     return {
       menu,
-      type: MenuType.EDITOR
+      type: MenuType.EDITOR,
     }
   }
 

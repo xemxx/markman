@@ -11,13 +11,13 @@ const noteModel = new Note()
 
 const state = {
   //同步状态
-  isSyncing: false
+  isSyncing: false,
 }
 
 const mutations = {
   update_isSyncing(state, value) {
     state.isSyncing = value
-  }
+  },
 }
 
 const actions = {
@@ -32,7 +32,7 @@ const actions = {
       const { lastSC: localSC = '' } = await userModel.getLastSC(uid)
       // 获取服务端版本号
       const { SC: serverSC = '' } = await axios.get(
-        `${server}/user/getLastSyncCount`
+        `${server}/user/getLastSyncCount`,
       )
       // 如果需要更新则拉取
       if (serverSC > localSC) {
@@ -89,7 +89,7 @@ const actions = {
         if (notebooks.length == 10) {
           return dispatch('_pullNotebooks', {
             uid,
-            afterSC: notebooks[notebooks.length - 1].SC
+            afterSC: notebooks[notebooks.length - 1].SC,
           })
         }
       })
@@ -109,7 +109,7 @@ const actions = {
         if (notes.length == 20) {
           return dispatch('_pullNotes', {
             uid,
-            afterSC: notes[notes.length - 1].SC
+            afterSC: notes[notes.length - 1].SC,
           })
         }
       })
@@ -141,13 +141,13 @@ const actions = {
                   sort,
                   sortType,
                   modifyDate,
-                  modifyState: 0
+                  modifyState: 0,
                 })
                 break
               case 1: // 代表本地新建，并且uuid冲突了，更新本地uuid即可，并且等会儿需要发送到服务端同步，暂时不需要更改modifyState
                 if (server.name == local.name) {
                   model.update(local.id, {
-                    guid: uuid()
+                    guid: uuid(),
                   })
                 }
                 break
@@ -160,7 +160,7 @@ const actions = {
                     name,
                     SC,
                     modifyDate,
-                    modifyState: 0
+                    modifyState: 0,
                   })
                 }
                 break
@@ -180,7 +180,7 @@ const actions = {
               addDate,
               modifyDate,
               uid,
-              modifyState: 0 //0：不需要同步，1：新的东西，2：修改过的东西 3：本地删除但是未同步的数据
+              modifyState: 0, //0：不需要同步，1：新的东西，2：修改过的东西 3：本地删除但是未同步的数据
             })
           }
         }
@@ -215,13 +215,13 @@ const actions = {
                   content,
                   bid,
                   modifyDate,
-                  modifyState: 0
+                  modifyState: 0,
                 })
                 break
               case 1: // 代表本地新建，并且uuid冲突了，更新本地uuid即可，并且等会儿需要发送到服务端同步，暂时不需要更改modifyState
                 if (server.name == local.name) {
                   model.update(local.id, {
-                    guid: uuid()
+                    guid: uuid(),
                   })
                 }
                 break
@@ -238,7 +238,7 @@ const actions = {
                 model.update(local.id, {
                   title: newTitle,
                   content: newContent,
-                  modifyDate: newModifyDate
+                  modifyDate: newModifyDate,
                 })
                 break
               }
@@ -257,7 +257,7 @@ const actions = {
               addDate,
               modifyDate,
               uid,
-              modifyState: 0 //0：不需要同步，1：新的东西，2：修改过的东西
+              modifyState: 0, //0：不需要同步，1：新的东西，2：修改过的东西
             })
           }
         }
@@ -319,11 +319,11 @@ const actions = {
         //不唯一，需要修改guid重新发送改变
         data[count].guid = uuid()
         notebookModel.update(local.id, {
-          guid: data[count].guid
+          guid: data[count].guid,
         })
         return dispatch('_updateNotebooksToServer', {
           data,
-          count
+          count,
         })
       } else if (SC == rootState.user.lastSC + 1) {
         //成功的状态，更新本地lastSC和对应资源的SC
@@ -376,11 +376,11 @@ const actions = {
         //不唯一，需要修改guid重新发送改变
         data[count].guid = uuid()
         noteModel.update(local.id, {
-          guid: data[count].guid
+          guid: data[count].guid,
         })
         return dispatch('_updateNotesToServer', {
           data,
-          count
+          count,
         })
       } else if (SC == rootState.user.lastSC + 1) {
         //成功的状态，更新本地lastSC和对应资源的SC
@@ -396,12 +396,12 @@ const actions = {
         console.log('not update')
       }
     })
-  }
+  },
 }
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 }

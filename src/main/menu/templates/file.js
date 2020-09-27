@@ -3,7 +3,7 @@ import * as actions from '../actions/file'
 import { userSetting } from '../actions/markman'
 import { isOsx } from '../../config'
 
-export default function(keybindings, preference) {
+export default function (keybindings, preference) {
   const { autoSave } = preference.getAll()
   const fileMenu = {
     label: 'File',
@@ -13,7 +13,7 @@ export default function(keybindings, preference) {
         accelerator: keybindings.getAccelerator('file.save'),
         click(menuItem, browserWindow) {
           actions.save(browserWindow)
-        }
+        },
       },
       {
         label: 'Auto Save',
@@ -22,10 +22,10 @@ export default function(keybindings, preference) {
         id: 'autoSaveMenuItem',
         click(menuItem) {
           actions.autoSave(menuItem)
-        }
+        },
       },
       {
-        type: 'separator'
+        type: 'separator',
       },
       {
         label: 'Export',
@@ -34,19 +34,19 @@ export default function(keybindings, preference) {
             label: 'HTML',
             click(menuItem, browserWindow) {
               actions.exportFile(browserWindow, 'styledHtml')
-            }
+            },
           },
           {
             label: 'PDF',
             click(menuItem, browserWindow) {
               actions.exportFile(browserWindow, 'pdf')
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
         type: 'separator',
-        visible: !isOsx
+        visible: !isOsx,
       },
       {
         label: 'Preferences',
@@ -54,21 +54,21 @@ export default function(keybindings, preference) {
         visible: !isOsx,
         click() {
           userSetting()
-        }
+        },
       },
       {
         label: 'Quit',
         accelerator: keybindings.getAccelerator('file.quit'),
         visible: !isOsx,
-        click: app.quit
-      }
-    ]
+        click: app.quit,
+      },
+    ],
   }
   if (isOsx) {
     fileMenu.submenu.push({
       label: 'Close Window',
       accelerator: keybindings.getAccelerator('file.close-window'),
-      role: 'close'
+      role: 'close',
     })
   }
   return fileMenu

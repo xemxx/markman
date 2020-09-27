@@ -5,7 +5,7 @@ import {
   TITLE_BAR_HEIGHT,
   preferencesWinOptions,
   isLinux,
-  isWindows
+  isWindows,
 } from '../config'
 
 class SettingWindow extends BaseWindow {

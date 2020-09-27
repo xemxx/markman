@@ -5,7 +5,8 @@
 <script>
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
-import bus from '@/bus'
+import emitter from '@/emitter'
+import { nextTick } from 'vue'
 
 export default {
   props: {
@@ -18,26 +19,25 @@ export default {
   },
   watch: {},
   created() {
-    this.$nextTick(() => {
-      // listen for bus events.
-      bus.$on('note-loaded', this.setMarkdownToEditor)
-      bus.$on('query-close-note', this.showCloseQuery)
+    nextTick(() => {
+      // listen for emitter events.
+      emitter.on('note-loaded', this.setMarkdownToEditor)
+      emitter.on('query-close-note', this.showCloseQuery)
 
       const options = {
         value: this.markdown,
         height: '100%',
         width: '100%',
-        toolbar: [],
         toolbarConfig: {
           hide: false,
-          pin: true,
+          pin: false,
         },
         tab: '\t',
         counter: {
           enable: true,
           type: 'md',
         },
-        typewriterMode: true,
+        typewriterMode: false,
         cache: { enable: false },
         input: (value) => {
           const { dispatch } = this.$store
@@ -53,9 +53,9 @@ export default {
       this.listen()
     })
   },
-  beforeDestroy() {
-    bus.$off('note-loaded', this.setMarkdownToEditor)
-    bus.$off('query-close-note', this.showCloseQuery)
+  beforeUnmount() {
+    emitter.off('note-loaded', this.setMarkdownToEditor)
+    emitter.off('query-close-note', this.showCloseQuery)
 
     this.vditor.destroy()
   },
@@ -83,10 +83,9 @@ export default {
           },
           (action) => {
             return action
-          }
+          },
         )
-        .then((action) => {
-          console.log(123)
+        .then(action => {
           if (action == 'cancel' || action == undefined)
             this.$store.dispatch('editor/loadNote', id)
         })
@@ -98,4 +97,4 @@ export default {
 }
 </script>
 
-<style lang="stylus" slot-scope></style>
+<style lang="stylus" scope></style>

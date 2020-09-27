@@ -15,29 +15,20 @@ export default {
   name: 'Sidebar',
   computed: {
     ...mapState({
-      sidebar: state => state.preference.toggleSidebar
-    })
+      sidebar: state => state.preference.toggleSidebar,
+    }),
   },
   components: {
     Notebooks,
-    Notes
-  }
+    Notes,
+  },
 }
 </script>
 
 <style lang="stylus" scoped>
-.layout
-  display flex
-  flex-direction row
-  height 100%
-
 .sidebar
   flex 1
   display flex
-  position relative
-  top -22px
-  height 100vh
-  padding-top 22px
   max-width 400px
   width 400px
 

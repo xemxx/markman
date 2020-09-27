@@ -32,13 +32,13 @@ const checkVersion = async () => {
             title: '升级提示',
             buttons: ['Yes', 'No'],
             message: '发现新版本，更新了很多功能，是否去下载最新的版本？',
-            cancelId: 1
+            cancelId: 1,
           },
           res => {
             if (res === 0) {
               shell.openExternal(downloadUrl)
             }
-          }
+          },
         )
       } else {
         dialog.showMessageBoxSync({
@@ -46,7 +46,7 @@ const checkVersion = async () => {
           title: '升级提示',
           buttons: ['确定'],
           message: '已是最新版本，无需升级',
-          cancelId: 0
+          cancelId: 0,
         })
       }
     }
@@ -57,7 +57,7 @@ const checkVersion = async () => {
       title: '升级提示',
       buttons: ['确定'],
       message: `网络错误，请自行前往github下载更新：${downloadUrl}`,
-      cancelId: 0
+      cancelId: 0,
     })
   }
   runningUpdate = false

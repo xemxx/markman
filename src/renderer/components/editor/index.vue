@@ -1,18 +1,12 @@
 <template>
-  <el-container class="editor">
-    <el-header height="auto">
+  <a-layout class="editor">
+    <a-layout-header height="auto">
       <input v-model="title" class="editor-title" />
-    </el-header>
-    <el-main>
-      <div class="editor-wrapper">
-        <Editor :markdown="markdown"></Editor>
-      </div>
-      <!-- <div class="preview-wrapper" v-if="showPreview">
-        <div class="pick-line"></div>
-        <preview :markdown="markdown"></preview>
-      </div> -->
-    </el-main>
-  </el-container>
+    </a-layout-header>
+    <a-layout-content class="editor-wrapper">
+      <Editor :markdown="markdown" />
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <script>
@@ -28,10 +22,10 @@ export default {
   },
   computed: {
     ...mapState({
-      showPreview: (state) => state.preference.togglePreview,
-      tags: (state) => state.editor.tags,
-      markdown: (state) => state.editor.currentNote.content,
-      isEdit: (state) => state.editor.isEdit,
+      showPreview: state => state.preference.togglePreview,
+      tags: state => state.editor.tags,
+      markdown: state => state.editor.currentNote.content,
+      isEdit: state => state.editor.isEdit,
     }),
     title: {
       get: function () {
@@ -55,6 +49,8 @@ export default {
 <style lang="stylus" scoped>
 .editor
   flex 1
+  min-width 0
+  max-width 100%
 
 .editor, .editor-title
   background-color editor-bc
@@ -70,22 +66,10 @@ export default {
     border none
     outline none
 
-.el-main
-  display flex
-  overflow hidden
-
 .editor-wrapper
   display flex
-  flex 1
+  height 100%
   min-width 150px
-
-.preview-wrapper
-  display flex
-  flex 1
-  min-width 150px
-
-  .pick-line
-    border black 1px solid
 
 .tags
   bottom 0px

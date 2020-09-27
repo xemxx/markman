@@ -49,5 +49,5 @@ export default [
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   tid INTEGER,
   nid INTEGER
-)`
+)`,
 ]

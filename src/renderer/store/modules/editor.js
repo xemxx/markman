@@ -1,7 +1,7 @@
 import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
 
-import bus from '@/bus'
+import emitter from '@/emitter'
 
 const nModel = new Note()
 
@@ -13,19 +13,19 @@ const defaultNote = {
   title: '',
   modifyState: 0,
   SC: 0,
-  isSave: true
+  isSave: true,
 }
 
 const state = {
   isEdit: true,
   currentNote: defaultNote,
-  modify: false
+  modify: false,
 }
 
 const mutations = {
   set_current_note(state, currentNote) {
     state.currentNote = currentNote
-    bus.$emit('note-loaded', currentNote)
+    emitter.emit('note-loaded', currentNote)
   },
   set_save_status(state, status) {
     state.currentNote.isSave = status
@@ -35,7 +35,7 @@ const mutations = {
   },
   set_markdown(state, value) {
     state.currentNote.markdown = value
-  }
+  },
 }
 
 const actions = {
@@ -56,7 +56,7 @@ const actions = {
           title: data.title,
           modifyState: data.modifyState,
           SC: data.SC,
-          isSave: true
+          isSave: true,
         }
         commit('set_current_note', current)
       }
@@ -78,7 +78,7 @@ const actions = {
     if (oldId != id && oldId != undefined) {
       // ask user if note need save
       if (!isSave) {
-        bus.$emit('query-close-note', id)
+        emitter.emit('query-close-note', id)
         return
       }
     }
@@ -97,7 +97,7 @@ const actions = {
         title: data.title,
         modifyState: data.modifyState,
         SC: data.SC,
-        isSave: true
+        isSave: true,
       }
 
       commit('set_current_note', current)
@@ -117,7 +117,7 @@ const actions = {
       modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
       SC: 0, //新建时该值无用
       addDate: time,
-      modifyDate: time
+      modifyDate: time,
     }
     return nModel
       .add(note)
@@ -131,7 +131,7 @@ const actions = {
   // save note to sqlite
   async saveNote(
     { dispatch, state, commit },
-    { markdown, id, title, SC, isSave } = state.currentNote
+    { markdown, id, title, SC, isSave } = state.currentNote,
   ) {
     if (id == undefined || id == '') {
       return
@@ -154,7 +154,7 @@ const actions = {
       content: markdown,
       title,
       modifyState: modifyState == 0 ? 2 : modifyState,
-      modifyDate: time
+      modifyDate: time,
     }
 
     return nModel
@@ -175,7 +175,7 @@ const actions = {
         const time = Date.parse(new Date()) / 1000
         const data = {
           modifyState: 3,
-          modifyDate: time
+          modifyDate: time,
         }
         await nModel.update(id, data)
       }
@@ -232,7 +232,7 @@ const actions = {
         title: newTitle,
         content: newContent,
         modifyDate: newModifyDate,
-        modifyState: 2
+        modifyState: 2,
       })
 
       local.title = newTitle
@@ -246,12 +246,12 @@ const actions = {
     } catch (err) {
       console.log(err)
     }
-  }
+  },
 }
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 }

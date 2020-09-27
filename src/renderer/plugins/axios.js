@@ -1,15 +1,14 @@
 import axios from 'axios'
-import store from '../store/index'
-import Vue from 'vue'
-import { Message } from 'element-ui'
+import store from '@/store'
+import { message } from 'ant-design-vue'
 
-import router from '../router'
+import router from '@/router'
 
 const errCode = {
   SUCCESS: 200, //请求成功
   ErrorAuthCheckTokenFail: 20001, //"Token无效"
   ErrorAuthCheckTokenTimeout: 20002, //""Token已超时""
-  ErrorAuthToken: 20003 //"Token参数错误"
+  ErrorAuthToken: 20003, //"Token参数错误"
 }
 
 axios.defaults.withCredentials = false
@@ -24,7 +23,7 @@ axios.interceptors.request.use(
   },
   error => {
     return Promise.error(error)
-  }
+  },
 )
 
 // 响应拦截器
@@ -32,36 +31,24 @@ axios.interceptors.response.use(
   // 请求成功
   async res => {
     if (res.status === 200) {
-      const code = res.data.code,
-        msg = res.data.msg
+      const code = res.data.code
+      const msg = res.data.msg
       switch (code) {
         case errCode.SUCCESS:
           return Promise.resolve(res.data.data)
         case errCode.ErrorAuthToken:
         case errCode.ErrorAuthCheckTokenFail:
         case errCode.ErrorAuthCheckTokenTimeout:
-          Message({
-            message: '登录失效，请重新登录,ERROR：' + msg,
-            type: 'error',
-            center: true
-          })
+          message.error('登录失效，请重新登录,ERROR：' + msg)
           store.commit('user/update_token', '')
           router.push('/sign/in').catch(err => err)
           return Promise.reject(res)
         default:
-          Message({
-            message: 'ERROR：' + msg,
-            type: 'error',
-            center: true
-          })
+          message.error('ERROR：' + msg)
           return Promise.reject(res)
       }
     } else {
-      Message({
-        message: '服务器出错了:(，ERROR：' + res.data,
-        type: 'error',
-        center: true
-      })
+      message.error('服务器出错了:(，ERROR：' + res.data)
       return Promise.reject(res)
     }
   },
@@ -70,11 +57,7 @@ axios.interceptors.response.use(
     //TODO 日志记录
     if (err.response) {
       //接收到响应，认为服务器错误，或者用户输入服务器地址错误导致请求成功，但是接口失败
-      Message({
-        message: '服务器错误，ERROR：' + err,
-        type: 'error',
-        center: true
-      })
+      message.eerror('服务器错误，ERROR：' + err)
     } else if (!err.request) {
       //发送请求失败，可能是用户url地址错误或者代码错误
       //or
@@ -82,17 +65,11 @@ axios.interceptors.response.use(
       if (!window.navigator.onLine) {
         store.commit('update_online', false)
       } else {
-        Message({
-          message: '网络错误，请检查，ERROR：' + err,
-          type: 'error',
-          center: true
-        })
+        message.error('网络错误，请检查，ERROR：' + err)
       }
     }
     return Promise.reject(err)
-  }
+  },
 )
-
-Vue.prototype.$axios = axios
 
 export default axios

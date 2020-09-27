@@ -16,7 +16,7 @@ export const configSettingMenu = keybindings => {
   return [
     ...(isOsx ? [markman(keybindings)] : []), // MacOs上的菜单第一个选项与其他平台不一致
     prefEdit(keybindings),
-    help()
+    help(),
   ]
 }
 
@@ -32,6 +32,6 @@ export const configEditorMenu = (keybindings, userPreference) => {
     edit(keybindings),
     window(keybindings),
     view(keybindings, userPreference),
-    help()
+    help(),
   ]
 }

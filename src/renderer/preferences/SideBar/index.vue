@@ -41,7 +41,7 @@ export default {
       })
     },
     handleCategoryItemClick(path) {
-      this.$router.push(path).catch((err) => err)
+      this.$router.push(path).catch(err => err)
     },
   },
 }

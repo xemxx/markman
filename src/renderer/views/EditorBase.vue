@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="container">
     <Sidebar />
     <Editor />
   </div>
@@ -10,10 +10,10 @@ import Sidebar from '@/components/sidebar'
 import Editor from '@/components/editor'
 
 export default {
-  name: 'Base',
+  name: 'EditorBase',
   components: {
     Sidebar,
-    Editor
+    Editor,
   },
   data: () => {
     return {}
@@ -28,13 +28,13 @@ export default {
       dispatch('listenFileSave')
       // 监听偏好设置即时生效
       dispatch('preference/getLocal')
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="stylus" scoped>
-.layout
+.container
   display flex
   flex-direction row
-  height 100%
+  height 'calc(100% - %s)' % titleBarHeight
 </style>
