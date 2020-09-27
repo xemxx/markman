@@ -54,13 +54,8 @@ export default {
     })
   },
   beforeUnmount() {
-<<<<<<< HEAD
     emitter.off('note-loaded', this.setMarkdownToEditor)
     emitter.off('query-close-note', this.showCloseQuery)
-=======
-    emitter.$off('note-loaded', this.setMarkdownToEditor)
-    emitter.$off('query-close-note', this.showCloseQuery)
->>>>>>> boot
 
     this.vditor.destroy()
   },
