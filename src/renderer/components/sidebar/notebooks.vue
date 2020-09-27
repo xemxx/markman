@@ -1,51 +1,54 @@
 <template>
-  <el-container>
-    <el-main>
-      <el-menu ref="menu" :collapse="isCollapse" class="menu">
-        <el-menu-item index="1" @click="loadList({ type: 'all' })"
-          >所有笔记</el-menu-item
+  <a-layout>
+    <a-layout-content>
+      <a-menu ref="menu" mode="inline">
+        <a-menu-item key="sub1" @click="loadList({ type: 'all' })"
+          >所有笔记</a-menu-item
         >
-        <el-submenu index="2">
-          <template slot="title">
-            笔记本
-            <i class="el-icon-plus" @click.stop="showAddNotebook"></i>
+        <a-sub-menu key="sub2">
+          <template v-slot:title>
+            <span
+              ><span>笔记本</span>
+              <PlusCircleOutlined @click.stop="showAddNotebook" />
+            </span>
           </template>
-          <el-menu-item v-show="notebookInput" index="1-new">
+          <a-menu-item v-if="notebookInput" key="addNotebook">
             <input
               ref="notebookInput"
-              v-model="notebookName"
+              :value="notebookName"
               @keyup.enter="doAddNotebook"
               @blur="blurAddNotebook"
             />
-          </el-menu-item>
-          <el-menu-item
+          </a-menu-item>
+          <a-menu-item
             v-for="item in notebooks"
-            :key="item.id"
-            :index="item.id + ''"
+            :key="item.id + ''"
             @click="loadList({ type: 'note', flagId: item.guid })"
           >
             <div class="notebook-item" @click.right="rightMenu(item.id)">
               <span v-if="!item.rename">{{ item.name }} </span>
               <input
                 ref="renameInput"
-                v-if="item.rename"
-                v-model="notebookName"
+                v-else
+                :value="notebookName"
                 @blur="blurRenameNotebook(item.id)"
                 @keyup.enter="doRenameNotebook(item.id)"
               />
             </div>
-          </el-menu-item>
-        </el-submenu>
-      </el-menu>
-    </el-main>
-    <el-footer height="auto">
+          </a-menu-item>
+        </a-sub-menu>
+      </a-menu>
+    </a-layout-content>
+    <a-layout-footer height="auto">
       <Footer />
-    </el-footer>
-  </el-container>
+    </a-layout-footer>
+  </a-layout>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import { nextTick } from 'vue'
+import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
@@ -54,26 +57,26 @@ import Footer from './footer.vue'
 
 export default {
   name: 'Notebooks',
-  data: function() {
+  data() {
     return {
       notebookInput: false,
       notebookName: '',
-      isCollapse: false
     }
   },
   computed: {
     ...mapState({
       notebooks: state => {
         return state.sidebar.notebooks
-      }
-    })
+      },
+    }),
   },
   created() {
     //只从本地获取文章，同步交给同步state处理
     this.loadNotebooks()
   },
   components: {
-    Footer
+    Footer,
+    PlusCircleOutlined,
   },
   methods: {
     ...mapActions({
@@ -81,12 +84,11 @@ export default {
       loadNotebooks: 'sidebar/loadNotebooks',
       addNotebook: 'sidebar/addNotebook',
       deleteNotebook: 'sidebar/deleteNotebook',
-      updateNotebook: 'sidebar/updateNotebook'
+      updateNotebook: 'sidebar/updateNotebook',
     }),
     showAddNotebook() {
-      this.$refs['menu'].open(2)
       this.notebookInput = true
-      this.$nextTick(() => {
+      nextTick(() => {
         this.$refs['notebookInput'].focus()
       })
     },
@@ -102,7 +104,6 @@ export default {
       }
     },
     blurAddNotebook() {
-      this.$refs['menu'].close(2)
       this.notebookInput = false
       this.notebookName = ''
     },
@@ -112,14 +113,14 @@ export default {
       menu.append(
         new MenuItem({
           label: '重命名',
-          click: () => this.renameNotebook(id)
-        })
+          click: () => this.renameNotebook(id),
+        }),
       )
       menu.append(
         new MenuItem({
           label: '删除',
-          click: () => this.deleteNotebook(id)
-        })
+          click: () => this.deleteNotebook(id),
+        }),
       )
       menu.popup({ window: remote.getCurrentWindow() })
     },
@@ -128,9 +129,8 @@ export default {
       this.notebooks[index].rename = true
       this.notebookName = this.notebooks[index].name
       this.renameOld = this.notebooks[index].name
-      this.$nextTick(() => {
-        console.log(this.$refs)
-        this.$refs.renameInput[0].focus()
+      nextTick(() => {
+        this.$refs.renameInput.focus()
       })
     },
     doRenameNotebook(id) {
@@ -143,8 +143,8 @@ export default {
       let index = this.notebooks.findIndex(item => id === item.id)
       this.notebooks[index].rename = false
       this.notebookName = ''
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="stylus" scoped>
@@ -165,7 +165,7 @@ input
     border 0
     outline none
 
-.el-submenu .el-menu-item
+.a-sub-menu .a-menu-item
   padding-right 0
   min-width 100px
 </style>

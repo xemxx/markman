@@ -3,8 +3,8 @@
     {{ title }}
     <!-- 如果是windows平台 -->
     <div class="handle-bar" v-if="isWin">
-      <i class="el-icon-minus" @click="minimizeWindow"></i>
-      <i class="el-icon-close" @click="closeWindow"></i>
+      <i class="a-icon-minus" @click="minimizeWindow"></i>
+      <i class="a-icon-close" @click="closeWindow"></i>
     </div>
   </div>
 </template>
@@ -18,7 +18,7 @@ export default {
     },
     title: () => {
       return 'Markman'
-    }
+    },
   },
   methods: {
     minimizeWindow() {
@@ -28,14 +28,15 @@ export default {
     closeWindow() {
       const window = remote.getCurrentWindow()
       window.close()
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="stylus" scoped>
 .title-bar
   width 100%
+  height titleBarHeight
   text-align center
   -webkit-app-region drag
   background notebooks-bc

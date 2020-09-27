@@ -1,6 +1,6 @@
 <template>
   <div class="pref-container">
-    <side-bar></side-bar>
+    <SideBar />
     <div class="pref-content">
       <router-view class="pref-setting"></router-view>
     </div>
@@ -10,6 +10,7 @@
 <script>
 import SideBar from '@/preferences/SideBar'
 import { isOsx } from '@/tools'
+import { nextTick } from 'vue'
 
 export default {
   data() {
@@ -17,14 +18,14 @@ export default {
     return {}
   },
   components: {
-    SideBar
+    SideBar,
   },
   computed: {},
   created() {
-    this.$nextTick(() => {
+    nextTick(() => {
       this.$store.dispatch('preference/getLocal')
     })
-  }
+  },
 }
 </script>
 

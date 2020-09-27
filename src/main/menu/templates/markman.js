@@ -5,7 +5,7 @@ import * as path from 'path'
 import About from 'electron-about'
 import pkg from '../../../../package.json'
 
-export default function(keybindings) {
+export default function (keybindings) {
   return {
     label: 'Markman',
     submenu: [
@@ -13,54 +13,54 @@ export default function(keybindings) {
         icon: `file://${path.join(__static, 'logo.png')}`,
         appName: 'Markman',
         version: `Version ${pkg.version}`,
-        copyright: 'Copyright © 2020 Xem'
+        copyright: 'Copyright © 2020 Xem',
       }),
       {
         label: 'Check for updates...',
         click(menuItem, browserWindow) {
           checkUpdates(browserWindow)
-        }
+        },
       },
       {
         label: 'Preferences',
         accelerator: keybindings.getAccelerator('file.preferences'),
         click() {
           userSetting()
-        }
+        },
       },
       {
-        type: 'separator'
+        type: 'separator',
       },
       {
         label: 'Services',
         role: 'services',
-        submenu: []
+        submenu: [],
       },
       {
-        type: 'separator'
+        type: 'separator',
       },
       {
         label: 'Hide Markman',
         accelerator: keybindings.getAccelerator('mt.hide'),
-        role: 'hide'
+        role: 'hide',
       },
       {
         label: 'Hide Others',
         accelerator: keybindings.getAccelerator('mt.hide-others'),
-        role: 'hideothers'
+        role: 'hideothers',
       },
       {
         label: 'Show All',
-        role: 'unhide'
+        role: 'unhide',
       },
       {
-        type: 'separator'
+        type: 'separator',
       },
       {
         label: 'Quit',
         accelerator: keybindings.getAccelerator('file.quit'),
-        click: app.quit
-      }
-    ]
+        click: app.quit,
+      },
+    ],
   }
 }

@@ -13,12 +13,12 @@ export default class Model {
     }
     let sql = `insert into ${table} (${fields.substr(
       0,
-      fields.length - 1
+      fields.length - 1,
     )}) values( ${values.substr(0, values.length - 1)} )`
 
     return db.run(sql, arr).then(
       () => this.getId(table),
-      err => console.log('isnet:' + err)
+      err => console.log('isnet:' + err),
     )
   }
 
