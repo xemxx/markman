@@ -9,7 +9,7 @@ import General from '@/preferences/General'
 const routes = [
   {
     path: '/',
-    component: Sign,
+    redirect: '/sign/in',
   },
   {
     path: '/editor',

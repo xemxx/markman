@@ -1,18 +1,16 @@
+import router from '@/router'
+import store from '@/store'
+import axios from '@/plugins/axios'
+
 const expir_time = 60 * 60 * 24 * 60
 
 export class BootStrap {
-  BootStrap(app) {
-    this.store = app.$store
-    this.router = app.$router
-    this.axios = app.$axios
-  }
+  constructor() {}
   init() {
     this.initLoginStatus()
-    this.initRouter()
-    this.router.push('/editor')
+    //this.initRouter()
   }
   initRouter() {
-    const { router, store } = this
     // 全局拦截，检测token
     router.beforeEach((to, from, next) => {
       if (to.matched.some(m => m.meta.auth)) {
@@ -29,7 +27,6 @@ export class BootStrap {
     })
   }
   async initLoginStatus() {
-    const { store, axios } = this
     try {
       const ustate = store.state.user
       await store.dispatch('user/loadActiver')
@@ -73,7 +70,7 @@ export class BootStrap {
   }
 
   logout() {
-    let store = this.store
     store.dispatch('user/unSetActiver')
+    router.push('/sign/in')
   }
 }

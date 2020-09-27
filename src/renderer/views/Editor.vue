@@ -36,7 +36,7 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.container
+.layout
   display flex
   flex-direction row
   height 'calc(100% - %s)' % titleBarHeight

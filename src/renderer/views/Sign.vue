@@ -4,7 +4,7 @@
       <router-link to="in">登陆</router-link>
       <router-link to="up">注册</router-link>
     </a-layout-header>
-    <a-layout-content style="padding-top: 20px">
+    <a-layout-content style="padding-top: 20px;">
       <router-view />
     </a-layout-content>
   </a-layout>

@@ -15,8 +15,9 @@ const app = createApp(App)
 app.config.productionTip = false
 app.config.globalProperties.$axios = Axios
 
-app.use(router).use(store).use(Antd).mount('#app')
+app.use(router).use(store).use(Antd)
 
-console.log('init')
-const boot = new BootStrap(app)
+const boot = new BootStrap()
 boot.init()
+
+app.mount('#app')
