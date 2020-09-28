@@ -39,7 +39,7 @@ export default {
         },
         typewriterMode: false,
         cache: { enable: false },
-        input: (value) => {
+        input: value => {
           const { dispatch } = this.$store
           dispatch('editor/listenContentChange', {
             markdown: value,
@@ -72,26 +72,20 @@ export default {
     },
 
     showCloseQuery(id) {
-      this.$confirm('当前笔记改动是否保存？', '提示', {
-        distinguishCancelAndClose: true,
-        confirmButtonText: '是',
-        cancelButtonText: '否',
+      this.$confirm({
+        content: '当前笔记改动是否保存？',
+        title: '提示',
+        okText: '是',
+        cancelText: '否',
+        onOk: () => {
+          return this.$store.dispatch('editor/saveNote').then(() => {
+            return this.$store.dispatch('editor/loadNote', id)
+          })
+        },
+        onCancel: () => {
+          return
+        },
       })
-        .then(
-          () => {
-            return this.$store.dispatch('editor/saveNote')
-          },
-          (action) => {
-            return action
-          },
-        )
-        .then(action => {
-          if (action == 'cancel' || action == undefined)
-            this.$store.dispatch('editor/loadNote', id)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
   },
 }
