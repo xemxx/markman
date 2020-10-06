@@ -31,6 +31,7 @@ export default {
   display flex
   max-width 400px
   width 400px
+  border-right 1px solid
 
 .notebooks, .notes
   flex 1
@@ -41,5 +42,6 @@ export default {
   background-color notebooks-bc
 
 .notes
-  background-color list-bc
+  background-color var(--sideBarColor)
+  color var(--sideBarTextColor)
 </style>
