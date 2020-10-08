@@ -1,7 +1,40 @@
 <template>
   <a-layout>
-    <a-layout-content>
-      <a-menu ref="menu" mode="inline" class="menu">
+    <a-layout-header class="search-wrapper">
+      <input
+        v-model="searchStr"
+        @keyup.enter="doSearch"
+        placeholder="搜索所有笔记"
+      />
+    </a-layout-header>
+    <a-layout-content class="list-wrapper">
+      <div class="item" @click="loadList({ type: 'all' })">所有笔记</div>
+      <div class="item" v-if="notebookInput" key="addNotebook">
+        <input
+          ref="notebookInput"
+          :value="notebookName"
+          @keyup.enter="doAddNotebook"
+          @blur="blurAddNotebook"
+        />
+      </div>
+      <div
+        class="item"
+        v-for="item in notebooks"
+        :key="item.id + ''"
+        @click="loadList({ type: 'note', flagId: item.guid })"
+        @click.right="rightMenu(item.id)"
+      >
+        <span v-if="!item.rename">{{ item.name }} </span>
+        <input
+          ref="renameInput"
+          v-else
+          :value="notebookName"
+          @blur="blurRenameNotebook(item.id)"
+          @keyup.enter="doRenameNotebook(item.id)"
+        />
+      </div>
+
+      <!-- <a-menu ref="menu" mode="inline" class="menu">
         <a-menu-item key="sub1" @click="loadList({ type: 'all' })"
           >所有笔记</a-menu-item
         >
@@ -37,18 +70,15 @@
             </div>
           </a-menu-item>
         </a-sub-menu>
-      </a-menu>
+      </a-menu> -->
     </a-layout-content>
-    <a-layout-footer height="auto">
-      <Footer />
-    </a-layout-footer>
+    <Footer />
   </a-layout>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
 import { nextTick } from 'vue'
-import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
@@ -61,6 +91,7 @@ export default {
     return {
       notebookInput: false,
       notebookName: '',
+      searchStr: '',
     }
   },
   computed: {
@@ -76,7 +107,6 @@ export default {
   },
   components: {
     Footer,
-    PlusCircleOutlined,
   },
   methods: {
     ...mapActions({
@@ -144,19 +174,35 @@ export default {
       this.notebooks[index].rename = false
       this.notebookName = ''
     },
+    doSearch() {
+      const { searchStr } = this
+      //TODO: 搜索笔记
+      console.log(searchStr)
+    },
   },
 }
 </script>
 <style lang="stylus" scoped>
-.menu
-  background-color var(--SiderBarBgColor)
-  color var(--SiderBarColor) !important
+.search-wrapper
+  padding 5px 0
+  line-height 24px
+  border-bottom 1px solid #fff
+
+  & input
+    padding 0 10px
+
+.list-wrapper, .search-wrapper
+  background-color transparent
 
 .add
   display flex
   position relative
   border-radius 50px
   justify-items center
+
+.item
+  font-size 16px
+  padding 5px 10px
 
 input
   width 90%

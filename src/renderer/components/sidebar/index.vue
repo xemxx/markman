@@ -34,6 +34,7 @@ export default {
   border-right 1px solid
   padding-top var(--titleBarHeight)
   background var(--sideBarBgColor)
+  color var(--sideBarColor)
 
 .notebooks, .notes
   flex 1
@@ -44,6 +45,5 @@ export default {
   background-color transparent
 
 .notes
-  background-color var(--sideBarBgColor)
-  color var(--sideBarColor)
+  background-color transparent
 </style>
