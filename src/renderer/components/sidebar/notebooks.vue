@@ -1,7 +1,7 @@
 <template>
   <a-layout>
     <a-layout-content>
-      <a-menu ref="menu" mode="inline">
+      <a-menu ref="menu" mode="inline" class="menu">
         <a-menu-item key="sub1" @click="loadList({ type: 'all' })"
           >所有笔记</a-menu-item
         >
@@ -149,7 +149,8 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .menu
-  background-color notebooks-bc
+  background-color var(--SiderBarBgColor)
+  color var(--SiderBarColor) !important
 
 .add
   display flex
@@ -164,8 +165,4 @@ input
   &:focus
     border 0
     outline none
-
-.a-sub-menu .a-menu-item
-  padding-right 0
-  min-width 100px
 </style>
