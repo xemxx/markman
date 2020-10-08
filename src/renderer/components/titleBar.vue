@@ -1,6 +1,5 @@
 <template>
   <div class="title-bar">
-    {{ title }}
     <!-- 如果是windows平台 -->
     <div class="handle-bar" v-if="isWin">
       <i class="a-icon-minus" @click="minimizeWindow"></i>
@@ -43,7 +42,7 @@ export default {
   transition color 0.4s ease-in-out
   user-select none
   cursor default
-  height titleBarHeight
+  height var(--titleBarHeight)
   text-align center
   -webkit-app-region drag
   background transparent

@@ -122,8 +122,11 @@ const actions = {
     return nModel
       .add(note)
       .then(id => {
-        dispatch('sidebar/loadNotes', {}, { root: true })
-        dispatch('loadNote', id)
+        return dispatch('sidebar/loadNotes', undefined, { root: true }).then(
+          () => {
+            dispatch('loadNote', id)
+          },
+        )
       })
       .catch(err => console.log(err))
   },

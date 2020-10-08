@@ -15,14 +15,6 @@ module.exports = {
     plugins: [],
   },
 
-  css: {
-    loaderOptions: {
-      stylus: {
-        import: '~@/assets/css/imports.styl',
-      },
-    },
-  },
-
   pluginOptions: {
     electronBuilder: {
       customFileProtocol: './',
