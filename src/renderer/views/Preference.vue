@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import SideBar from '@/preferences/SideBar'
+import SideBar from '@/preferences/sideBar'
 import { isOsx } from '@/tools'
 import { nextTick } from 'vue'
 

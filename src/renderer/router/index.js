@@ -5,7 +5,7 @@ import Sign from '@/views/Sign'
 import Preference from '@/views/Preference'
 import SignUp from '@/components/sign/signUp.vue'
 import SignIn from '@/components/sign/signIn.vue'
-import General from '@/preferences/General'
+import General from '@/preferences/general'
 
 const routes = [
   {
