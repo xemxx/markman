@@ -51,9 +51,10 @@ export default {
   flex 1
   min-width 0
   max-width 100%
+  padding-top var(--titleBarHeight)
 
 .editor, .editor-title
-  background-color editor-bc
+  background-color var(--editorBgColor)
 
 .editor-title
   width 100%

@@ -35,12 +35,18 @@ export default {
 
 <style lang="stylus" scoped>
 .title-bar
-  width 100%
+  position fixed
+  left 0
+  top 0
+  right 0
+  z-index 2
+  transition color 0.4s ease-in-out
+  user-select none
+  cursor default
   height titleBarHeight
   text-align center
   -webkit-app-region drag
-  background notebooks-bc
-  z-index 2
+  background transparent
 
   & .handle-bar
     float right
