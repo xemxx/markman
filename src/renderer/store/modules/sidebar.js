@@ -98,10 +98,9 @@ const actions = {
   },
 
   //更新state中的list，视图将自动更新
-  loadNotes({ commit, rootState }, { type, flagId } = state) {
+  loadNotes({ commit, rootState, state }, { type, flagId } = state) {
     const uid = rootState.user.id
     let list = {}
-
     if (type === 'note') {
       list = nModel.getAllByBook(uid, flagId)
     } else if (type === 'tag') {

@@ -1,9 +1,7 @@
 <template>
   <a-layout>
-    <a-layout-header height="auto" class="toolbar">
-      <a-button v-show="showNew" type="text" class="new" @click="addNote(bid)"
-        >新建笔记</a-button
-      >
+    <a-layout-header class="toolbar">
+      <ToolBar />
     </a-layout-header>
     <a-layout-content>
       <ScrollBar class="list" v-model:settings="scrollSettings">
@@ -43,6 +41,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import ScrollBar from '@/components/common/scrollBar'
+import ToolBar from './toolBar'
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
 
@@ -50,6 +49,7 @@ export default {
   name: 'Notes',
   components: {
     ScrollBar,
+    ToolBar,
   },
   data() {
     return {
@@ -65,7 +65,6 @@ export default {
   computed: {
     ...mapState({
       notes: state => state.sidebar.notes,
-      showNew: state => state.sidebar.type == 'note',
       bid: state => state.sidebar.flagId,
       notebooks: state => state.sidebar.notebooks,
     }),
