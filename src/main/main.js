@@ -8,12 +8,10 @@ import { isDevelopment, isWindows, userDataPath } from './config'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 
 if (isDevelopment && !process.env.IS_TEST) {
-  app.on('ready', async () => {
-    try {
-      await installExtension(VUEJS_DEVTOOLS)
-    } catch (e) {
-      console.error('Vue Devtools failed to install:', e.toString())
-    }
+  app.whenReady().then(() => {
+    installExtension(VUEJS_DEVTOOLS)
+      .then(name => console.log(`Added Extension:  ${name}`))
+      .catch(err => console.log('An error occurred: ', err))
   })
 }
 
