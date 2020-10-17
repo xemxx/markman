@@ -22,7 +22,7 @@ export default class App {
       const { _windowManager } = this
       // 当运行第二个实例时,activeWindow
       const activeWindow = _windowManager.editor
-      if (activeWindow) {
+      if (activeWindow != null && activeWindow != undefined) {
         activeWindow.bringToFront()
       }
     })

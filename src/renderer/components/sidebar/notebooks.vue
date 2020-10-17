@@ -8,11 +8,13 @@
       />
     </a-layout-header>
     <a-layout-content class="list-wrapper">
-      <div class="item" @click="loadList({ type: 'all' })">所有笔记</div>
+      <div class="item" @click="loadList({ type: 'all' })">
+        所有笔记 <PlusCircleOutlined @click.stop="showAddNotebook" />
+      </div>
       <div class="item" v-if="notebookInput" key="addNotebook">
         <input
           ref="notebookInput"
-          :value="notebookName"
+          v-model="notebookName"
           @keyup.enter="doAddNotebook"
           @blur="blurAddNotebook"
         />
@@ -28,49 +30,11 @@
         <input
           ref="renameInput"
           v-else
-          :value="notebookName"
+          v-model="notebookName"
           @blur="blurRenameNotebook(item.id)"
           @keyup.enter="doRenameNotebook(item.id)"
         />
       </div>
-
-      <!-- <a-menu ref="menu" mode="inline" class="menu">
-        <a-menu-item key="sub1" @click="loadList({ type: 'all' })"
-          >所有笔记</a-menu-item
-        >
-        <a-sub-menu key="sub2">
-          <template v-slot:title>
-            <span
-              ><span>笔记本</span>
-              <PlusCircleOutlined @click.stop="showAddNotebook" />
-            </span>
-          </template>
-          <a-menu-item v-if="notebookInput" key="addNotebook">
-            <input
-              ref="notebookInput"
-              :value="notebookName"
-              @keyup.enter="doAddNotebook"
-              @blur="blurAddNotebook"
-            />
-          </a-menu-item>
-          <a-menu-item
-            v-for="item in notebooks"
-            :key="item.id + ''"
-            @click="loadList({ type: 'note', flagId: item.guid })"
-          >
-            <div class="notebook-item" @click.right="rightMenu(item.id)">
-              <span v-if="!item.rename">{{ item.name }} </span>
-              <input
-                ref="renameInput"
-                v-else
-                :value="notebookName"
-                @blur="blurRenameNotebook(item.id)"
-                @keyup.enter="doRenameNotebook(item.id)"
-              />
-            </div>
-          </a-menu-item>
-        </a-sub-menu>
-      </a-menu> -->
     </a-layout-content>
     <Footer />
   </a-layout>
@@ -80,13 +44,14 @@
 import { mapState, mapActions } from 'vuex'
 import { nextTick } from 'vue'
 
+import { PlusCircleOutlined } from '@ant-design/icons-vue'
+
 import { remote } from 'electron'
 const { Menu, MenuItem } = remote
 
 import Footer from './footer.vue'
 
 export default {
-  name: 'Notebooks',
   data() {
     return {
       notebookInput: false,
@@ -107,6 +72,7 @@ export default {
   },
   components: {
     Footer,
+    PlusCircleOutlined,
   },
   methods: {
     ...mapActions({

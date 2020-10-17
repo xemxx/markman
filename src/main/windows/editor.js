@@ -67,9 +67,9 @@ class EditorWindow extends BaseWindow {
       if (win.id) {
         switch (response) {
           case 0:
-            return this.destroy()
+            return this.emit('window-closed')
           case 1:
-            return this.reload()
+            return super.reload()
         }
       }
     })
@@ -93,18 +93,6 @@ class EditorWindow extends BaseWindow {
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win
-  }
-
-  reload() {
-    const { browserWindow } = this
-
-    browserWindow.webContents.once('did-finish-load', () => {
-      super.reload()
-    })
-  }
-
-  destroy() {
-    super.destroy()
   }
 }
 
