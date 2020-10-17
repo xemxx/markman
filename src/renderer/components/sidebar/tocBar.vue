@@ -1,7 +1,8 @@
 <template>
   <a-layout>
     <a-layout-header class="toolbar">
-      <ToolBar />
+      <div><AlignLeftOutlined /></div>
+      <div @click="addNote(bid)"><PlusOutlined /></div>
     </a-layout-header>
     <a-layout-content>
       <ScrollBar class="list" v-model:settings="scrollSettings">
@@ -41,15 +42,16 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import ScrollBar from '@/components/common/scrollBar'
-import ToolBar from './toolBar'
 import { remote } from 'electron'
+import { AlignLeftOutlined, PlusOutlined } from '@ant-design/icons-vue'
 const { Menu, MenuItem } = remote
 
 export default {
-  name: 'Notes',
+  name: 'TocBar',
   components: {
     ScrollBar,
-    ToolBar,
+    AlignLeftOutlined,
+    PlusOutlined,
   },
   data() {
     return {
@@ -143,4 +145,8 @@ export default {
 .toolbar
   background-color transparent
   text-align center
+  display flex
+  justify-content space-between
+  padding 0 10px
+  line-height 14px
 </style>

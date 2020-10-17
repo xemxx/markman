@@ -1,5 +1,8 @@
 import { shell } from 'electron'
-import { showAboutDialog } from '../actions/help'
+
+import path from 'path'
+import About from 'electron-about'
+import pkg from '../../../../package.json'
 import { isOsx } from '../../config'
 
 export default function () {
@@ -33,12 +36,12 @@ export default function () {
       {
         type: 'separator',
       },
-      {
-        label: 'About Markman',
-        click(menuItem, browserWindow) {
-          showAboutDialog(browserWindow)
-        },
-      },
+      About.makeMenuItem('Markman', {
+        icon: `file://${path.join(__static, 'logo.png')}`,
+        appName: 'Markman',
+        version: `Version ${pkg.version}`,
+        copyright: 'Copyright © 2020 Xem',
+      }),
     )
   }
   return helpMenu

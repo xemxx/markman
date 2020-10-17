@@ -1,13 +1,13 @@
 <template>
   <div v-show="sidebar" class="sidebar">
-    <Notebooks class="notebooks" />
-    <Notes class="notes" />
+    <ActivityBar class="activity" />
+    <TocBar class="toc" />
   </div>
 </template>
 
 <script>
-import Notebooks from './notebooks'
-import Notes from './notes'
+import ActivityBar from './notebooks'
+import TocBar from './tocBar'
 
 import { mapState } from 'vuex'
 
@@ -19,8 +19,8 @@ export default {
     }),
   },
   components: {
-    Notebooks,
-    Notes,
+    ActivityBar,
+    TocBar,
   },
 }
 </script>
@@ -36,14 +36,14 @@ export default {
   background var(--sideBarBgColor)
   color var(--sideBarColor)
 
-.notebooks, .notes
+.activity, .toc
   flex 1
   max-width 200px
   width 200px
 
-.notebooks
+.activity
   background-color transparent
 
-.notes
+.toc
   background-color transparent
 </style>

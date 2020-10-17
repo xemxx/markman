@@ -50,8 +50,6 @@ const actions = {
         modifyDate: time,
       })
       .then(() => {
-        //更新列表显示
-        dispatch('loadNotebooks')
         //同步服务器
         dispatch('sync/sync', null, { root: true })
       })
