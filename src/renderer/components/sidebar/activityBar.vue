@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, useStore } from 'vuex'
 import { nextTick, computed, ref } from 'vue'
 import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
@@ -79,25 +79,24 @@ export default {
     }
 
     // rename book
-    computed({
-      ...mapState({
-        books: state => state.sidebar.books,
-      }),
-    })
+    const store = useStore()
+    const books = computed(() => store.state.sidebar.books)
     const bookRenameInputRef = ref()
+    const bookReName = ref('')
+    const renameOld = ref('')
 
     const renameBook = id => {
-      let index = this.books.findIndex(item => id === item.id)
-      this.books[index].rename = true
-      this.bookName = this.books[index].name
-      this.renameOld = this.books[index].name
+      let index = books.value.findIndex(item => id === item.id)
+      books.value[index].rename = true
+      bookReName.value = books.value[index].name
+      renameOld.value = books.value[index].name
       nextTick(() => {
         bookRenameInputRef.value.focus()
       })
     }
     const doRenameBook = id => {
-      if (this.bookName != '' && this.bookName != this.renameOld) {
-        this.updateBook({ id, name: this.bookName })
+      if (bookReName.value != '' && bookReName.value != renameOld.value) {
+        store.dispatch('updateBook', { id, name: bookReName })
       }
       blurRenameBook(id)
     }
@@ -117,6 +116,7 @@ export default {
       blurAddBook,
 
       bookRenameInputRef,
+      bookReName,
 
       renameBook,
       doRenameBook,
