@@ -29,8 +29,8 @@
         <span v-if="!item.rename">{{ item.name }} </span>
         <input
           v-else
-          ref="renameBookInputRef"
-          v-model="bookName"
+          ref="bookRenameInputRef"
+          v-model="bookReName"
           @blur="blurRenameBook(item.id)"
           @keyup.enter="doRenameBook(item.id)"
         />
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, useStore } from 'vuex'
+import { useStore } from 'vuex'
 import { nextTick, computed, ref } from 'vue'
 import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
@@ -51,7 +51,17 @@ const { Menu, MenuItem } = remote
 import Footer from './footer.vue'
 
 export default {
+  components: {
+    PlusCircleOutlined,
+    Footer,
+  },
   setup() {
+    // load store
+    const store = useStore()
+
+    const loadList = obj => store.dispatch('sidebar/loadNotes', obj)
+    store.dispatch('sidebar/loadNotebooks')
+
     // add book
     const bookInputShow = ref(false)
     const bookInputRef = ref()
@@ -72,15 +82,14 @@ export default {
         blurAddBook()
       } else {
         // 添加到本地数据库和显示列表
-        this.addBook(name).then(() => {
+        store.dispatch('sidebar/addNotebook', name).then(() => {
           blurAddBook()
         })
       }
     }
 
     // rename book
-    const store = useStore()
-    const books = computed(() => store.state.sidebar.books)
+    const books = computed(() => store.state.sidebar.notebooks)
     const bookRenameInputRef = ref()
     const bookReName = ref('')
     const renameOld = ref('')
@@ -96,17 +105,48 @@ export default {
     }
     const doRenameBook = id => {
       if (bookReName.value != '' && bookReName.value != renameOld.value) {
-        store.dispatch('updateBook', { id, name: bookReName })
+        store.dispatch('sidebar/updateNotebook', { id, name: bookReName })
       }
       blurRenameBook(id)
     }
     const blurRenameBook = id => {
-      let index = this.books.findIndex(item => id === item.id)
-      this.books[index].rename = false
-      this.bookName = ''
+      let index = books.value.findIndex(item => id === item.id)
+      books.value[index].rename = false
+      bookReName.value = ''
+    }
+
+    // rightMenu
+    const rightMenu = id => {
+      const menu = new Menu()
+      menu.append(
+        new MenuItem({
+          label: '重命名',
+          click: () => renameBook(id),
+        }),
+      )
+      menu.append(
+        new MenuItem({
+          label: '删除',
+          click: () => store.dispatch('sidebar/deleteNotebook', id),
+        }),
+      )
+      menu.popup({ window: remote.getCurrentWindow() })
+    }
+
+    // search
+    const searchStr = ref('')
+    const doSearch = () => {
+      //TODO: 搜索笔记
+      console.log(searchStr)
     }
 
     return {
+      // store
+      books,
+
+      loadList,
+
+      // addBook
       bookInputShow,
       bookInputRef,
       bookName,
@@ -115,65 +155,21 @@ export default {
       doAddBook,
       blurAddBook,
 
+      // renameBook
       bookRenameInputRef,
       bookReName,
 
       renameBook,
       doRenameBook,
       blurRenameBook,
-    }
-  },
 
-  data() {
-    return {
-      searchStr: '',
+      // rightMenu
+      rightMenu,
+
+      // search
+      searchStr,
+      doSearch,
     }
-  },
-  computed: {
-    ...mapState({
-      books: state => {
-        return state.sidebar.notebooks
-      },
-    }),
-  },
-  created() {
-    //只从本地获取文章，同步交给同步state处理
-    this.loadBooks()
-  },
-  components: {
-    PlusCircleOutlined,
-    Footer,
-  },
-  methods: {
-    ...mapActions({
-      loadList: 'sidebar/loadNotes',
-      loadBooks: 'sidebar/loadNotebooks',
-      addBook: 'sidebar/addNoteook',
-      deleteBook: 'sidebar/deleteNotebook',
-      updateBook: 'sidebar/updateNotebook',
-    }),
-    //右键菜单
-    rightMenu(id) {
-      const menu = new Menu()
-      menu.append(
-        new MenuItem({
-          label: '重命名',
-          click: () => this.renameBook(id),
-        }),
-      )
-      menu.append(
-        new MenuItem({
-          label: '删除',
-          click: () => this.deleteBook(id),
-        }),
-      )
-      menu.popup({ window: remote.getCurrentWindow() })
-    },
-    doSearch() {
-      const { searchStr } = this
-      //TODO: 搜索笔记
-      console.log(searchStr)
-    },
   },
 }
 </script>
