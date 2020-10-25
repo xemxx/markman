@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ActivityBar from './notebooks'
+import ActivityBar from './activityBar'
 import TocBar from './tocBar'
 
 import { mapState } from 'vuex'

@@ -74,6 +74,10 @@ class EditorWindow extends BaseWindow {
       }
     })
 
+    win.on('reload', () => {
+      super.reload()
+    })
+
     win.on('focus', () => {
       this.emit('window-focus')
     })

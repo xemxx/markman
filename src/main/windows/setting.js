@@ -53,6 +53,10 @@ class SettingWindow extends BaseWindow {
       this.bringToFront()
     })
 
+    win.on('reload', () => {
+      super.reload()
+    })
+
     win.on('focus', () => {
       this.emit('window-focus')
     })
