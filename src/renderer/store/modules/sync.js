@@ -50,12 +50,12 @@ const actions = {
     dispatch('editor/flashNote', undefined, { root: true })
   },
 
-  pull({ dispatch, rootState, commit }, { localSC, serverSC }) {
+  async pull({ dispatch, rootState, commit }, { localSC, serverSC }) {
     const uid = rootState.user.id
-    return dispatch('_pullNotebooks', localSC)
-      .then(() => dispatch('_pullNotes', localSC))
-      .then(() => userModel.update(uid, { lastSC: serverSC }))
-      .then(() => commit('user/update_lastSC', serverSC, { root: true }))
+    await dispatch('_pullNotebooks', localSC)
+    await dispatch('_pullNotes', localSC)
+    await userModel.update(uid, { lastSC: serverSC })
+    await commit('user/update_lastSC', serverSC, { root: true })
   },
 
   async push({ dispatch }) {
@@ -78,7 +78,6 @@ const actions = {
    */
   _pullNotebooks({ dispatch, rootState }, afterSC) {
     const server = rootState.user.server
-    const uid = rootState.user.id
     return axios
       .get(`${server}/notebook/getSync?afterSC=${afterSC}&maxCount=10`)
       .then(data => {
@@ -87,30 +86,22 @@ const actions = {
           dispatch('_updateNotebooksToLocal', notebooks)
         }
         if (notebooks.length == 10) {
-          return dispatch('_pullNotebooks', {
-            uid,
-            afterSC: notebooks[notebooks.length - 1].SC,
-          })
+          return dispatch('_pullNotebooks', notebooks[notebooks.length - 1].SC)
         }
       })
   },
 
   _pullNotes({ dispatch, rootState }, afterSC) {
     const server = rootState.user.server
-    const uid = rootState.user.id
     return axios
       .get(`${server}/note/getSync?afterSC=${afterSC}&maxCount=20`)
       .then(data => {
         const notes = data.notes
-        console.log(notes)
         if (notes.length > 0) {
           dispatch('_updateNotesToLocal', notes)
         }
         if (notes.length == 20) {
-          return dispatch('_pullNotes', {
-            uid,
-            afterSC: notes[notes.length - 1].SC,
-          })
+          return dispatch('_pullNotes', notes[notes.length - 1].SC)
         }
       })
   },

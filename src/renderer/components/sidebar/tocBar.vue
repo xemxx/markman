@@ -5,7 +5,7 @@
       <div @click="addNote(bid)"><PlusOutlined /></div>
     </a-layout-header>
     <a-layout-content>
-      <ScrollBar class="list" v-model:settings="scrollSettings">
+      <ScrollBar class="list" :settings="scrollSettings">
         <div
           class="card"
           v-for="item in notes"
@@ -21,8 +21,8 @@
         </div>
       </ScrollBar>
     </a-layout-content>
-    <a-modal title="移动笔记" v-model:visible="showMove" width="30%">
-      <a-select v-model:value="moveCheck">
+    <a-modal title="移动笔记" :visible="showMove" width="30%">
+      <a-select :value="moveCheck">
         <a-select-option
           v-for="item in notebooks"
           :key="item.guid"

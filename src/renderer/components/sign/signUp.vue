@@ -3,21 +3,21 @@
     <a-form-item label="服务器地址" name="server">
       <a-input
         type="text"
-        v-model:value="signUp.server"
+        :value="signUp.server"
         placeholder="http(s)://127.0.0.1:8000"
       ></a-input>
     </a-form-item>
     <a-form-item label="用户名" name="user">
       <a-input
         type="text"
-        v-model:value="signUp.user"
+        :value="signUp.user"
         placeholder="xem"
       ></a-input>
     </a-form-item>
     <a-form-item label="密码" name="password">
       <a-input
         type="password"
-        v-model:value="signUp.password"
+        :value="signUp.password"
         placeholder="xemxem"
       ></a-input>
     </a-form-item>

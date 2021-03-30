@@ -5,7 +5,7 @@
       <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
     </div>
     <a-switch
-      v-model:checked="status"
+      :checked="status"
       @change="handleSwitchChange"
       checked-children="On"
       un-checked-children="Off"
