@@ -5,7 +5,7 @@ import App from './app'
 import { app } from 'electron'
 import Accessor from './app/accessor'
 import { isDevelopment, isWindows, userDataPath } from './config'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import installExtension from 'electron-devtools-installer'
 
 if (isDevelopment && !process.env.IS_TEST) {
   app.whenReady().then(async () => {

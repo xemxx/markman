@@ -8,7 +8,7 @@
     ></bool>
     <range
       description="The delay in milliseconds between a change being made and saved."
-      :value="autoSaveDelay"
+      v-model:value="autoSaveDelay"
       :min="1000"
       :max="10000"
       unit="ms"

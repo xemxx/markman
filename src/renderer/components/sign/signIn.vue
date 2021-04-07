@@ -1,21 +1,17 @@
 <template>
-  <a-form :model="signIn" :rules="signInRules" ref="signIn" label-width="100px">
+  <a-form :model="signIn" layout="vertical" :rules="signInRules" ref="signIn">
     <a-form-item label="服务器地址" name="server">
       <a-input
         type="text"
-        :value="signIn.server"
+        v-model:value="signIn.server"
         placeholder="http://127.0.0.1:8000"
       ></a-input>
     </a-form-item>
     <a-form-item label="用户名" name="username">
-      <a-input
-        type="text"
-        :value="signIn.username"
-        placeholder="xem"
-      ></a-input>
+      <a-input type="text" v-model:value="signIn.username"></a-input>
     </a-form-item>
     <a-form-item label="密码" name="password">
-      <a-input type="password" :value="signIn.password"></a-input>
+      <a-input type="password" v-model:value="signIn.password"></a-input>
     </a-form-item>
     <a-form-item>
       <a-button type="primary" @click="handleSubmit('signIn')">登陆</a-button>
