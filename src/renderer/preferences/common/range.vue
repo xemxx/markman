@@ -8,7 +8,7 @@
       <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
     </div>
     <a-slider
-      :value="selectValue"
+      v-model:value="selectValue"
       @change="select"
       :min="min"
       :max="max"

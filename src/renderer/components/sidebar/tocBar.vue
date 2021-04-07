@@ -22,11 +22,11 @@
       </ScrollBar>
     </a-layout-content>
     <a-modal title="移动笔记" :visible="showMove" width="30%">
-      <a-select :value="moveCheck">
+      <a-select v-model:value="moveCheck">
         <a-select-option
           v-for="item in notebooks"
           :key="item.guid"
-          :value="item.guid"
+          v-model:value="item.guid"
         >
           {{ item.name }}
         </a-select-option>
