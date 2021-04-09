@@ -230,6 +230,7 @@ const actions = {
                   title: newTitle,
                   content: newContent,
                   modifyDate: newModifyDate,
+                  SC, //SC也要更新，代表与服务端是统一版本的基础上做的修改
                 })
                 break
               }
