@@ -6,6 +6,7 @@ import {
   preferencesWinOptions,
   isLinux,
   isWindows,
+  isOsx,
 } from '../config'
 
 class SettingWindow extends BaseWindow {
@@ -41,7 +42,6 @@ class SettingWindow extends BaseWindow {
 
     // Create a menu for the current window
     appMenu.addSettingMenu(win)
-    appMenu.setActiveWindow(win.id)
 
     win.once('ready-to-show', () => {
       win.show()
