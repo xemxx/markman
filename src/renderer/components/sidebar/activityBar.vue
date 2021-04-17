@@ -105,7 +105,8 @@ export default {
     }
     const doRenameBook = id => {
       if (bookReName.value != '' && bookReName.value != renameOld.value) {
-        store.dispatch('sidebar/updateNotebook', { id, name: bookReName })
+        console.log(bookReName.value)
+        store.dispatch('sidebar/updateNotebook', { id, name: bookReName.value })
       }
       blurRenameBook(id)
     }
