@@ -1,10 +1,10 @@
 <template>
-  <div class="toolbar">
+  <a-layout-footer class="toolbar">
     <SyncOutlined spin @click.stop="sync" />
     <p v-if="isSyncing">同步中</p>
     <p v-else>同步完成</p>
     <LogoutOutlined @click.stop="quit" />
-  </div>
+  </a-layout-footer>
 </template>
 
 <script>
@@ -32,15 +32,12 @@ export default {
 
 <style lang="stylus" scoped>
 .toolbar
-  background-color wheat
-  color black
-  text-align center
+  color var(--sideBarColor)
   display flex
+  justify-content space-between
+  align-items center
 
   p
+    text-align center
     flex 1
-
-  i
-    padding 3px 5px
-    height auto
 </style>

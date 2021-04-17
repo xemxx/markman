@@ -5,9 +5,10 @@
       <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
     </div>
     <a-switch
-      v-model:value="status"
+      :checked="status"
       @change="handleSwitchChange"
-      :active-text="status ? 'On' : 'Off'"
+      checked-children="On"
+      un-checked-children="Off"
     >
     </a-switch>
   </section>

@@ -7,18 +7,21 @@ export default class Note extends Model {
   }
   getAllByBook(uid, bid) {
     return db.all(
-      `select * from note where uid=? and bid=? and modifyState<3`,
+      `select * from note where uid=? and bid=? and modifyState<3 order by modifyDate desc`,
       [uid, bid],
     )
   }
   getAllByTag(uid, tid) {
     return db.all(
-      `select b.* from note_tag as a left join note as b on a.nid=b.id where a.tid=? and b.uid=? and modifyState<3`,
+      `select b.* from note_tag as a left join note as b on a.nid=b.id where a.tid=? and b.uid=? and modifyState<3 order by modifyDate desc`,
       [tid, uid],
     )
   }
   getAll(uid) {
-    return db.all(`select * from note where uid=? and modifyState<3`, [uid])
+    return db.all(
+      `select * from note where uid=? and modifyState<3 order by modifyDate desc`,
+      [uid],
+    )
   }
   update(id, data) {
     return super.update(id, 'note', data)
@@ -44,6 +47,7 @@ export default class Note extends Model {
       guids,
     )
   }
+
   getModify(uid) {
     return db.all(`select * from note where uid=? and modifyState>0`, [uid])
   }

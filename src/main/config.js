@@ -12,7 +12,9 @@ export const editorWinOptions = {
   minHeight: 350,
   center: true,
   webPreferences: {
-    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION, //提供完整的node环境支持
+    nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+    contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+    enableRemoteModule: true,
   },
   useContentSize: true,
   show: false,
@@ -25,6 +27,8 @@ export const preferencesWinOptions = {
   height: 650,
   webPreferences: {
     nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+    contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+    enableRemoteModule: true,
   },
   fullscreenable: false,
   fullscreen: false,

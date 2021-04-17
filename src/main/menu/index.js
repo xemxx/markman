@@ -30,7 +30,6 @@ class AppMenu {
    * Add the editor menu to the given window.
    *
    * @param {BrowserWindow} window The editor browser window.
-   * @param {[*]} options The menu options.
    */
   addEditorMenu(window) {
     const { windowMenus } = this

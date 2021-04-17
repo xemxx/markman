@@ -9,9 +9,9 @@ class Keybindings {
     this.configPath = path.join(userDataPath, 'keybindings.json')
 
     this.keys = new Map([
-      // Mark Text - macOS only
-      ['mt.hide', 'Command+H'],
-      ['mt.hide-others', 'Command+Alt+H'],
+      // macOS only
+      ['mm.hide', 'Command+H'],
+      ['mm.hide-others', 'Command+Alt+H'],
 
       // File menu
       ['file.save', 'CmdOrCtrl+S'],

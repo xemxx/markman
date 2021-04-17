@@ -36,5 +36,5 @@ export default {
 .container
   display flex
   flex-direction row
-  height 'calc(100% - %s)' % titleBarHeight
+  height 100vh
 </style>

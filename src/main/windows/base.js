@@ -29,6 +29,7 @@ class BaseWindow extends EventEmitter {
 
   bringToFront() {
     const { browserWindow: win } = this
+
     if (win.isMinimized()) win.restore()
     if (!win.isVisible()) win.show()
     if (isLinux) {

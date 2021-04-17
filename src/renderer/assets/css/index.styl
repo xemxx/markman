@@ -56,11 +56,13 @@
     --buttonPrimaryFocusShadow inset 0 0 0 1px rgba(13, 91, 55, 0.5), 0 0 0 1px var(--themeColor)
     --tableBorderColor #e5e5e5
     /* app */
-    --sideBarColor rgba(0, 0, 0, 0.6)
+    --titleBarHeight 22px
+    --siderBarWidth 400px
+    --sideBarColor rgba(242, 242, 242, 0.9)
     --sideBarIconColor var(--iconColor)
-    --sideBarTitleColor rgba(0, 0, 0, 1)
-    --sideBarTextColor rgba(0, 0, 0, 0.4)
-    --sideBarBgColor rgba(242, 242, 242, 0.9)
+    --sideBarTitleColor rgba(255, 255, 255, 1)
+    --sideBarTextColor rgba(214, 214, 214, 1)
+    --sideBarBgColor rgba(46, 50, 53, 1)
     --sideBarItemHoverBgColor rgba(0, 0, 0, 0.03)
     --itemBgColor rgba(255, 255, 255, 0.6)
     --floatFontColor rgba(0, 0, 0, 0.6)
@@ -91,6 +93,7 @@ article, aside, blockquote, body, button, dd, details, div, dl, dt, fieldset, fi
 .ant-layout-header, .ant-layout-content, .ant-layout-footer
     padding 0
     overflow-x hidden
+    background-color transparent
 
 .ant-layout-header
     height auto
@@ -135,3 +138,6 @@ input
     flex-basis auto
     overflow auto
     box-sizing border-box
+
+.center-text
+    text-align center
