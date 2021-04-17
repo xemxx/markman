@@ -1,5 +1,5 @@
 <template>
-  <a-form :model="signUp" :rules="signUpRules" ref="signUp" label-width="100px">
+  <a-form :model="signUp" layout="vertical" :rules="signUpRules" ref="signUp">
     <a-form-item label="服务器地址" name="server">
       <a-input
         type="text"
@@ -8,18 +8,10 @@
       ></a-input>
     </a-form-item>
     <a-form-item label="用户名" name="user">
-      <a-input
-        type="text"
-        v-model:value="signUp.user"
-        placeholder="xem"
-      ></a-input>
+      <a-input type="text" v-model:value="signUp.user"></a-input>
     </a-form-item>
     <a-form-item label="密码" name="password">
-      <a-input
-        type="password"
-        v-model:value="signUp.password"
-        placeholder="xemxem"
-      ></a-input>
+      <a-input type="password" v-model:value="signUp.password"></a-input>
     </a-form-item>
     <a-form-item>
       <a-button type="primary" @click="handleSubmit('signUp')">注册</a-button>

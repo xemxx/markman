@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import { checkUpdates, userSetting } from '../actions/markman'
 
-import * as path from 'path'
+import path from 'path'
 import About from 'electron-about'
 import pkg from '../../../../package.json'
 
@@ -10,7 +10,7 @@ export default function (keybindings) {
     label: 'Markman',
     submenu: [
       About.makeMenuItem('Markman', {
-        icon: `file://${path.join(__static, 'logo.png')}`,
+        icon: `file://` + path.join(__static, 'logo.png'),
         appName: 'Markman',
         version: `Version ${pkg.version}`,
         copyright: 'Copyright © 2020 Xem',
@@ -34,7 +34,6 @@ export default function (keybindings) {
       {
         label: 'Services',
         role: 'services',
-        submenu: [],
       },
       {
         type: 'separator',

@@ -6,7 +6,6 @@ import App from '@/App.vue'
 import '@/plugins/sqlite3/init.js'
 import Axios from '@/plugins/axios.js'
 import Antd from '@/plugins/antd.js'
-
 import '@/assets/css/index.styl'
 
 // 全局拦截，检测token

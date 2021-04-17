@@ -41,7 +41,6 @@ class EditorWindow extends BaseWindow {
 
     // Create a menu for the current window
     appMenu.addEditorMenu(win)
-    appMenu.setActiveWindow(win.id)
 
     win.once('ready-to-show', () => {
       win.show()
@@ -67,11 +66,15 @@ class EditorWindow extends BaseWindow {
       if (win.id) {
         switch (response) {
           case 0:
-            return this.destroy()
+            return this.emit('window-closed')
           case 1:
-            return this.reload()
+            return super.reload()
         }
       }
+    })
+
+    win.on('reload', () => {
+      super.reload()
     })
 
     win.on('focus', () => {
@@ -93,18 +96,6 @@ class EditorWindow extends BaseWindow {
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win
-  }
-
-  reload() {
-    const { browserWindow } = this
-
-    browserWindow.webContents.once('did-finish-load', () => {
-      super.reload()
-    })
-  }
-
-  destroy() {
-    super.destroy()
   }
 }
 

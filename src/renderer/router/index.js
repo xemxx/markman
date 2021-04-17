@@ -1,11 +1,15 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHashHistory,
+  createWebHistory,
+} from 'vue-router'
 import App from '@/views/App'
 import Base from '@/views/EditorBase'
 import Sign from '@/views/Sign'
 import Preference from '@/views/Preference'
 import SignUp from '@/components/sign/signUp.vue'
 import SignIn from '@/components/sign/signIn.vue'
-import General from '@/preferences/General'
+import General from '@/preferences/general'
 
 const routes = [
   {
@@ -55,7 +59,9 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(process.env.BASE_URL),
+  history: process.env.IS_ELECTRON
+    ? createWebHashHistory()
+    : createWebHistory(),
   routes,
 })
 

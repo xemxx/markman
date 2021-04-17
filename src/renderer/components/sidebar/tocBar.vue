@@ -1,30 +1,32 @@
 <template>
   <a-layout>
-    <a-layout-header height="auto" class="toolbar">
-      <a-button v-show="showNew" type="text" class="new" @click="addNote(bid)"
-        >新建笔记</a-button
-      >
+    <a-layout-header class="toolbar">
+      <div><AlignLeftOutlined /></div>
+      <div @click="addNote(bid)"><PlusOutlined /></div>
     </a-layout-header>
-    <a-layout-content class="list">
-      <a-card
-        class="card"
-        v-for="item in notes"
-        :key="item.id"
-        @click="checkoutNote(item.id)"
-        @click.right="rightMenu(item.id, item.bid)"
-      >
-        <template v-slot:title>
+    <a-layout-content>
+      <ScrollBar class="list" :settings="scrollSettings">
+        <div
+          class="card"
+          v-for="item in notes"
+          :key="item.id"
+          @click="checkoutNote(item.id)"
+          @click.right="rightMenu(item.id, item.bid)"
+        >
           <div class="card-title">{{ item.title }}</div>
-        </template>
-        <div class="card-content">{{ item.content }}</div>
-      </a-card>
+          <div class="card-content">
+            <p>{{ item.content }}</p>
+          </div>
+          <hr />
+        </div>
+      </ScrollBar>
     </a-layout-content>
-    <a-modal title="移动笔记" v-model:visible="showMove" width="30%">
+    <a-modal title="移动笔记" :visible="showMove" width="30%">
       <a-select v-model:value="moveCheck">
         <a-select-option
           v-for="item in notebooks"
           :key="item.guid"
-          :value="item.guid"
+          v-model:value="item.guid"
         >
           {{ item.name }}
         </a-select-option>
@@ -39,22 +41,32 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-
+import ScrollBar from '@/components/common/scrollBar'
 import { remote } from 'electron'
+import { AlignLeftOutlined, PlusOutlined } from '@ant-design/icons-vue'
 const { Menu, MenuItem } = remote
 
 export default {
-  name: 'Notes',
+  name: 'TocBar',
+  components: {
+    ScrollBar,
+    AlignLeftOutlined,
+    PlusOutlined,
+  },
   data() {
     return {
       showMove: false,
       moveCheck: 0,
+      scrollSettings: {
+        suppressScrollY: false,
+        suppressScrollX: true,
+        wheelPropagation: false,
+      },
     }
   },
   computed: {
     ...mapState({
       notes: state => state.sidebar.notes,
-      showNew: state => state.sidebar.type == 'note',
       bid: state => state.sidebar.flagId,
       notebooks: state => state.sidebar.notebooks,
     }),
@@ -104,30 +116,37 @@ export default {
 
 <style lang="stylus" scoped>
 .list
-  &::-webkit-scrollbar
-    width 10px
-
-  &::-webkit-scrollbar-thumb
-    -webkit-box-shadow inset 0 0 5px rgba(0, 0, 0, 0.2)
-    background #535353
-
-  &::-webkit-scrollbar-track
-    -webkit-box-shadow inset 0 0 5px rgba(0, 0, 0, 0.2)
-    background #EDEDED
+  height 100%
+  padding 5px
 
 .card
-  margin 5px
+  line-height 1.5715
+  background-color transparent
+  margin 0
 
 .card-title
-  margin -6px 0
+  margin 0
+  padding 8px 12px
+  font-size 16px
+  line-height 24px
+  font-weight 500
+  white-space nowrap
+  overflow hidden
+  text-overflow ellipsis
 
 .card-content
   font-size 14px
-  max-height 50px
-  margin -10px
+  height 46px
+  margin 0
+  padding 0 12px 5px 12px
   overflow hidden
+  text-overflow ellipsis
 
 .toolbar
-  background-color #ffffff
+  background-color transparent
   text-align center
+  display flex
+  justify-content space-between
+  padding 0 10px
+  line-height 14px
 </style>

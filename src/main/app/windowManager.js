@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron'
 import EventEmitter from 'events'
+import { isOsx } from '../config'
 
 class WindowManager extends EventEmitter {
   /**
@@ -63,7 +64,16 @@ class WindowManager extends EventEmitter {
   setActiveWindow(windowId) {
     if (this._activeWindowId !== windowId) {
       this._activeWindowId = windowId
-      this._appMenu.setActiveWindow(windowId)
+      if (windowId != null) {
+        // 修复windows上的菜单切换问题
+        if (!isOsx && this._setting != null && this._setting.id == windowId) {
+          this._setting.browserWindow.setMenu(
+            this._appMenu.getWindowMenuById(windowId),
+          )
+        } else {
+          this._appMenu.setActiveWindow(windowId)
+        }
+      }
     }
   }
 
