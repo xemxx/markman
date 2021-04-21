@@ -7,6 +7,7 @@ import { BrowserWindow, ipcMain } from 'electron'
 import log from 'electron-log'
 import { hasSameKeys } from '../utils'
 import schema from './schema'
+import { Debug } from '../../common/log'
 
 const PREFERENCES_FILE_NAME = 'preferences'
 
@@ -73,6 +74,7 @@ class Preference extends EventEmitter {
   }
 
   setItem(key, value) {
+    Debug('Event: broadcast-pref-changed' + ' key: ' + key + ' value: ' + value)
     ipcMain.emit('broadcast-pref-changed', { [key]: value })
     return this.store.set(key, value)
   }
@@ -105,6 +107,7 @@ class Preference extends EventEmitter {
       win.webContents.send('m::user-pref', this.getAll())
     })
     ipcMain.on('m::set-user-pref', (e, settings) => {
+      Debug(settings)
       this.setItems(settings)
     })
     ipcMain.on('set-user-pref', settings => {

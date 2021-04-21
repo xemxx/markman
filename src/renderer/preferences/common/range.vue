@@ -3,7 +3,7 @@
     <div class="description">
       <span
         >{{ description }}:
-        <span class="value">{{ selectValue + (unit ? unit : '') }}</span></span
+        <span class="value">{{ selectValue + (after ? after : '') }}</span></span
       >
       <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
     </div>
@@ -12,7 +12,7 @@
       @change="select"
       :min="min"
       :max="max"
-      :format-tooltip="value => value + (unit ? unit : '')"
+      :format-tooltip="value => value + (after ? after : '')"
       :step="step"
     >
     </a-slider>
@@ -34,7 +34,7 @@ export default {
     min: Number,
     max: Number,
     onChange: Function,
-    unit: String,
+    after: String,
     step: Number,
     more: String,
     disable: {

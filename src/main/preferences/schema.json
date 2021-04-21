@@ -7,7 +7,7 @@
   "autoSaveDelay": {
     "description": "General--The time in ms after a change that the file is saved.",
     "type": "number",
-    "minimum": 1000
+    "minimum": 0
   },
   "toggleSidebar": {
     "description": "View Menu--Sidebar status.",

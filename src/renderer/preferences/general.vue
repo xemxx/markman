@@ -6,27 +6,24 @@
       :bool="autoSave"
       :onChange="value => onSelectChange('autoSave', value)"
     ></bool>
-    <range
+    <Input
       description="The delay in milliseconds between a change being made and saved."
-      v-model:value="autoSaveDelay"
-      :min="1000"
-      :max="10000"
-      unit="ms"
-      :step="100"
       :onChange="value => onSelectChange('autoSaveDelay', value)"
-    ></range>
+      :val="autoSaveDelay"
+      after="ms"
+    >
+    </Input>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import Range from './common/range'
+import Input from './common/input'
 import Bool from './common/bool'
-
 export default {
   components: {
     Bool,
-    Range,
+    Input,
   },
   data() {
     return {}

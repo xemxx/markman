@@ -2,6 +2,7 @@ import { Menu } from 'electron'
 import { isOsx, isWindows, isLinux } from '../config'
 import { configEditorMenu, configSettingMenu } from '../menu/templates'
 import { ipcMain } from 'electron'
+import { Debug } from '../../common/log'
 
 export const MenuType = {
   DEFAULT: 0,
@@ -178,6 +179,8 @@ class AppMenu {
 
   _listenForIpcMain() {
     ipcMain.on('broadcast-pref-changed', prefs => {
+      Debug('Menu: broadcast-pref-changed')
+      Debug(prefs)
       if (prefs.autoSave !== undefined) this.updateAutoSaveMenu(prefs.autoSave)
       else if (prefs.toggleSidebar !== undefined)
         this.updateToggleSidebar(prefs.toggleSidebar)

@@ -2,6 +2,7 @@ import Note from '@/model/note.js'
 import uuid from 'uuid/v1'
 
 import emitter from '@/emitter'
+import { Debug } from '@/../common/log'
 
 const nModel = new Note()
 
@@ -218,6 +219,7 @@ const actions = {
     }
     const timeFunc = setTimeout(async () => {
       autoSaveTimers.delete(id)
+      Debug('do auto save')
       await dispatch('saveNote', { id, title, markdown, SC, isSave })
     }, autoSaveDelay)
     autoSaveTimers.set(id, timeFunc)
