@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { remote } from 'electron'
+import { remote } from '@electron/remote'
 import { closePath } from '../../assets/window-controls.js'
 
 export default {

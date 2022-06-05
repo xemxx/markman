@@ -45,8 +45,9 @@ import { useStore } from 'vuex'
 import { nextTick, computed, ref } from 'vue'
 import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
-import { remote } from 'electron'
-const { Menu, MenuItem } = remote
+// import { ipcRenderer } from 'electron'
+
+import { Menu, MenuItem, remote } from '@electron/remote'
 
 import Footer from './footer.vue'
 
@@ -115,6 +116,26 @@ export default {
       books.value[index].rename = false
       bookReName.value = ''
     }
+
+    // window.addEventListener('contextmenu', e => {
+    //   e.preventDefault()
+    //   ipcRenderer.send('m::show-activeBar-context-menu', {
+    //     menus: [
+    //       {
+    //         label: '重命名',
+    //         click: () => renameBook(id),
+    //       },
+    //       {
+    //         label: '删除',
+    //         click: () => store.dispatch('sidebar/deleteNotebook', id),
+    //       },
+    //     ],
+    //   })
+    // })
+
+    // ipcRenderer.on('context-menu-command', (e, command) => {
+    //   // ...
+    // })
 
     // rightMenu
     const rightMenu = id => {

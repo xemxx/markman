@@ -89,6 +89,8 @@ class WindowManager extends EventEmitter {
       if (this._setting !== null)
         this._setting.browserWindow.webContents.send('m::user-pref', prefs)
     })
+
+    // ipcMain.on('m::show-activeBar-context-menu', ({ menus }) => {})
   }
 }
 

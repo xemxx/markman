@@ -91,7 +91,7 @@ class EditorWindow extends BaseWindow {
     win.on('resize', () => {
       win.webContents.send('m::resize-editor')
     })
-
+    require('@electron/remote/main').enable(win.webContents)
     win.loadURL(this._buildUrlString() + '#/')
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 

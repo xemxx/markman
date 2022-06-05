@@ -42,9 +42,8 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import ScrollBar from '@/components/common/scrollBar'
-import { remote } from 'electron'
 import { AlignLeftOutlined, PlusOutlined } from '@ant-design/icons-vue'
-const { Menu, MenuItem } = remote
+import { Menu, MenuItem, remote } from '@electron/remote'
 
 export default {
   name: 'TocBar',

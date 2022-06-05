@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { remote } from 'electron'
+import { remote } from '@electron/remote'
 export default {
   computed: {
     isWin: () => {

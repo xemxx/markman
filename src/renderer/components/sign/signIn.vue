@@ -11,7 +11,11 @@
       <a-input type="text" v-model:value="signIn.username"></a-input>
     </a-form-item>
     <a-form-item label="密码" name="password">
-      <a-input type="password" v-model:value="signIn.password"></a-input>
+      <a-input
+        type="password"
+        v-model:value="signIn.password"
+        @keyup.enter="handleSubmit('signIn')"
+      ></a-input>
     </a-form-item>
     <a-form-item>
       <a-button type="primary" @click="handleSubmit('signIn')">登陆</a-button>
@@ -44,33 +48,35 @@ export default {
   },
   methods: {
     handleSubmit(name) {
-      this.$refs[name].validate().then(() => {
-        const msg = this.$message
-        const { username, password, server } = this.signIn
-        const router = this.$router
-        const store = this.$store
-
-        // 向服务器发起登录请求
-        this.$axios
-          .post(this.signIn.server + '/signIn', {
-            username,
-            password,
-          })
-          .then(data => {
-            // 服务端成功返回数据，更新客户端的活动用户信息
-            return store.dispatch('user/setActiver', {
+      const msg = this.$message
+      const { username, password, server } = this.signIn
+      const router = this.$router
+      const store = this.$store
+      this.$refs[name]
+        .validate()
+        .then(() => {
+          // 向服务器发起登录请求
+          return this.$axios
+            .post(this.signIn.server + '/signIn', {
               username,
-              token: data.token,
-              server,
+              password,
             })
-          })
-          .then(() => {
-            // 显示消息框提示用户成功
-            msg.success('登录成功:)')
-            router.push('/editorBase')
-          })
-        // 如果失败有后台封装的默认处理函数
-      })
+            .then(data => {
+              // 服务端成功返回数据，更新客户端的活动用户信息
+              return store.dispatch('user/setActiver', {
+                username,
+                token: data.token,
+                server,
+              })
+            })
+            .then(() => {
+              // 显示消息框提示用户成功
+              msg.success('登录成功:)')
+              return router.push('/editorBase')
+            })
+          // 如果失败有后台封装的默认处理函数
+        })
+        .catch(() => {})
     },
   },
 }

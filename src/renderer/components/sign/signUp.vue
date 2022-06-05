@@ -52,17 +52,17 @@ export default {
       this.$refs[name]
         .validate()
         .then(() => {
-          this.$axios
+          return this.$axios
             .post(this.signUp.server + '/signUp', {
               username: this.signUp.user,
               password: this.signUp.password,
             })
             .then(() => {
               msg.success('注册成功!请手动登录:)')
-              router.push('/sign/in')
+              return router.push('/sign/in')
             })
         })
-        .catch()
+        .catch(err => err)
     },
     handleReset(name) {
       this.$refs[name].resetFields()

@@ -6,6 +6,7 @@ import { app } from 'electron'
 import Accessor from './app/accessor'
 import { isDevelopment, isWindows, userDataPath } from './config'
 import installExtension from 'electron-devtools-installer'
+require('@electron/remote/main').initialize()
 
 if (isDevelopment && !process.env.IS_TEST) {
   app.whenReady().then(async () => {
