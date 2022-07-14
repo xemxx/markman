@@ -1,6 +1,6 @@
 <template>
   <a-layout-footer class="toolbar">
-    <SyncOutlined spin @click.stop="sync" />
+    <SyncOutlined v-model:spin="isSyncing" @click.stop="sync" />
     <p v-if="isSyncing">同步中</p>
     <p v-else>同步完成</p>
     <LogoutOutlined @click.stop="quit" />
