@@ -1,18 +1,17 @@
 <template>
   <a-layout>
     <a-layout-header class="toolbar">
-      <div><AlignLeftOutlined /></div>
-      <div @click="addNote(bid)"><PlusOutlined /></div>
+      <div>
+        <AlignLeftOutlined />
+      </div>
+      <div @click="addNote(bid)">
+        <PlusOutlined />
+      </div>
     </a-layout-header>
     <a-layout-content>
       <ScrollBar class="list" :settings="scrollSettings">
-        <div
-          class="card"
-          v-for="item in notes"
-          :key="item.id"
-          @click="checkoutNote(item.id)"
-          @click.right="rightMenu(item.id, item.bid)"
-        >
+        <div class="card" v-for="item in notes" :key="item.id" @click="checkoutNote(item.id)"
+          @click.right="rightMenu(item.id, item.bid)">
           <div class="card-title">{{ item.title }}</div>
           <div class="card-content">
             <p>{{ item.content }}</p>
@@ -23,11 +22,7 @@
     </a-layout-content>
     <a-modal title="移动笔记" :visible="showMove" width="30%">
       <a-select v-model:value="moveCheck">
-        <a-select-option
-          v-for="item in notebooks"
-          :key="item.guid"
-          v-model:value="item.guid"
-        >
+        <a-select-option v-for="item in notebooks" :key="item.guid" v-model:value="item.guid">
           {{ item.name }}
         </a-select-option>
       </a-select>
@@ -43,7 +38,7 @@
 import { mapState, mapActions } from 'vuex'
 import ScrollBar from '@/components/common/scrollBar'
 import { AlignLeftOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { Menu, MenuItem, remote } from '@electron/remote'
+import { Menu, MenuItem, getCurrentWindow } from '@electron/remote'
 
 export default {
   name: 'TocBar',
@@ -95,7 +90,7 @@ export default {
           click: () => this.deleteNote(id),
         }),
       )
-      menu.popup({ window: remote.getCurrentWindow() })
+      menu.popup({ window: getCurrentWindow() })
     },
     moveNote(id, bid) {
       this.moveNoteId = id
