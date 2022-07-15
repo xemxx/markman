@@ -66,7 +66,7 @@ class SettingWindow extends BaseWindow {
       this.emit('window-closed')
       win = null
     })
-
+    require('@electron/remote/main').enable(win.webContents)
     win.loadURL(this._buildUrlString() + '#/preference')
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
