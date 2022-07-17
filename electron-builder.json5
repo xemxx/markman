@@ -1,0 +1,43 @@
+// https://www.electron.build/configuration/configuration
+{
+  appId: 'com.xemxx.markman',
+  asar: true,
+  directories: {
+    output: 'release/${version}',
+  },
+  publish: [
+    {
+      provider: 'github',
+      owner: 'xemxx',
+      repo: 'markman-client',
+      releaseType: 'draft',
+    },
+  ],
+  files: ['dist'],
+  mac: {
+    // artifactName: '${productName}_${version}.${ext}',
+    target: ['dmg', 'zip'],
+    icon: 'public/icons/mac/icon.icns',
+  },
+  win: {
+    target: [
+      {
+        target: 'nsis',
+        arch: ['x64'],
+      },
+    ],
+    // artifactName: '${productName}_${version}.${ext}',
+    icon: 'public/icons/win/icon.ico',
+  },
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowToChangeInstallationDirectory: true,
+    deleteAppDataOnUninstall: false,
+  },
+  linux: {
+    target: ['AppImage', 'snap'],
+    icon: 'public/icons/mac/icon.icns',
+    category: 'Office',
+  },
+}
