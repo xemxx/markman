@@ -28,9 +28,7 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/router/index.js",
-    "src/store/index.js",
-    "src/store/modules/user.js",
+    "src/**/*.js",
   ],
   "references": [
     {
