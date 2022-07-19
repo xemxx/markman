@@ -9,6 +9,7 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "baseUrl": "./",
+    "outDir": "./",
     "strict": true,
     "paths": {
       "main/*": [

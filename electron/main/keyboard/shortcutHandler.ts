@@ -2,10 +2,12 @@ import path from 'path'
 import { isOsx } from '../config'
 
 class Keybindings {
+  configPath: string
+  keys: Map<string, string>
   /**
    * @param {string} userDataPath The user data path.
    */
-  constructor(userDataPath) {
+  constructor(userDataPath: string) {
     this.configPath = path.join(userDataPath, 'keybindings.json')
 
     this.keys = new Map([

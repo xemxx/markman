@@ -6,12 +6,14 @@ import {
   isWindows,
   //  isLinux
 } from '../config'
+import { Debug } from '../log'
+import Accessor from '../app/accessor'
 
 class EditorWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */
-  constructor(accessor) {
+  constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.EDITOR
   }
@@ -20,7 +22,7 @@ class EditorWindow extends BaseWindow {
    * Creates a new editor window.
    * @param {*} [options] The BrowserWindow options.
    */
-  createWindow(options = {}) {
+  createWindow(options: any = {}) {
     const { menu: appMenu } = this._accessor
 
     const winOptions = Object.assign(
@@ -77,10 +79,6 @@ class EditorWindow extends BaseWindow {
             return super.reload()
         }
       }
-    })
-
-    win.on('reload', () => {
-      super.reload()
     })
 
     win.on('focus', () => {

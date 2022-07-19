@@ -6,14 +6,23 @@ import Store from 'electron-store'
 import { BrowserWindow, ipcMain } from 'electron'
 import log from 'electron-log'
 import { hasSameKeys } from '../utils'
-import schema from './schema'
 import { Debug } from '../log'
 import { ROOT_PATH } from '../config'
+
+import { schema } from './schema'
 
 const PREFERENCES_FILE_NAME = 'preferences'
 
 class Preference extends EventEmitter {
-  constructor(preferencesPath) {
+  preferencesPath: string
+  hasPreferencesFile: boolean
+  store: Store<{
+    autoSave: unknown
+    autoSaveDelay: unknown
+    toggleSidebar: unknown
+  }>
+  staticPath: string
+  constructor(preferencesPath: string) {
     super()
 
     this.preferencesPath = preferencesPath
@@ -21,7 +30,7 @@ class Preference extends EventEmitter {
       path.join(this.preferencesPath, `./${PREFERENCES_FILE_NAME}.json`),
     )
     this.store = new Store({
-      schema,
+      schema: schema,
       name: PREFERENCES_FILE_NAME,
     })
 
@@ -74,13 +83,13 @@ class Preference extends EventEmitter {
     return this.store.store
   }
 
-  setItem(key, value) {
+  setItem(key: string, value: string | boolean) {
     Debug('Event: broadcast-pref-changed' + ' key: ' + key + ' value: ' + value)
     ipcMain.emit('broadcast-pref-changed', { [key]: value })
     return this.store.set(key, value)
   }
 
-  getItem(key) {
+  getItem(key: string) {
     return this.store.get(key)
   }
 
@@ -89,7 +98,7 @@ class Preference extends EventEmitter {
    *
    * @param {Object.<string, *>} settings A settings object or subset object with key/value entries.
    */
-  setItems(settings) {
+  setItems(settings: Electron.IpcMainEvent) {
     if (!settings) {
       log.error(
         'Cannot change settings without entires: object is undefined or null.',

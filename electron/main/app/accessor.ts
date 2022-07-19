@@ -1,11 +1,15 @@
-import WindowManager from '../app/windowManager'
+import WindowManager from './windowManager'
 
 import Keybindings from '../keyboard/shortcutHandler'
 import AppMenu from '../menu'
 import Preference from '../preferences'
 
 class Accessor {
-  constructor(args) {
+  preferences: any
+  keybindings: any
+  menu: any
+  windowManager: any
+  constructor(args: { userDataPath: any }) {
     let userDataPath = args.userDataPath
     this.preferences = new Preference(userDataPath)
     this.keybindings = new Keybindings(userDataPath)

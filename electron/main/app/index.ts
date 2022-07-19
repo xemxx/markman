@@ -6,21 +6,22 @@ import { app, ipcMain } from 'electron'
 
 import EditorWindow from '../windows/editor'
 import SettingWindow from '../windows/setting'
+import Accessor from './accessor'
+import WindowManager from './windowManager'
 
 export default class App {
-  constructor(Accessor) {
-    this._accessor = Accessor
-    this._windowManager = Accessor.windowManager
-    // this.ready = () => {
-    //   this._createEditorWindow()
-    // }
+  private _accessor: Accessor
+  private _windowManager: WindowManager
+
+  constructor(accessor: Accessor) {
+    this._accessor = accessor
+    this._windowManager = accessor.windowManager
     this._listenForIpcMain()
   }
   ready = () => {
     this._createEditorWindow()
   }
   init() {
-    require('@electron/remote/main').initialize()
     app.on('second-instance', () => {
       const { _windowManager } = this
       // 当运行第二个实例时,activeWindow

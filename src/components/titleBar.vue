@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { remote } from '@electron/remote'
+import { getCurrentWindow } from '@electron/remote'
 export default {
   computed: {
     isWin: () => {
@@ -21,11 +21,11 @@ export default {
   },
   methods: {
     minimizeWindow() {
-      const window = remote.getCurrentWindow()
+      const window = getCurrentWindow()
       window.minimize()
     },
     closeWindow() {
-      const window = remote.getCurrentWindow()
+      const window = getCurrentWindow()
       window.close()
     },
   },

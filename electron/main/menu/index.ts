@@ -1,8 +1,9 @@
-import { Menu } from 'electron'
+import { BrowserWindow, Menu } from 'electron'
 import { isOsx, isWindows, isLinux } from '../config'
-import { configEditorMenu, configSettingMenu } from '../menu/templates'
+import { configEditorMenu, configSettingMenu } from './templates'
 import { ipcMain } from 'electron'
 import { Debug } from '../log'
+import Keybindings from '../keyboard/shortcutHandler'
 
 export const MenuType = {
   DEFAULT: 0,
@@ -11,11 +12,17 @@ export const MenuType = {
 }
 
 class AppMenu {
+  _keybindings: any
+  _userDataPath: any
+  _userPreference: any
+  isOsxOrWindows: boolean
+  activeWindowId: number
+  windowMenus: Map<any, any>
   /**
    * @param {Keybindings} keybindings The keybindings instances.
    * @param {string} userDataPath The user data path.
    */
-  constructor(keybindings, userDataPath, userPreference) {
+  constructor(keybindings: Keybindings, userDataPath: string, userPreference) {
     this._keybindings = keybindings
     this._userDataPath = userDataPath
     this._userPreference = userPreference
@@ -32,7 +39,7 @@ class AppMenu {
    *
    * @param {BrowserWindow} window The editor browser window.
    */
-  addEditorMenu(window) {
+  addEditorMenu(window: BrowserWindow) {
     const { windowMenus } = this
     windowMenus.set(window.id, this._buildEditorMenu())
   }
@@ -42,7 +49,7 @@ class AppMenu {
    *
    * @param {BrowserWindow} window The settings browser window.
    */
-  addSettingMenu(window) {
+  addSettingMenu(window: BrowserWindow) {
     const { windowMenus } = this
     windowMenus.set(window.id, this._buildSettingMenu())
   }
@@ -52,7 +59,7 @@ class AppMenu {
    *
    * @param {number} windowId The window id.
    */
-  removeWindowMenu(windowId) {
+  removeWindowMenu(windowId: number) {
     // NOTE: Shortcut handler is automatically unregistered when window is closed.
     const { activeWindowId } = this
     this.windowMenus.delete(windowId)
@@ -63,11 +70,10 @@ class AppMenu {
 
   /**
    * Update always on top menu item.
-   *
    * @param {number} windowId The window id.
-   * @param {boolean} lineEnding Always on top.
+   * @param {boolean} flag Always on top.
    */
-  updateAlwaysOnTopMenu(windowId, flag) {
+  updateAlwaysOnTopMenu(windowId: number, flag) {
     const menus = this.getWindowMenuById(windowId)
     const menu = menus.getMenuItemById('alwaysOnTopMenuItem')
     menu.checked = flag
@@ -79,7 +85,7 @@ class AppMenu {
    * @param {number} windowId The window id.
    * @returns {Electron.Menu} The menu.
    */
-  getWindowMenuById(windowId) {
+  getWindowMenuById(windowId: number): Electron.Menu {
     const menu = this.windowMenus.get(windowId)
     if (!menu) {
       throw new Error(`Cannot find window menu for id ${windowId}.`)
@@ -137,7 +143,7 @@ class AppMenu {
    *
    * @param {number} windowId The window id.
    */
-  setActiveWindow(windowId) {
+  setActiveWindow(windowId: number) {
     if (this.activeWindowId !== windowId) {
       // Change application menu to the current window menu.
       this._setApplicationMenu(this.getWindowMenuById(windowId))
@@ -178,14 +184,14 @@ class AppMenu {
   }
 
   _listenForIpcMain() {
-    ipcMain.on('broadcast-pref-changed', prefs => {
+    ipcMain.on('broadcast-pref-changed', (pref: any) => {
       Debug('Menu: broadcast-pref-changed')
-      Debug(prefs)
-      if (prefs.autoSave !== undefined) this.updateAutoSaveMenu(prefs.autoSave)
-      else if (prefs.toggleSidebar !== undefined)
-        this.updateToggleSidebar(prefs.toggleSidebar)
-      else if (prefs.togglePreview !== undefined)
-        this.updateTogglePreview(prefs.togglePreview)
+      Debug(pref)
+      if (pref.autoSave !== undefined) this.updateAutoSaveMenu(pref.autoSave)
+      else if (pref.toggleSidebar !== undefined)
+        this.updateToggleSidebar(pref.toggleSidebar)
+      else if (pref.togglePreview !== undefined)
+        this.updateTogglePreview(pref.togglePreview)
     })
   }
 }
@@ -194,9 +200,9 @@ class AppMenu {
  * Return the menu from the application menu.
  *
  * @param {string} menuId Menu ID
- * @returns {Electron.Menu} Returns the menu or null.
+ * @returns {Electron.MenuItem} Returns the menu or null.
  */
-export const getMenuItemById = menuId => {
+export const getMenuItemById = (menuId: string): Electron.MenuItem => {
   const menus = Menu.getApplicationMenu()
   return menus.getMenuItemById(menuId)
 }

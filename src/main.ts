@@ -12,7 +12,6 @@ import '@/assets/css/index.styl'
 
 // 全局拦截，检测token
 
-
 const app = createApp(App)
 
 app.config.globalProperties.$axios = Axios

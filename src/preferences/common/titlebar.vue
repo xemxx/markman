@@ -1,9 +1,6 @@
 <template>
   <div class="title-bar">
-    <div
-      class="frameless-titlebar-button frameless-titlebar-close"
-      @click.stop="handleCloseClick"
-    >
+    <div class="frameless-titlebar-button frameless-titlebar-close" @click.stop="handleCloseClick">
       <div>
         <svg width="10" height="10">
           <path :d="windowIconClose" />
@@ -14,7 +11,7 @@
 </template>
 
 <script>
-import { remote } from '@electron/remote'
+import { getCurrentWindow } from '@electron/remote'
 import { closePath } from '../../assets/window-controls.js'
 
 export default {
@@ -24,7 +21,7 @@ export default {
   },
   methods: {
     handleCloseClick() {
-      remote.getCurrentWindow().close()
+      getCurrentWindow().close()
     },
   },
 }
@@ -56,19 +53,23 @@ export default {
   height: var(--titleBarHeight);
   -webkit-app-region: no-drag;
 }
-.frameless-titlebar-button > div {
+
+.frameless-titlebar-button>div {
   position: absolute;
   display: inline-flex;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
+
 .frameless-titlebar-close:hover {
   background-color: rgb(228, 79, 79);
 }
+
 .frameless-titlebar-button svg {
   fill: #000000;
 }
+
 .frameless-titlebar-close:hover svg {
   fill: #ffffff;
 }

@@ -36,7 +36,8 @@ export default {
   display flex
   justify-content space-between
   align-items center
-
+  border-top 1px solid black
+  padding 2px 5px
   p
     text-align center
     flex 1

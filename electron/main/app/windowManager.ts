@@ -1,13 +1,19 @@
-import { ipcMain } from 'electron'
+import { BrowserWindow, ipcMain } from 'electron'
 import EventEmitter from 'events'
 import { isWindows } from '../config'
+import AppMenu from '../menu'
+import BaseWindow from '../windows/base'
 
 class WindowManager extends EventEmitter {
+  private _activeWindowId: any
+  private _appMenu: AppMenu
+  private _editor: BaseWindow
+  private _setting: BaseWindow
   /**
    *
    * @param {AppMenu} appMenu The application menu instance.
    */
-  constructor(appMenu) {
+  constructor(appMenu: AppMenu) {
     super()
 
     this._appMenu = appMenu
@@ -21,9 +27,9 @@ class WindowManager extends EventEmitter {
 
   /**
    * 添加主窗口用于管理
-   * @param {IApplicationWindow} window The application window. We take ownership!
+   * @param {BaseWindow} window The application window. We take ownership!
    */
-  addEditor(window) {
+  addEditor(window: BaseWindow) {
     this._editor = window
 
     window.on('window-closed', () => {
@@ -40,7 +46,7 @@ class WindowManager extends EventEmitter {
     })
   }
 
-  addSetting(window) {
+  addSetting(window: BaseWindow) {
     this._setting = window
 
     window.on('window-closed', () => {
@@ -54,10 +60,10 @@ class WindowManager extends EventEmitter {
     })
   }
 
-  get editor() {
+  get editor(): BaseWindow {
     return this._editor
   }
-  get setting() {
+  get setting(): BaseWindow {
     return this._setting
   }
 
@@ -82,7 +88,7 @@ class WindowManager extends EventEmitter {
   }
 
   _listenForIpcMain() {
-    ipcMain.on('window-toggle-always-on-top', win => {
+    ipcMain.on('window-toggle-always-on-top', (win: any) => {
       const flag = !win.isAlwaysOnTop()
       win.setAlwaysOnTop(flag)
       this._appMenu.updateAlwaysOnTopMenu(win.id, flag)

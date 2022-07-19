@@ -14,7 +14,7 @@ export const editorWinOptions = {
   minHeight: 350,
   center: true,
   webPreferences: {
-    // preload,
+    preload,
     nodeIntegration: true,
     contextIsolation: false,
     // enableRemoteModule: true,

@@ -24,15 +24,14 @@ export default function (keybindings, preference) {
       { role: 'zoomout' },
     ],
   }
-
+  viewMenu.submenu.push({
+    label: 'Toggle Developer Tools',
+    accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
+    role: 'toggledevtools',
+  })
   if (isDevelopment) {
     viewMenu.submenu.push({
       type: 'separator',
-    })
-    viewMenu.submenu.push({
-      label: 'Toggle Developer Tools',
-      accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
-      role: 'toggledevtools',
     })
     viewMenu.submenu.push({
       label: 'Reload',

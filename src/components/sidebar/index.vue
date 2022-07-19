@@ -31,7 +31,6 @@ export default {
   display flex
   max-width 400px
   width 400px
-  border-right 1px solid
   padding-top var(--titleBarHeight)
   background var(--sideBarBgColor)
   color var(--sideBarColor)
@@ -40,6 +39,7 @@ export default {
   flex 1
   max-width 200px
   width 200px
+  border-right 1px solid #000000
 
 .activity
   background-color transparent

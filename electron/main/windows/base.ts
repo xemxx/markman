@@ -4,7 +4,8 @@ import { join } from 'path'
 import { ROOT_PATH } from '../config'
 import { Debug } from '../log'
 
-import { app } from 'electron'
+import { app, BrowserWindow } from 'electron'
+import Accessor from '../app/accessor'
 
 /**
  * @typedef {BaseWindow} IApplicationWindow
@@ -23,10 +24,14 @@ const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_D
 const indexHtml = join(ROOT_PATH.dist, 'index.html')
 
 class BaseWindow extends EventEmitter {
+  protected _accessor: Accessor
+  id: number
+  browserWindow: BrowserWindow
+  type: string
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */
-  constructor(accessor) {
+  public constructor(accessor: Accessor) {
     super()
 
     this._accessor = accessor

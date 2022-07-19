@@ -6,16 +6,15 @@ import {
   preferencesWinOptions,
   isLinux,
   isWindows,
-  isOsx,
   ROOT_PATH,
 } from '../config'
-import { Debug } from '../log'
+import Accessor from '../app/accessor'
 
 class SettingWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */
-  constructor(accessor) {
+  constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.SETTINGS
   }
@@ -25,7 +24,7 @@ class SettingWindow extends BaseWindow {
    *
    * @param {*} [options] BrowserWindow options.
    */
-  createWindow(options = {}) {
+  createWindow(options: any = {}) {
     const { menu: appMenu } = this._accessor
     const winOptions = Object.assign({}, preferencesWinOptions, options)
 
@@ -53,10 +52,6 @@ class SettingWindow extends BaseWindow {
     win.webContents.once('did-finish-load', () => {
       // Restore and focus window
       this.bringToFront()
-    })
-
-    win.on('reload', () => {
-      super.reload()
     })
 
     win.on('focus', () => {
