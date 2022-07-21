@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { getCurrentWindow } from '@electron/remote'
+const { getCurrentWindow } = window.require('@electron/remote')
 export default {
   computed: {
     isWin: () => {

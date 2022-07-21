@@ -1,5 +1,5 @@
 import path from 'path'
-import { app } from '@electron/remote'
+const { app } = require('@electron/remote')
 import Sqlite from './sqlite.js'
 
 let dbPath = path.join(app.getPath('userData'), 'data.db')

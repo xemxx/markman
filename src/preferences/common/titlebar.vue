@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { getCurrentWindow } from '@electron/remote'
+const { getCurrentWindow } = window.require('@electron/remote')
 import { closePath } from '../../assets/window-controls.js'
 
 export default {

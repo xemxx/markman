@@ -28,7 +28,7 @@ import { nextTick, computed, ref } from 'vue'
 import { PlusCircleOutlined } from '@ant-design/icons-vue'
 
 
-import { Menu, MenuItem, getCurrentWindow } from '@electron/remote'
+const { Menu, MenuItem, getCurrentWindow } = window.require('@electron/remote')
 
 import Footer from './footer.vue'
 

@@ -17,7 +17,6 @@ export const editorWinOptions = {
     preload,
     nodeIntegration: true,
     contextIsolation: false,
-    // enableRemoteModule: true,
   },
   useContentSize: true,
   show: false,
@@ -29,9 +28,9 @@ export const preferencesWinOptions = {
   width: 950,
   height: 650,
   webPreferences: {
+    preload,
     nodeIntegration: true,
     contextIsolation: false,
-    enableRemoteModule: true,
   },
   fullscreenable: false,
   fullscreen: false,
