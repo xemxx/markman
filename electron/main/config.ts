@@ -7,7 +7,7 @@ import { app } from 'electron'
 import { join } from 'path'
 
 export const userDataPath = app.getPath('userData')
-const preload = join(__dirname, '../preload/index.ts')
+const preload = join(__dirname, '../preload/index.js')
 export const editorWinOptions = {
   title: 'markman',
   minWidth: 500,
