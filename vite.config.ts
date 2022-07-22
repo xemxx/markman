@@ -34,7 +34,16 @@ export default defineConfig({
         },
       },
       // Enables use of Node.js API in the Renderer-process
-      renderer: {},
+      renderer: {
+        resolve() {
+          // 显式的告诉 `vite-plugin-electron-renderer` 下面的包是 Node.js(CJS) 模块
+          return [
+            // C/C++ 原生模块
+            'serialport',
+            'sqlite3',
+          ]
+        },
+      },
     }),
   ],
   server: {
