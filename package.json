@@ -55,7 +55,7 @@
     "uuid": "^3.4.0",
     "vditor": "^3.8.4",
     "vite": "^2.0.0",
-    "vite-plugin-electron": "^0.7.0",
+    "vite-plugin-electron": "^0.8.0",
     "vue": "^3.2.37",
     "vue-router": "^4.0.0",
     "vue-tsc": "^0.38.3",
