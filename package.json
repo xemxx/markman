@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
+    "build:all": "vue-tsc --noEmit && vite build && electron-builder -mwl",
     "lint": "eslint src",
     "lint:fix": "eslint src electron --fix --ext .ts,.tsx,.js",
     "release": "vue-tsc --noEmit && vite build && electron-builder --publish onTagOrDraft",
