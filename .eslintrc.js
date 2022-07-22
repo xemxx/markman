@@ -5,26 +5,33 @@ module.exports = {
     node: true,
     es6: true,
   },
-  extends: ['plugin:vue/vue3-essential', '@vue/prettier'],
+  parser: 'vue-eslint-parser',
   globals: {
     __static: true,
   },
-  rules: {
-    //'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-  },
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: '@typescript-eslint/parser', // Specifies the ESLint parser
+    ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
+    sourceType: 'module', // Allows for the use of imports
+    ecmaFeatures: {
+      // Allows for the parsing of JSX
+      jsx: true,
+    },
   },
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+  },
+
   settings: {
     'import/resolver': {
       alias: {
         map: [
-          ['main', path.join(__dirname, 'src/main')],
-          ['@', path.join(__dirname, 'src/renderer')],
+          ['main', path.join(__dirname, 'electron/main')],
+          ['@', path.join(__dirname, 'src')],
         ],
-        extensions: ['.js', '.vue', '.json', '.css', '.node'],
+        extensions: ['.ts', '.js', '.vue', '.json', '.css', '.node'],
       },
     },
   },
+  extends: ['plugin:vue/vue3-recommended', 'plugin:prettier/recommended'],
 }
