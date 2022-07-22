@@ -3,13 +3,13 @@
         "./src/**/*"
     ],
     "compilerOptions": {
-        "baseUrl": "./src",
+        "baseUrl": "./",
         "paths": {
             "main/*": [
-                "src/main/*"
+                "electron/main/*"
             ],
             "@/*": [
-                "src/renderer/*"
+                "src/*"
             ]
         }
     }
