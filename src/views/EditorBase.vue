@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-import Editor from '@/components/editor/index.vue'
+import Editor from '@/components/editor/editor.vue'
 import { usePreferenceStore } from '@/store/preference'
 import { useListenStore } from '@/store/listen'
 

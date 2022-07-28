@@ -6,6 +6,7 @@ import electron from 'vite-plugin-electron'
 import pkg from './package.json'
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
@@ -15,6 +16,24 @@ export default defineConfig({
     vue(),
     Components({
       resolvers: [AntDesignVueResolver()],
+    }),
+    createSvgIconsPlugin({
+      // 指定需要缓存的图标文件夹
+      iconDirs: [resolve('./src/assets/icons/')],
+      // 指定symbolId格式
+      symbolId: 'icon-[dir]-[name]',
+
+      /**
+       * 自定义插入位置
+       * @default: body-last
+       */
+      inject: 'body-last',
+
+      /**
+       * custom dom id
+       * @default: __svg__icons__dom__
+       */
+      customDomId: '__svg__icons__dom__',
     }),
     electron({
       main: {
@@ -61,6 +80,15 @@ export default defineConfig({
   server: {
     host: pkg.env.VITE_DEV_SERVER_HOST,
     port: pkg.env.VITE_DEV_SERVER_PORT,
+  },
+  // publicDir: 'src/assets',
+  build: {
+    target: 'esnext',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
   // 设置路径别名
   resolve: {

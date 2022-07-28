@@ -2,9 +2,9 @@
 {
   appId: 'com.xemxx.markman',
   asar: true,
-  // directories: {
-  //   output: 'release/${version}',
-  // },
+  directories: {
+    output: 'release/${version}',
+  },
   publish: [
     {
       provider: 'github',

@@ -1,87 +1,78 @@
 <template>
-  <div ref="markdownRef"></div>
+  <a-layout class="editor">
+    <a-layout-header height="auto">
+      <input v-model="title" class="editor-title" />
+    </a-layout-header>
+    <a-layout-content class="editor-wrapper">
+      <Markdown :markdown="markdown" />
+    </a-layout-content>
+  </a-layout>
 </template>
 
 <script setup lang="ts">
-import Vditor from 'vditor'
-import 'vditor/dist/index.css'
-import { emitter } from '@/emitter'
-import { nextTick, defineProps, onUnmounted, ref } from 'vue'
+import Markdown from './markdown.vue'
+import { ref, computed } from 'vue'
 import { useEditorStore } from '@/store/editor'
-import { Modal } from 'ant-design-vue'
-const editor = useEditorStore()
 
-let vditor: Vditor
-const props = defineProps({
-  markdown: {
-    type: String,
-    default: function () {
-      return ''
-    },
+const editorS = useEditorStore()
+
+const markdown = ref(editorS.currentNote.content)
+
+const title = computed({
+  get: function () {
+    return editorS.currentNote.title
   },
-})
-
-// listen for checkout a new note.
-const setMarkdownToEditor = ({ markdown = '' }: any) => {
-  if (vditor) {
-    vditor.setValue(markdown, true)
-  }
-}
-
-const showCloseQuery = (id: any) => {
-  Modal.confirm({
-    content: '当前笔记改动是否保存？',
-    title: '提示',
-    okText: '是',
-    cancelText: '否',
-    onOk: async () => {
-      await editor.saveNote()
-      return await editor.loadNote(id)
-    },
-    onCancel: () => {
-      return
-    },
-  })
-}
-
-const markdownRef = ref()
-
-nextTick(() => {
-  // listen for emitter events.
-  emitter.on('note-loaded', setMarkdownToEditor)
-  emitter.on('query-close-note', showCloseQuery)
-
-  const options: IOptions = {
-    value: props.markdown,
-    height: '100%',
-    width: '100%',
-    toolbarConfig: {
-      hide: false,
-      pin: false,
-    },
-    tab: '\t',
-    counter: {
-      enable: true,
-      type: 'markdown',
-    },
-    typewriterMode: false,
-    cache: { enable: false },
-    input: value => {
-      editor.listenContentChange({
-        markdown: value,
-        title: undefined,
-      })
-    },
-  }
-  vditor = new Vditor(markdownRef.value, options)
-})
-
-onUnmounted(() => {
-  emitter.off('note-loaded', setMarkdownToEditor)
-  emitter.off('query-close-note', showCloseQuery)
-
-  vditor.destroy()
+  set: function (newVal) {
+    editorS.listenContentChange({
+      title: newVal,
+      markdown: undefined,
+    })
+  },
 })
 </script>
 
-<style lang="stylus" scope></style>
+<style lang="stylus" scoped>
+.editor
+  flex 1
+  min-width 0
+  max-width 100%
+  padding-top var(--titleBarHeight)
+
+.editor, .editor-title
+  background-color var(--editorBgColor)
+
+.editor-title
+  width 100%
+  padding 5px 10px
+  border none
+  font-size 24px
+  font-weight 500
+
+  &:focus
+    border none
+    outline none
+
+.editor-wrapper
+  display flex
+  height 100%
+  min-width 150px
+
+.tags
+  bottom 0px
+  width 100%
+  height auto
+  min-height 20px
+  background-color #aaeedd
+
+  ul
+    list-style-type none
+    display inline
+
+    li
+      border 1px
+      border-radius 5px
+      background-color aqua
+      padding-left 10px
+      color black
+      float left
+</style>
