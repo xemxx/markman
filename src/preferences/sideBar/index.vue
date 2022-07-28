@@ -9,9 +9,7 @@
         :class="{ active: item.label === currentCategory }"
         @click="handleCategoryItemClick(item.path)"
       >
-        <svg :viewBox="item.icon.viewBox">
-          <use :xlink:href="item.icon.url"></use>
-        </svg>
+        <SvgIcon :name="item.icon" />
         <span>{{ item.name }}</span>
       </div>
     </section>
@@ -19,10 +17,14 @@
 </template>
 <script setup lang="ts">
 import { category as categoryC } from './config'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-const category = ref(categoryC)
+import SvgIcon from '@/components/svgIcon.vue'
+import { reactive, ref } from 'vue'
+import { useRouter } from '@/router'
+import GeneralIcon from '@/assets/icons/pref_general.svg'
+const category = reactive(categoryC)
 const currentCategory = ref('general')
+
+console.log(GeneralIcon)
 
 const router = useRouter()
 
@@ -75,12 +77,6 @@ const handleCategoryItemClick = path => {
     cursor pointer
     position relative
     user-select none
-
-    & > svg
-      width 28px
-      height 28px
-      fill var(--iconColor)
-      margin-right 15px
 
     &:hover
       background var(--sideBarItemHoverBgColor)

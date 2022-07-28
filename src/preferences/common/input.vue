@@ -2,9 +2,9 @@
   <section class="pref-input-item" :class="{ 'ag-underdevelop': disable }">
     <div class="description">
       <span>{{ description }}</span>
-      <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
+      <i v-if="more" class="a-icon-info" @click="handleMoreClick"></i>
     </div>
-    <a-input @change="change" v-model:value="value" :suffix="after"> </a-input>
+    <a-input v-model:value="value" :suffix="after" @change="change"> </a-input>
   </section>
 </template>
 
@@ -12,11 +12,6 @@
 import { shell } from 'electron'
 
 export default {
-  data() {
-    return {
-      value: this.val,
-    }
-  },
   props: {
     description: String,
     val: Number,
@@ -27,6 +22,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      value: this.val,
+    }
   },
   watch: {
     val: function (value, oldValue) {

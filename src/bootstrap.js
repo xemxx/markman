@@ -29,7 +29,7 @@ export class BootStrap {
   async initLoginStatus() {
     try {
       const ustate = store.state.user
-      ;(await user).loadActiver()
+      user.loadActiver()
 
       //先自身解析token是否超时
       let data = JSON.parse(
