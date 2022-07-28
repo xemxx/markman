@@ -9,34 +9,25 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex'
+<script setup lang="ts">
 import Input from './common/input.vue'
 import Bool from './common/bool.vue'
-export default {
-  components: {
-    Bool,
-    Input,
-  },
-  data() {
-    return {}
-  },
-  computed: {
-    ...mapState({
-      autoSave: state => state.preference.autoSave,
-      autoSaveDelay: state => state.preference.autoSaveDelay,
-    }),
-  },
-  methods: {
-    onSelectChange(type, value) {
-      // 当选择项改变后，改变设置项
-      this.$store.dispatch('preference/setOne', { type, value })
-    },
-    selectDefaultDirectoryToOpen() {
-      this.$store.dispatch('SELECT_DEFAULT_DIRECTORY_TO_OPEN')
-    },
-  },
+
+import { usePreferenceStore } from '@/store/preference'
+const preference = usePreferenceStore()
+// computed: {
+//   ...mapState({
+//     autoSave: state => state.preference.autoSave,
+//     autoSaveDelay: state => state.preference.autoSaveDelay,
+//   }),
+// },
+const { autoSave, autoSaveDelay } = preference
+
+const onSelectChange = (type, value) => {
+  // 当选择项改变后，改变设置项
+  preference.setOne({ type, value })
 }
+
 </script>
 
 <style lang="stylus" scoped>

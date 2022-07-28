@@ -7,26 +7,13 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import SideBar from '@/preferences/sideBar/index.vue'
-import { isOsx } from '@/tools'
-import { nextTick } from 'vue'
 
-export default {
-  data() {
-    this.isOsx = isOsx
-    return {}
-  },
-  components: {
-    SideBar,
-  },
-  computed: {},
-  created() {
-    nextTick(() => {
-      this.$store.dispatch('preference/getLocal')
-    })
-  },
-}
+import { usePreferenceStore } from '@/store/preference'
+
+const preference = usePreferenceStore()
+preference.getLocal()
 </script>
 
 <style lang="stylus" scoped>

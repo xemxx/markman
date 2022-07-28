@@ -4,12 +4,7 @@
       <span>{{ description }}</span>
       <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
     </div>
-    <a-switch
-      :checked="status"
-      @change="handleSwitchChange"
-      checked-children="On"
-      un-checked-children="Off"
-    >
+    <a-switch :checked="status" @change="handleSwitchChange" checked-children="On" un-checked-children="Off">
     </a-switch>
   </section>
 </template>

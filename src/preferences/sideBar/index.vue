@@ -6,8 +6,8 @@
         v-for="item of category"
         :key="item.name"
         class="item"
-        @click="handleCategoryItemClick(item.path)"
         :class="{ active: item.label === currentCategory }"
+        @click="handleCategoryItemClick(item.path)"
       >
         <svg :viewBox="item.icon.viewBox">
           <use :xlink:href="item.icon.url"></use>
@@ -17,33 +17,30 @@
     </section>
   </div>
 </template>
-<script>
-import { category } from './config'
+<script setup lang="ts">
+import { category as categoryC } from './config'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const category = ref(categoryC)
+const currentCategory = ref('general')
 
-export default {
-  data() {
-    this.category = category
-    return {
-      currentCategory: 'general',
-    }
-  },
-  watch: {
-    $route(to, from) {
-      if (to.name !== from.name) {
-        this.currentCategory = to.name
-      }
-    },
-  },
-  methods: {
-    handleSelect(item) {
-      this.$router.push({
-        path: `/preference/${item.category.toLowerCase()}`,
-      })
-    },
-    handleCategoryItemClick(path) {
-      this.$router.push(path).catch(err => err)
-    },
-  },
+const router = useRouter()
+
+// TODO: maybe
+// $route(to, from) {
+//   if (to.name !== from.name) {
+//     this.currentCategory = to.name
+//   }
+// },
+
+const handleSelect = item => {
+  router.push({
+    path: `/preference/${item.category.toLowerCase()}`,
+  })
+}
+
+const handleCategoryItemClick = path => {
+  router.push(path).catch(err => err)
 }
 </script>
 

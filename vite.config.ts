@@ -4,6 +4,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron'
 import pkg from './package.json'
+import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
 
 rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
@@ -11,6 +13,9 @@ rmSync('dist', { recursive: true, force: true }) // v14.14.0
 export default defineConfig({
   plugins: [
     vue(),
+    Components({
+      resolvers: [AntDesignVueResolver()],
+    }),
     electron({
       main: {
         entry: 'electron/main/index.ts',
@@ -39,13 +44,20 @@ export default defineConfig({
           // 显式的告诉 `vite-plugin-electron-renderer` 下面的包是 Node.js(CJS) 模块
           return [
             // C/C++ 原生模块
-            'serialport',
             'sqlite3',
           ]
         },
       },
     }),
   ],
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+      },
+    },
+    devSourcemap: false,
+  },
   server: {
     host: pkg.env.VITE_DEV_SERVER_HOST,
     port: pkg.env.VITE_DEV_SERVER_PORT,

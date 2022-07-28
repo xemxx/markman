@@ -9,7 +9,6 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "baseUrl": "./",
-    "outDir": "./",
     "strict": true,
     "paths": {
       "main/*": [
@@ -21,16 +20,15 @@
     },
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "allowJs": true,
     "noImplicitAny": false,
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/**/*.js",
-  ],
+  // "include": [
+  //   "src/**/*.ts",
+  //   "src/**/*.d.ts",
+  //   "src/**/*.tsx",
+  //   "src/**/*.vue",
+  //   "src/**/*.js",
+  // ],
   "references": [
     {
       "path": "./tsconfig.node.json"

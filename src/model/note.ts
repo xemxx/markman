@@ -1,8 +1,21 @@
-import db from '../plugins/sqlite3/db.js'
-import Model from './base.js'
+import { db } from '../plugins/sqlite3/db'
+import { Model } from './base'
 
-export default class Note extends Model {
-  get(id) {
+export interface noteItem {
+  id: number
+  guid: string
+  bid: string // 文件夹guid，和服务端一致
+  uid: number
+  title: string
+  content: string
+  modifyState: number // 0：不需要同步，1：新的东西，2：修改过的东西 3：本地删除但是未同步的数据
+  SC: number
+  addDate: number
+  modifyDate: number
+}
+
+export class NoteModel extends Model {
+  get(id: any) {
     return db.get(`select * from note where id=?`, [id])
   }
   getAllByBook(uid, bid) {
