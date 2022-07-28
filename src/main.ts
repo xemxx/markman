@@ -1,19 +1,42 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-// import './samples/node-api'
 
 import router from '@/router'
-import store from '@/store'
+
+import devtools from '@vue/devtools'
+if (process.env.NODE_ENV === 'development') {
+  devtools.connect()
+}
 
 import '@/plugins/sqlite3/init'
-import Axios from '@/plugins/axios'
-import Antd from '@/plugins/antd'
 import '@/assets/css/index.styl'
 
-// 全局拦截，检测token
+import pinia from '@/store'
 
 const app = createApp(App)
 
-app.config.globalProperties.$axios = Axios
+app
+  .use(router)
+  .use(pinia)
+  .mount('#app')
+  .$nextTick(() => {
+    postMessage({ payload: 'removeLoading' }, '*')
+  })
 
-app.use(router).use(store).use(Antd).mount('#app')
+import { useUserStore } from '@/store/user'
+
+const user = useUserStore()
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(m => m.meta.auth)) {
+    if (user.token === '') {
+      next({
+        path: '/sign/in',
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})

@@ -1,28 +1,19 @@
 <template>
-  <div v-show="sidebar" class="sidebar">
+  <div v-show="toggleSidebar" class="sidebar">
     <ActivityBar class="activity" />
     <TocBar class="toc" />
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { usePreferenceStore } from '@/store/preference'
+import { storeToRefs } from 'pinia'
 import ActivityBar from './activityBar.vue'
 import TocBar from './tocBar.vue'
 
-import { mapState } from 'vuex'
-
-export default {
-  name: 'Sidebar',
-  computed: {
-    ...mapState({
-      sidebar: state => state.preference.toggleSidebar,
-    }),
-  },
-  components: {
-    ActivityBar,
-    TocBar,
-  },
-}
+const preference = usePreferenceStore()
+console.log(preference.toggleSidebar)
+const { toggleSidebar } = storeToRefs(preference)
 </script>
 
 <style lang="stylus" scoped>
@@ -34,6 +25,7 @@ export default {
   padding-top var(--titleBarHeight)
   background var(--sideBarBgColor)
   color var(--sideBarColor)
+  height 100%
 
 .activity, .toc
   flex 1

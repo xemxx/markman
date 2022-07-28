@@ -9,41 +9,26 @@
   </a-layout>
 </template>
 
-<script>
-import { mapState } from 'vuex'
+<script setup lang="ts">
 import Editor from './editor.vue'
+import { ref, computed } from 'vue'
+import { useEditorStore } from '@/store/editor'
 
-export default {
-  data() {
-    return {
-      modifyState: false,
-      editor: null,
-    }
+const editorS = useEditorStore()
+
+const markdown = ref(editorS.currentNote.content)
+
+const title = computed({
+  get: function () {
+    return editorS.currentNote.title
   },
-  computed: {
-    ...mapState({
-      showPreview: state => state.preference.togglePreview,
-      tags: state => state.editor.tags,
-      markdown: state => state.editor.currentNote.content,
-      isEdit: state => state.editor.isEdit,
-    }),
-    title: {
-      get: function () {
-        return this.$store.state.editor.currentNote.title
-      },
-      set: function (newVal) {
-        const { dispatch } = this.$store
-        dispatch('editor/listenContentChange', {
-          title: newVal,
-        })
-      },
-    },
+  set: function (newVal) {
+    editorS.listenContentChange({
+      title: newVal,
+      markdown: undefined,
+    })
   },
-  methods: {},
-  components: {
-    Editor,
-  },
-}
+})
 </script>
 
 <style lang="stylus" scoped>
