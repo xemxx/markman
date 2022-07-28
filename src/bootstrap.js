@@ -29,18 +29,18 @@ export class BootStrap {
   async initLoginStatus() {
     try {
       const ustate = store.state.user
-      await store.dispatch('user/loadActiver')
+      ;(await user).loadActiver()
 
       //先自身解析token是否超时
       let data = JSON.parse(
         decodeURIComponent(escape(window.atob(ustate.token.split('.')[1]))),
       )
-      if (data.exp < Date.parse(new Date()) / 1000) {
+      if (data.exp < Date.parse(Date()) / 1000) {
         // 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
         this.logout()
         return
       }
-      if (data.exp - Date.parse(new Date()) / 1000 > expir_time / 2) {
+      if (data.exp - Date.parse(Date()) / 1000 > expir_time / 2) {
         // 代表在60天的前30天，不需要刷新token
         return
       }
@@ -53,7 +53,7 @@ export class BootStrap {
       try {
         const data = await axios.post(ustate.server + '/user/flashToken')
         //刷新成功，直接进入
-        store.dispatch('user/flashToken', data.token)
+        user.flashToken(data.token)
         return
       } catch (res) {
         //处理请求时原有token出现问题，可能数据被串改，需要重新登录
@@ -70,7 +70,7 @@ export class BootStrap {
   }
 
   logout() {
-    store.dispatch('user/unSetActiver')
+    user.unSetActiver()
     router.push('/sign/in')
   }
 }

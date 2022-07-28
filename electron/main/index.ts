@@ -3,15 +3,12 @@ import { release } from 'os'
 import App from './app'
 import Accessor from './app/accessor'
 import { isDevelopment, isWindows, userDataPath } from './config'
-import installExtension from 'electron-devtools-installer'
+import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
 require('@electron/remote/main').initialize()
 // if (isDevelopment && !process.env.IS_TEST) {
-//   app.whenReady().then(async () => {
-//     await installExtension({
-//       id: 'ljjemllljcmogpfapbkkighbhhppjdbg',
-//       electron: '>=1.0.0',
-//     })
+//   app.whenReady().then(() => {
+//     installExtension(VUEJS3_DEVTOOLS)
 //   })
 // }
 
@@ -85,7 +82,7 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 //   // Test actively push message to the Electron-Renderer
 //   win.webContents.on('did-finish-load', () => {
-//     win?.webContents.send('main-process-message', new Date().toLocaleString())
+//     win?.webContents.send('main-process-message', Date().toLocaleString())
 //   })
 
 //   // Make all links open with the browser, not with the application

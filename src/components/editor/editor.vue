@@ -1,94 +1,87 @@
 <template>
-  <div ref="markdown"></div>
+  <div ref="markdownRef"></div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
-import emitter from '@/emitter'
-import { nextTick } from 'vue'
+import { emitter } from '@/emitter'
+import { nextTick, defineProps, onUnmounted, ref } from 'vue'
+import { useEditorStore } from '@/store/editor'
+import { Modal } from 'ant-design-vue'
+const editor = useEditorStore()
 
-export default {
-  props: {
-    markdown: {
-      type: String,
-      default: function () {
-        return ''
-      },
+let vditor: Vditor
+const props = defineProps({
+  markdown: {
+    type: String,
+    default: function () {
+      return ''
     },
   },
-  watch: {},
-  created() {
-    nextTick(() => {
-      // listen for emitter events.
-      emitter.on('note-loaded', this.setMarkdownToEditor)
-      emitter.on('query-close-note', this.showCloseQuery)
+})
 
-      const options = {
-        value: this.markdown,
-        height: '100%',
-        width: '100%',
-        toolbarConfig: {
-          hide: false,
-          pin: false,
-        },
-        tab: '\t',
-        counter: {
-          enable: true,
-          type: 'md',
-        },
-        typewriterMode: false,
-        cache: { enable: false },
-        input: value => {
-          const { dispatch } = this.$store
-          dispatch('editor/listenContentChange', {
-            markdown: value,
-          })
-        },
-      }
+// listen for checkout a new note.
+const setMarkdownToEditor = ({ markdown = '' }: any) => {
+  if (vditor) {
+    vditor.setValue(markdown, true)
+  }
+}
 
-      this.vditor = new Vditor(this.$refs.markdown, options)
-
-      // listen for main thread ipc message
-      this.listen()
-    })
-  },
-  beforeUnmount() {
-    emitter.off('note-loaded', this.setMarkdownToEditor)
-    emitter.off('query-close-note', this.showCloseQuery)
-
-    this.vditor.destroy()
-  },
-
-  methods: {
-    listen() {},
-
-    // listen for checkout a new note.
-    setMarkdownToEditor({ markdown }) {
-      const { vditor } = this
-      if (vditor) {
-        vditor.setValue(markdown, true)
-      }
+const showCloseQuery = (id: any) => {
+  Modal.confirm({
+    content: '当前笔记改动是否保存？',
+    title: '提示',
+    okText: '是',
+    cancelText: '否',
+    onOk: async () => {
+      await editor.saveNote()
+      return await editor.loadNote(id)
     },
+    onCancel: () => {
+      return
+    },
+  })
+}
 
-    showCloseQuery(id) {
-      this.$confirm({
-        content: '当前笔记改动是否保存？',
-        title: '提示',
-        okText: '是',
-        cancelText: '否',
-        onOk: () => {
-          return this.$store.dispatch('editor/saveNote').then(() => {
-            return this.$store.dispatch('editor/loadNote', id)
-          })
-        },
-        onCancel: () => {
-          return
-        },
+const markdownRef = ref()
+
+nextTick(() => {
+  // listen for emitter events.
+  emitter.on('note-loaded', setMarkdownToEditor)
+  emitter.on('query-close-note', showCloseQuery)
+
+  const options: IOptions = {
+    value: props.markdown,
+    height: '100%',
+    width: '100%',
+    toolbarConfig: {
+      hide: false,
+      pin: false,
+    },
+    tab: '\t',
+    counter: {
+      enable: true,
+      type: 'markdown',
+    },
+    typewriterMode: false,
+    cache: { enable: false },
+    input: value => {
+      editor.listenContentChange({
+        markdown: value,
+        title: undefined,
       })
     },
-  },
-}
+  }
+  vditor = new Vditor(markdownRef.value, options)
+})
+
+onUnmounted(() => {
+  emitter.off('note-loaded', setMarkdownToEditor)
+  emitter.off('query-close-note', showCloseQuery)
+
+  vditor.destroy()
+})
 </script>
 
 <style lang="stylus" scope></style>

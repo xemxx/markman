@@ -1,7 +1,8 @@
 import axios from 'axios'
-import store from '@/store'
 import { message } from 'ant-design-vue'
 
+import { useUserStore } from '@/store/user'
+import { useSysStore } from '@/store/sys'
 import router from '@/router'
 
 const errCode = {
@@ -16,7 +17,8 @@ axios.defaults.withCredentials = false
 // 请求拦截器
 axios.interceptors.request.use(
   config => {
-    const token = store.state.user.token
+    const user = useUserStore()
+    const token = user.token
     if (config.headers) {
       config.headers['Authorization'] = token ? token : ''
     }
@@ -32,6 +34,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   // 请求成功
   async res => {
+    const user = useUserStore()
     if (res.status === 200) {
       const code = res.data.code
       const msg = res.data.msg
@@ -42,7 +45,7 @@ axios.interceptors.response.use(
         case errCode.ErrorAuthCheckTokenFail:
         case errCode.ErrorAuthCheckTokenTimeout:
           message.error('登录失效，请重新登录,ERROR：' + msg)
-          store.commit('user/update_token', '')
+          user.update_token('')
           router.push('/sign/in').catch(err => err)
           return Promise.reject(res)
         default:
@@ -65,7 +68,8 @@ axios.interceptors.response.use(
       //or
       //成功发送请求，但是未接收到响应
       if (!window.navigator.onLine) {
-        store.commit('update_online', false)
+        const store = useSysStore()
+        store.update_online(false)
       } else {
         message.error('网络错误，请检查，ERROR：' + err)
       }

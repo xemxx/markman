@@ -8,27 +8,17 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 const { getCurrentWindow } = window.require('@electron/remote')
-export default {
-  computed: {
-    isWin: () => {
-      return process.platform === 'win32'
-    },
-    title: () => {
-      return 'Markman'
-    },
-  },
-  methods: {
-    minimizeWindow() {
-      const window = getCurrentWindow()
-      window.minimize()
-    },
-    closeWindow() {
-      const window = getCurrentWindow()
-      window.close()
-    },
-  },
+
+const ew = getCurrentWindow()
+
+const minimizeWindow = () => {
+  ew.minimize()
+}
+
+const closeWindow = () => {
+  ew.close()
 }
 </script>
 

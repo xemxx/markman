@@ -1,5 +1,5 @@
-import db from './db.js'
-import sql from './sql.js'
+import { db } from './db'
+import sql from './sql'
 
 db.build = function () {
   for (const row of sql) {
