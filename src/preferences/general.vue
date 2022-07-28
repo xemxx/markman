@@ -1,10 +1,17 @@
 <template>
   <div class="pref-general">
     <h4>General</h4>
-    <bool description="Automatically save document changes." :bool="autoSave"
-      :onChange="value => onSelectChange('autoSave', value)"></bool>
-    <Input description="The delay in milliseconds between a change being made and saved."
-      :onChange="value => onSelectChange('autoSaveDelay', value)" :val="autoSaveDelay" after="ms">
+    <bool
+      description="Automatically save document changes."
+      :bool="autoSave"
+      :on-change="value => onSelectChange('autoSave', value)"
+    ></bool>
+    <Input
+      description="The delay in milliseconds between a change being made and saved."
+      :on-change="value => onSelectChange('autoSaveDelay', value)"
+      :val="autoSaveDelay"
+      after="ms"
+    >
     </Input>
   </div>
 </template>
@@ -14,6 +21,7 @@ import Input from './common/input.vue'
 import Bool from './common/bool.vue'
 
 import { usePreferenceStore } from '@/store/preference'
+import { storeToRefs } from 'pinia'
 const preference = usePreferenceStore()
 // computed: {
 //   ...mapState({
@@ -21,13 +29,12 @@ const preference = usePreferenceStore()
 //     autoSaveDelay: state => state.preference.autoSaveDelay,
 //   }),
 // },
-const { autoSave, autoSaveDelay } = preference
+const { autoSave, autoSaveDelay } = storeToRefs(preference)
 
 const onSelectChange = (type, value) => {
   // 当选择项改变后，改变设置项
   preference.setOne({ type, value })
 }
-
 </script>
 
 <style lang="stylus" scoped>

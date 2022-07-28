@@ -52,7 +52,7 @@ const { Menu, MenuItem, getCurrentWindow } = window.require('@electron/remote')
 // load store
 const sidebar = useSidebarStore()
 
-const loadList = obj => sidebar.loadNotes(obj)
+const loadList = sidebar.loadNotes
 sidebar.loadNotebooks()
 
 // add book

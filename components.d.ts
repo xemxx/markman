@@ -22,6 +22,7 @@ declare module '@vue/runtime-core' {
     ASwitch: typeof import('ant-design-vue/es')['Switch']
     Editor: typeof import('./src/components/editor/editor.vue')['default']
     Footer: typeof import('./src/components/sidebar/footer.vue')['default']
+    Markdown: typeof import('./src/components/editor/markdown.vue')['default']
     Preview: typeof import('./src/components/editor/preview.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -29,6 +30,7 @@ declare module '@vue/runtime-core' {
     Sidebar: typeof import('./src/components/sidebar/index.vue')['default']
     SignIn: typeof import('./src/components/sign/signIn.vue')['default']
     SignUp: typeof import('./src/components/sign/signUp.vue')['default']
+    SvgIcon: typeof import('./src/components/svgIcon.vue')['default']
     TitleBar: typeof import('./src/components/titleBar.vue')['default']
     TocBar: typeof import('./src/components/sidebar/tocBar.vue')['default']
   }
