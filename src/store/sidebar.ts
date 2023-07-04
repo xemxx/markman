@@ -136,7 +136,7 @@ export const useSidebarStore = defineStore('sidebar', {
         list = nModel.getAll(uid)
         flagId = '0'
       } else {
-        return Promise<{}>.reject(new Error('flagID and type is not define'))
+        return Promise.reject(new Error('flagID and type is not define'))
       }
 
       try {
