@@ -1,5 +1,10 @@
 <template>
-  <a-form ref="signUp" :model="signUp" layout="vertical" :rules="signUpRules">
+  <a-form
+    ref="signUpRef"
+    :model="signUp"
+    layout="vertical"
+    :rules="signUpRules"
+  >
     <a-form-item label="服务器地址" name="server">
       <a-input
         v-model:value="signUp.server"
@@ -46,22 +51,17 @@ const signUpRules = {
 }
 
 const handleSubmit = () => {
-  let msg = message
-
   signUpRef.value
     .validate()
-    .then(() => {
-      return axios
-        .post(signUp.value.server + '/signUp', {
-          username: signUp.value.user,
-          password: signUp.value.password,
-        })
-        .then(() => {
-          msg.success('注册成功!请手动登录:)')
-          return router.push('/sign/in')
-        })
+    .then(async () => {
+      await axios.post(signUp.value.server + '/signUp', {
+        username: signUp.value.user,
+        password: signUp.value.password,
+      })
+      message.success('注册成功!请手动登录:)')
+      return await router.push('/sign/in')
     })
-    .catch(err => err)
+    .catch((err: any) => err)
 }
 const handleReset = () => {
   signUpRef.value.resetFields()

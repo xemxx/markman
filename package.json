@@ -10,6 +10,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "vue:tools": "vue-devtools",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
     "build:all": "vue-tsc --noEmit && vite build && electron-builder -mwl",
     "lint": "eslint src electron  --ext .ts,.tsx,.vue",
@@ -41,7 +42,7 @@
     "ant-design-vue": "^3.0.0",
     "axios": ">=0.21.1",
     "core-js": "^3.6.5",
-    "electron": "^19.0.8",
+    "electron": "^19.0.0",
     "electron-builder": "^23.1.0",
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",

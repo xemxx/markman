@@ -24,7 +24,7 @@ const props = defineProps({
 // listen for checkout a new note.
 const setMarkdownToEditor = ({ markdown = '' }: any) => {
   if (vditor) {
-    vditor.setValue(markdown, true)
+    vditor.setValue(markdown)
   }
 }
 
