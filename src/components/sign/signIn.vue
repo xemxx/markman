@@ -61,26 +61,20 @@ const handleSubmit = (name: string) => {
 
   signInRef.value
     .validate()
-    .then(() => {
+    .then(async () => {
       // 向服务器发起登录请求
-      return axios
-        .post(server + '/signIn', {
-          username,
-          password,
-        })
-        .then((data: any) => {
-          // 服务端成功返回数据，更新客户端的活动用户信息
-          return user.setActiver({
-            username,
-            token: data.token,
-            server,
-          })
-        })
-        .then(() => {
-          // 显示消息框提示用户成功
-          msg.success('登录成功:)')
-          return router.push('/editorBase')
-        })
+      const data: { token: any } = await axios.post(server + '/signIn', {
+        username,
+        password,
+      })
+      await user.setActiver({
+        username,
+        token: data.token,
+        server,
+      })
+      // 显示消息框提示用户成功
+      msg.success('登录成功:)')
+      return router.push('/editorBase')
       // 如果失败有后台封装的默认处理函数
     })
     .catch(() => {})

@@ -31,9 +31,9 @@ class EditorWindow extends BaseWindow {
 
       options,
     )
-    if (isWindows) {
-      options.frame = false // 创建一个frameless窗口，详情：https://electronjs.org/docs/api/frameless-window
-    }
+    // if (isWindows) {
+    //   options.frame = false
+    // }
     // if (isLinux) {
     //   winOptions.icon = path.join(ROOT_PATH.public, 'icons/png/128x128.png')
     // }

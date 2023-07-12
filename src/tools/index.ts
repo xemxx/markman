@@ -10,7 +10,7 @@ export function deleteCookie(key) {
   return localStorage.removeItem(key)
 }
 
-export const hasKeys = obj => Object.keys(obj).length > 0
+export const hasKeys = (obj: {}) => Object.keys(obj).length > 0
 
 export const isOsx = process.platform === 'darwin'
 export const isWindows = process.platform === 'win32'
