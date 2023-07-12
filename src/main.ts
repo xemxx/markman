@@ -10,6 +10,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 import '@/plugins/sqlite3/init'
+import 'ant-design-vue/dist/antd.css'
 import '@/assets/css/index.styl'
 
 import 'virtual:svg-icons-register'

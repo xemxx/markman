@@ -53,7 +53,7 @@ axios.interceptors.response.use(
           return Promise.reject(res)
       }
     } else {
-      message.error('服务器出错了:(，ERROR：' + res.data)
+      message.error('服务器出错了:(，ERROR：' + res)
       return Promise.reject(res)
     }
   },

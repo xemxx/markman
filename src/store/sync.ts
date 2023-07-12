@@ -66,7 +66,7 @@ export const useSyncStore = defineStore('sync', {
       await this._pullNotebooks(localSC)
       await this._pullNotes(localSC)
       await userModel.update(uid!, { lastSC: serverSC })
-      ;(await user).update_lastSC(serverSC)
+      user.update_lastSC(serverSC)
     },
 
     async push() {

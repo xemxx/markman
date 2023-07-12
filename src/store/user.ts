@@ -42,12 +42,13 @@ export const useUserStore = defineStore('user', {
     },
 
     unSetActiver() {
+      let id = this.id
       this.update_id(0)
       this.update_lastSC(0)
       this.update_server('')
       this.update_token('')
       this.update_username('')
-      return model.update(this.id!, { state: 0 })
+      return model.update(id!, { state: 0 })
     },
 
     setActiver({ username, token, server }) {
@@ -56,7 +57,7 @@ export const useUserStore = defineStore('user', {
           return model
             .update(id, { state: 1, token })
             .then(() => {
-              return this.loadActiver
+              return this.loadActiver()
             })
             .catch((err: any) => {
               console.log(err)
@@ -65,7 +66,7 @@ export const useUserStore = defineStore('user', {
         return model
           .add({ username, server, token, state: 1, lastSC: 0 })
           .then(() => {
-            return this.loadActiver
+            return this.loadActiver()
           })
           .catch((err: any) => {
             console.log(err)
