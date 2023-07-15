@@ -16,7 +16,7 @@ import { storeToRefs } from 'pinia'
 
 const sync = useSyncStore()
 const { isSyncing } = storeToRefs(sync)
-console.log(isSyncing)
+console.debug(isSyncing)
 const doSync = sync.sync
 const user = useUserStore()
 const router = useRouter()
