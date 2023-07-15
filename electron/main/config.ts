@@ -21,7 +21,7 @@ export const editorWinOptions = {
   useContentSize: true,
   show: false,
   frame: true,
-  titleBarStyle: 'hidden',
+  // titleBarStyle: isOsx ? 'hidden' : '', //todo 添加自定义按钮
 }
 
 export const preferencesWinOptions = {
@@ -41,7 +41,7 @@ export const preferencesWinOptions = {
   show: false,
   frame: true,
   thickFrame: !isOsx,
-  titleBarStyle: 'hidden',
+  // titleBarStyle: isOsx ? 'hidden' : '', //todo 添加自定义按钮
 }
 
 export const EXTENSION_HASN = {
