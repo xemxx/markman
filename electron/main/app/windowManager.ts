@@ -67,7 +67,7 @@ class WindowManager extends EventEmitter {
     return this._setting
   }
 
-  setActiveWindow(windowId) {
+  setActiveWindow(windowId: number) {
     if (this._activeWindowId !== windowId) {
       this._activeWindowId = windowId
       if (windowId != null) {

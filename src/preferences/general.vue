@@ -1,41 +1,39 @@
 <template>
   <div class="pref-general">
     <h4>General</h4>
-    <bool description="Automatically save document changes." :bool="autoSave"
-      :onChange="value => onSelectChange('autoSave', value)"></bool>
-    <Input description="The delay in milliseconds between a change being made and saved."
-      :onChange="value => onSelectChange('autoSaveDelay', value)" :val="autoSaveDelay" after="ms">
+    <bool
+      description="Automatically save document changes."
+      :bool="autoSave"
+      :on-change="value => onSelectChange('autoSave', value)"
+    ></bool>
+    <Input
+      description="The delay in milliseconds between a change being made and saved."
+      :on-change="value => onSelectChange('autoSaveDelay', value)"
+      :val="autoSaveDelay"
+      after="ms"
+    >
     </Input>
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex'
+<script setup lang="ts">
 import Input from './common/input.vue'
 import Bool from './common/bool.vue'
-export default {
-  components: {
-    Bool,
-    Input,
-  },
-  data() {
-    return {}
-  },
-  computed: {
-    ...mapState({
-      autoSave: state => state.preference.autoSave,
-      autoSaveDelay: state => state.preference.autoSaveDelay,
-    }),
-  },
-  methods: {
-    onSelectChange(type, value) {
-      // 当选择项改变后，改变设置项
-      this.$store.dispatch('preference/setOne', { type, value })
-    },
-    selectDefaultDirectoryToOpen() {
-      this.$store.dispatch('SELECT_DEFAULT_DIRECTORY_TO_OPEN')
-    },
-  },
+
+import { usePreferenceStore } from '@/store/preference'
+import { storeToRefs } from 'pinia'
+const preference = usePreferenceStore()
+// computed: {
+//   ...mapState({
+//     autoSave: state => state.preference.autoSave,
+//     autoSaveDelay: state => state.preference.autoSaveDelay,
+//   }),
+// },
+const { autoSave, autoSaveDelay } = storeToRefs(preference)
+
+const onSelectChange = (type, value) => {
+  // 当选择项改变后，改变设置项
+  preference.setOne({ type, value })
 }
 </script>
 

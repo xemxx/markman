@@ -20,7 +20,7 @@ import PerfectScrollbar from 'perfect-scrollbar'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
 import { nextTick } from 'vue'
 export default {
-  name: 'vue-custom-scrollbar',
+  name: 'VueCustomScrollbar',
   props: {
     settings: {
       default: null,
@@ -38,33 +38,6 @@ export default {
     return {
       ps: null,
     }
-  },
-  methods: {
-    scrollHandle(evt) {
-      this.$emit(evt.type, evt)
-    },
-    update() {
-      if (this.ps) {
-        this.ps.update()
-      }
-    },
-    __init() {
-      if (this.swicher) {
-        if (!this._ps_inited) {
-          this._ps_inited = true
-          this.ps = new PerfectScrollbar(this.$el, this.settings)
-        } else {
-          this.ps.update()
-        }
-      }
-    },
-    __uninit() {
-      if (this.ps) {
-        this.ps.destroy()
-        this.ps = null
-        this._ps_inited = false
-      }
-    },
   },
   watch: {
     swicher(val) {
@@ -94,6 +67,33 @@ export default {
   },
   beforeUnmount() {
     this.__uninit()
+  },
+  methods: {
+    scrollHandle(evt) {
+      this.$emit(evt.type, evt)
+    },
+    update() {
+      if (this.ps) {
+        this.ps.update()
+      }
+    },
+    __init() {
+      if (this.swicher) {
+        if (!this._ps_inited) {
+          this._ps_inited = true
+          this.ps = new PerfectScrollbar(this.$el, this.settings)
+        } else {
+          this.ps.update()
+        }
+      }
+    },
+    __uninit() {
+      if (this.ps) {
+        this.ps.destroy()
+        this.ps = null
+        this._ps_inited = false
+      }
+    },
   },
 }
 </script>

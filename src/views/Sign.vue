@@ -10,14 +10,7 @@
   </a-layout>
 </template>
 
-<script>
-export default {
-  name: 'Sign',
-  data() {
-    return {}
-  },
-}
-</script>
+<script setup lang="ts"></script>
 
 <style lang="stylus" scoped>
 .sign-header

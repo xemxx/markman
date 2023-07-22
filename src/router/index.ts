@@ -6,7 +6,6 @@ import Preference from '@/views/Preference.vue'
 import SignUp from '@/components/sign/signUp.vue'
 import SignIn from '@/components/sign/signIn.vue'
 import General from '@/preferences/general.vue'
-import store from '@/store'
 
 const routes = [
   {
@@ -60,18 +59,8 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(m => m.meta.auth)) {
-    if (store.state.user.token === '') {
-      next({
-        path: '/sign/in',
-      })
-    } else {
-      next()
-    }
-  } else {
-    next()
-  }
-})
-
 export default router
+
+export const useRouter = () => {
+  return router
+}

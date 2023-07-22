@@ -5,32 +5,23 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-import Editor from '@/components/editor/index.vue'
+import Editor from '@/components/editor/editor.vue'
+import { usePreferenceStore } from '@/store/preference'
+import { useListenStore } from '@/store/listen'
+import { useSyncStore } from '@/store/sync'
 
-export default {
-  name: 'EditorBase',
-  components: {
-    Sidebar,
-    Editor,
-  },
-  data: () => {
-    return {}
-  },
-  created() {
-    this.$store.dispatch('sync/sync')
-    this.listen()
-  },
-  methods: {
-    listen() {
-      const { dispatch } = this.$store
-      dispatch('listenFileSave')
-      // 监听偏好设置即时生效
-      dispatch('preference/getLocal')
-    },
-  },
-}
+const preference = usePreferenceStore()
+const listen = useListenStore()
+const sync = useSyncStore()
+
+// 监听内容变动
+listen.listenFileSave()
+// 监听偏好设置即时生效
+preference.getLocal()
+
+sync.sync()
 </script>
 <style lang="stylus" scoped>
 .container

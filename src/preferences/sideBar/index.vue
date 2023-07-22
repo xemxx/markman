@@ -6,44 +6,43 @@
         v-for="item of category"
         :key="item.name"
         class="item"
-        @click="handleCategoryItemClick(item.path)"
         :class="{ active: item.label === currentCategory }"
+        @click="handleCategoryItemClick(item.path)"
       >
-        <svg :viewBox="item.icon.viewBox">
-          <use :xlink:href="item.icon.url"></use>
-        </svg>
+        <SvgIcon :name="item.icon" />
         <span>{{ item.name }}</span>
       </div>
     </section>
   </div>
 </template>
-<script>
-import { category } from './config'
+<script setup lang="ts">
+import { category as categoryC } from './config'
+import SvgIcon from '@/components/svgIcon.vue'
+import { reactive, ref } from 'vue'
+import { useRouter } from '@/router'
+import GeneralIcon from '@/assets/icons/pref_general.svg'
+const category = reactive(categoryC)
+const currentCategory = ref('general')
 
-export default {
-  data() {
-    this.category = category
-    return {
-      currentCategory: 'general',
-    }
-  },
-  watch: {
-    $route(to, from) {
-      if (to.name !== from.name) {
-        this.currentCategory = to.name
-      }
-    },
-  },
-  methods: {
-    handleSelect(item) {
-      this.$router.push({
-        path: `/preference/${item.category.toLowerCase()}`,
-      })
-    },
-    handleCategoryItemClick(path) {
-      this.$router.push(path).catch(err => err)
-    },
-  },
+console.log(GeneralIcon)
+
+const router = useRouter()
+
+// TODO: maybe
+// $route(to, from) {
+//   if (to.name !== from.name) {
+//     this.currentCategory = to.name
+//   }
+// },
+
+const handleSelect = item => {
+  router.push({
+    path: `/preference/${item.category.toLowerCase()}`,
+  })
+}
+
+const handleCategoryItemClick = path => {
+  router.push(path).catch(err => err)
 }
 </script>
 
@@ -78,12 +77,6 @@ export default {
     cursor pointer
     position relative
     user-select none
-
-    & > svg
-      width 28px
-      height 28px
-      fill var(--iconColor)
-      margin-right 15px
 
     &:hover
       background var(--sideBarItemHoverBgColor)

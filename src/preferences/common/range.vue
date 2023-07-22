@@ -3,17 +3,19 @@
     <div class="description">
       <span
         >{{ description }}:
-        <span class="value">{{ selectValue + (after ? after : '') }}</span></span
+        <span class="value">{{
+          selectValue + (after ? after : '')
+        }}</span></span
       >
-      <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
+      <i v-if="more" class="a-icon-info" @click="handleMoreClick"></i>
     </div>
     <a-slider
       v-model:value="selectValue"
-      @change="select"
       :min="min"
       :max="max"
       :format-tooltip="value => value + (after ? after : '')"
       :step="step"
+      @change="select"
     >
     </a-slider>
   </section>
@@ -23,11 +25,6 @@
 import { shell } from 'electron'
 
 export default {
-  data() {
-    return {
-      selectValue: this.value,
-    }
-  },
   props: {
     description: String,
     value: Number,
@@ -41,6 +38,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      selectValue: this.value,
+    }
   },
   watch: {
     value: function (value, oldValue) {

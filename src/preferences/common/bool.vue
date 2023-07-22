@@ -2,13 +2,13 @@
   <section class="pref-switch-item" :class="{ 'ag-underdevelop': disable }">
     <div class="description">
       <span>{{ description }}</span>
-      <i class="a-icon-info" v-if="more" @click="handleMoreClick"></i>
+      <i v-if="more" class="a-icon-info" @click="handleMoreClick"></i>
     </div>
     <a-switch
       :checked="status"
-      @change="handleSwitchChange"
       checked-children="On"
       un-checked-children="Off"
+      @change="handleSwitchChange"
     >
     </a-switch>
   </section>
@@ -18,11 +18,6 @@
 import { shell } from 'electron'
 
 export default {
-  data() {
-    return {
-      status: this.bool,
-    }
-  },
   props: {
     description: String,
     bool: Boolean,
@@ -32,6 +27,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      status: this.bool,
+    }
   },
   watch: {
     bool: function (value, oldValue) {

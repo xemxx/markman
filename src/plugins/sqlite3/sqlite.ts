@@ -3,12 +3,13 @@ import sqlite3 from 'sqlite3'
 const sqlite = sqlite3.verbose()
 
 class Sqlite {
-  constructor() {
-    this.instance
-    this.db = null
+  db!: sqlite3.Database
+  static instance: any
+  constructor(dbPath: string) {
+    this.connect(dbPath)
   }
   // 连接数据库
-  connect(path) {
+  connect(path: string) {
     return new Promise((resolve, reject) => {
       this.db = new sqlite.Database(path, err => {
         if (err === null) {
@@ -20,7 +21,7 @@ class Sqlite {
     })
   }
   // 运行sql
-  run(sql, params) {
+  run(sql: string, params: any) {
     return new Promise((resolve, reject) => {
       this.db.run(sql, params, err => {
         if (err === null) {
@@ -32,7 +33,7 @@ class Sqlite {
     })
   }
   // 运行多条sql
-  exec(sql) {
+  exec(sql: string) {
     return new Promise((resolve, reject) => {
       this.db.exec(sql, err => {
         if (err === null) {
@@ -44,9 +45,9 @@ class Sqlite {
     })
   }
   // 查询一条数据
-  get(sql, params) {
+  get<T>(sql: string, params: any) {
     return new Promise((resolve, reject) => {
-      this.db.get(sql, params, (err, data) => {
+      this.db.get(sql, params, (err, data: T) => {
         if (err) {
           console.log('run:' + err)
           reject(err)
@@ -57,7 +58,7 @@ class Sqlite {
     })
   }
   // 查询所有数据
-  all(sql, params) {
+  all(sql: string, params: any) {
     return new Promise((resolve, reject) => {
       this.db.all(sql, params, (err, data) => {
         if (err) {
@@ -74,8 +75,8 @@ class Sqlite {
   }
 
   // 单例
-  static getInstance() {
-    this.instance = this.instance ? this.instance : new Sqlite()
+  static getInstance(dbPath: string) {
+    this.instance = this.instance ? this.instance : new Sqlite(dbPath)
     return this.instance
   }
 }

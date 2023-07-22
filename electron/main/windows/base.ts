@@ -20,7 +20,7 @@ export const WindowType = {
   SETTINGS: 'settings',
 }
 
-const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}`
+const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}/`
 const indexHtml = join(ROOT_PATH.dist, 'index.html')
 
 class BaseWindow extends EventEmitter {
@@ -28,6 +28,8 @@ class BaseWindow extends EventEmitter {
   id: number
   browserWindow: BrowserWindow
   type: string
+  url: string
+
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */

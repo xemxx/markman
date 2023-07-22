@@ -17,6 +17,7 @@ class SettingWindow extends BaseWindow {
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.SETTINGS
+    this.url = this._buildUrlString() + '#/preference'
   }
 
   /**
@@ -64,7 +65,7 @@ class SettingWindow extends BaseWindow {
       win = null
     })
     require('@electron/remote/main').enable(win.webContents)
-    win.loadURL(this._buildUrlString() + '/#/preference')
+    win.loadURL(this.url)
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win

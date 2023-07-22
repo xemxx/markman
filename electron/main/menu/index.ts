@@ -11,13 +11,18 @@ export const MenuType = {
   SETTINGS: 2,
 }
 
+interface MenuCustom {
+  menu: Electron.Menu
+  type: number
+}
+
 class AppMenu {
   _keybindings: any
   _userDataPath: any
   _userPreference: any
   isOsxOrWindows: boolean
   activeWindowId: number
-  windowMenus: Map<any, any>
+  windowMenus: Map<any, MenuCustom>
   /**
    * @param {Keybindings} keybindings The keybindings instances.
    * @param {string} userDataPath The user data path.
@@ -101,14 +106,11 @@ class AppMenu {
       }
 
       const menuItem = menu.getMenuItemById('autoSaveMenuItem')
-      if (!menuItem) {
-        return
-      }
-      menuItem.checked = autoSave
+      menuItem!.checked = autoSave
     })
   }
 
-  updateToggleSidebar(toggleSidebar) {
+  updateToggleSidebar(toggleSidebar: any) {
     this.windowMenus.forEach(value => {
       const { menu, type } = value
       if (type !== MenuType.EDITOR) {
@@ -116,10 +118,7 @@ class AppMenu {
       }
 
       const menuItem = menu.getMenuItemById('sideBarMenuItem')
-      if (!menuItem) {
-        return
-      }
-      menuItem.checked = toggleSidebar
+      menuItem!.checked = toggleSidebar
     })
   }
 
@@ -169,7 +168,7 @@ class AppMenu {
     const menu = Menu.buildFromTemplate(menuTemplate)
 
     return {
-      menu,
+      menu: menu,
       type: MenuType.EDITOR,
     }
   }

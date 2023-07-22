@@ -6,9 +6,6 @@ module.exports = {
     es6: true,
   },
   parser: 'vue-eslint-parser',
-  globals: {
-    __static: true,
-  },
   parserOptions: {
     parser: '@typescript-eslint/parser', // Specifies the ESLint parser
     ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
@@ -20,6 +17,7 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
+    'vue/multi-word-component-names': 'off',
   },
 
   settings: {

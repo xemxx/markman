@@ -9,7 +9,6 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "baseUrl": "./",
-    "outDir": "./",
     "strict": true,
     "paths": {
       "main/*": [
@@ -21,8 +20,8 @@
     },
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "allowJs": true,
     "noImplicitAny": false,
+    "allowJs": true
   },
   "include": [
     "src/**/*.ts",
@@ -30,6 +29,9 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "src/**/*.js",
+  ],
+  "exclude": [
+    "src/bootstrap.js",
   ],
   "references": [
     {
