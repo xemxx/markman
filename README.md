@@ -1,7 +1,8 @@
 # markman
 
-[![Build Status](https://travis-ci.org/xemxx/markman-client.svg?branch=master)](https://travis-ci.org/xemxx/markman-client)
+[![Build Status](https://app.travis-ci.com/xemxx/markman.svg?branch=master)](https://app.travis-ci.com/xemxx/markman)
 
+[![Build status](https://ci.appveyor.com/api/projects/status/necfva92gr7it59q?svg=true)](https://ci.appveyor.com/project/xemxx/markman-client)
 
 ## 配置开发环境
 

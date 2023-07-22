@@ -36,7 +36,7 @@
     deleteAppDataOnUninstall: false,
   },
   linux: {
-    target: ['AppImage', 'snap'],
+    target: ['AppImage'],
     icon: 'public/icons/mac/icon.icns',
     category: 'Office',
   },
