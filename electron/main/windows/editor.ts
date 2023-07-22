@@ -16,6 +16,7 @@ class EditorWindow extends BaseWindow {
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.EDITOR
+    this.url = this._buildUrlString()
   }
 
   /**
@@ -31,9 +32,9 @@ class EditorWindow extends BaseWindow {
 
       options,
     )
-    if (isWindows) {
-      options.frame = false // 创建一个frameless窗口，详情：https://electronjs.org/docs/api/frameless-window
-    }
+    // if (isWindows) {
+    //   options.frame = false
+    // }
     // if (isLinux) {
     //   winOptions.icon = path.join(ROOT_PATH.public, 'icons/png/128x128.png')
     // }
@@ -97,12 +98,7 @@ class EditorWindow extends BaseWindow {
     })
 
     require('@electron/remote/main').enable(win.webContents)
-    win.loadURL(this._buildUrlString()).catch(e => {
-      Debug(this._buildUrlString())
-      Debug(e)
-    })
-    // win.show()
-    // win.webContents.openDevTools();
+    win.loadURL(this.url)
 
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
