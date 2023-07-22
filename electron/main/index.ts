@@ -3,14 +3,8 @@ import { release } from 'os'
 import App from './app'
 import Accessor from './app/accessor'
 import { isDevelopment, isWindows, userDataPath } from './config'
-// import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
 require('@electron/remote/main').initialize()
-// if (isDevelopment && !process.env.IS_TEST) {
-//   app.whenReady().then(() => {
-//     installExtension(VUEJS3_DEVTOOLS)
-//   })
-// }
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()

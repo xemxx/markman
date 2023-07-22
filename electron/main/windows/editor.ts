@@ -16,6 +16,7 @@ class EditorWindow extends BaseWindow {
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.EDITOR
+    this.url = this._buildUrlString()
   }
 
   /**
@@ -97,12 +98,7 @@ class EditorWindow extends BaseWindow {
     })
 
     require('@electron/remote/main').enable(win.webContents)
-    win.loadURL(this._buildUrlString()).catch(e => {
-      Debug(this._buildUrlString())
-      Debug(e)
-    })
-    // win.show()
-    // win.webContents.openDevTools();
+    win.loadURL(this.url)
 
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
