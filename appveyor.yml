@@ -16,7 +16,7 @@ init:
   - git config --global core.autocrlf input
 
 install:
-  - ps: Install-Product node 14 x64
+  - ps: Install-Product node 18 x64
   - git reset --hard HEAD
   - npm i
   - node --version
@@ -24,4 +24,4 @@ install:
 build_script:
   - npm run release
 
-test: off
+test: false
