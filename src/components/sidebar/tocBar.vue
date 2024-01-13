@@ -1,31 +1,31 @@
 <template>
-  <a-layout>
-    <a-layout-header class="toolbar">
+  <a-flex vertical>
+    <div class="toolbar">
       <div>
         <AlignLeftOutlined />
       </div>
       <div @click="addNote(bid)">
         <PlusOutlined />
       </div>
-    </a-layout-header>
-    <a-layout-content>
-      <ScrollBar class="list" :settings="scrollSettings">
-        <div
-          v-for="item in notes"
-          :key="item.id"
-          class="card"
-          @click="checkoutNote(item.id)"
-          @click.right="rightMenu(item.id, item.bid)"
-        >
-          <div class="card-title">{{ item.title }}</div>
-          <div class="card-content">
-            <p>{{ item.content }}</p>
-          </div>
-          <hr />
+    </div>
+
+    <ScrollBar class="list" :settings="scrollSettings">
+      <div
+        v-for="item in notes"
+        :key="item.id"
+        class="card"
+        @click="checkoutNote(item.id)"
+        @click.right="rightMenu(item.id, item.bid)"
+      >
+        <div class="card-title">{{ item.title }}</div>
+        <div class="card-content">
+          <p>{{ item.content }}</p>
         </div>
-      </ScrollBar>
-    </a-layout-content>
-    <a-modal title="移动笔记" :visible="showMove" width="30%">
+        <hr />
+      </div>
+    </ScrollBar>
+
+    <a-modal title="移动笔记" :open="showMove" width="30%">
       <a-select v-model:value="moveCheck">
         <a-select-option
           v-for="item in notebooks"
@@ -40,7 +40,7 @@
         <a-button key="submit" type="primary" @click="doMove">确 定</a-button>
       </template>
     </a-modal>
-  </a-layout>
+  </a-flex>
 </template>
 
 <script setup lang="ts">
@@ -107,7 +107,6 @@ const doMove = () => {
 
 <style lang="stylus" scoped>
 .list
-  height 100%
   padding 5px
 
 .card

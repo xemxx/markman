@@ -6,7 +6,7 @@
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import { emitter } from '@/emitter'
-import { nextTick, defineProps, onUnmounted, ref } from 'vue'
+import { nextTick, onUnmounted, ref } from 'vue'
 import { useEditorStore } from '@/store/editor'
 import { Modal } from 'ant-design-vue'
 const editor = useEditorStore()

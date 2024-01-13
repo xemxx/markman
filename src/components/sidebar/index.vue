@@ -1,8 +1,8 @@
 <template>
-  <div v-show="toggleSidebar" class="sidebar">
+  <a-flex v-show="toggleSidebar" class="sidebar">
     <ActivityBar class="activity" />
     <TocBar class="toc" />
-  </div>
+  </a-flex>
 </template>
 
 <script setup lang="ts">
@@ -18,24 +18,15 @@ const { toggleSidebar } = storeToRefs(preference)
 
 <style lang="stylus" scoped>
 .sidebar
-  flex 1
-  display flex
   max-width 400px
   width 400px
   padding-top var(--titleBarHeight)
   background var(--sideBarBgColor)
   color var(--sideBarColor)
-  height 100%
 
 .activity, .toc
-  flex 1
   max-width 200px
   width 200px
   border-right 1px solid #000000
-
-.activity
-  background-color transparent
-
-.toc
   background-color transparent
 </style>
