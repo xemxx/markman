@@ -1,13 +1,13 @@
 <template>
-  <a-layout>
-    <a-layout-header class="search-wrapper">
+  <a-flex gap="small" vertical justify="space-between">
+    <div class="search-wrapper">
       <input
         v-model="searchStr"
         placeholder="搜索所有笔记"
         @keyup.enter="doSearch"
       />
-    </a-layout-header>
-    <a-layout-content class="list-wrapper">
+    </div>
+    <ScrollBar class="list-wrapper" :settings="scrollSettings">
       <div class="item" @click="loadList({ type: 'all' })">
         所有笔记
         <PlusCircleOutlined @click.stop="showAddBook" />
@@ -36,9 +36,9 @@
           @keyup.enter="doRenameBook(item.id)"
         />
       </div>
-    </a-layout-content>
+    </ScrollBar>
     <Footer />
-  </a-layout>
+  </a-flex>
 </template>
 
 <script setup lang="ts">
@@ -46,6 +46,7 @@ import { nextTick, computed, ref } from 'vue'
 import { PlusCircleOutlined } from '@ant-design/icons-vue'
 import { useSidebarStore } from '@/store/sidebar'
 import Footer from './footer.vue'
+import ScrollBar from '@/components/common/scrollBar.vue'
 
 const { Menu, MenuItem, getCurrentWindow } = window.require('@electron/remote')
 
@@ -129,6 +130,12 @@ const rightMenu = id => {
   menu.popup({ window: getCurrentWindow() })
 }
 
+const scrollSettings = ref({
+  suppressScrollY: false,
+  suppressScrollX: true,
+  wheelPropagation: false,
+})
+
 // search
 const searchStr = ref('')
 const doSearch = () => {
@@ -172,11 +179,12 @@ const doSearch = () => {
   padding 5px 0
   line-height 24px
   border-bottom 1px solid #fff
+  background-color transparent
 
   & input
     padding 0 10px
 
-.list-wrapper, .search-wrapper
+.list-wrapper
   background-color transparent
 
 .add

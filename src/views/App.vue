@@ -1,7 +1,7 @@
 <template>
   <div class="editor-container">
     <TitleBar />
-    <router-view class="main"></router-view>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -21,9 +21,7 @@ user
   .then(() => {
     //先自身解析token是否超时
     try {
-      let data = JSON.parse(
-        decodeURIComponent(escape(window.atob(user.token!.split('.')[1]))),
-      )
+      let data = JSON.parse(window.atob(user.token!.split('.')[1]))
       if (data.exp > Date.parse(Date()) / 1000) {
         if (data.exp - Date.parse(Date()) / 1000 < 60 * 60 * 24 * 30) {
           // 代表在60天的后30天，需要刷新token
@@ -72,6 +70,5 @@ const logout = () => {
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
   color #2c3e50
-  height 100vh
   overflow hidden
 </style>

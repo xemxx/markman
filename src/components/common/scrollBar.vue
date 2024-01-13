@@ -23,6 +23,7 @@ export default {
   name: 'VueCustomScrollbar',
   props: {
     settings: {
+      type: Object,
       default: null,
     },
     swicher: {

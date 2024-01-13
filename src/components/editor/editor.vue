@@ -1,12 +1,12 @@
 <template>
-  <a-layout class="editor">
-    <a-layout-header height="auto">
+  <a-flex vertical class="editor">
+    <div height="auto">
       <input v-model="title" class="editor-title" />
-    </a-layout-header>
-    <a-layout-content class="editor-wrapper">
+    </div>
+    <div class="editor-wrapper">
       <Markdown :markdown="markdown" />
-    </a-layout-content>
-  </a-layout>
+    </div>
+  </a-flex>
 </template>
 
 <script setup lang="ts">
