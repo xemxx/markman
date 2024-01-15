@@ -21,25 +21,39 @@ interface DNote {
   modifyState: number
   SC: number
   isSave: boolean
+  latestContent: string
 }
 const defaultNote: DNote = {
   id: 0,
   markdown: '',
   content: '',
+  latestContent: '',
   title: '',
   modifyState: 0,
   SC: 0,
   isSave: true,
 }
 
-const state = {
-  isEdit: true,
-  currentNote: defaultNote,
-  modify: false,
-}
-
 export const useEditorStore = defineStore('editor', {
-  state: () => state,
+  state: () => ({
+    isEdit: true,
+    currentNote: <DNote>{
+      id: 0,
+      markdown: '',
+      content: '',
+      latestContent: '',
+      title: '',
+      modifyState: 0,
+      SC: 0,
+      isSave: true,
+    },
+    modify: false,
+  }),
+  getters: {
+    isSave: state => {
+      state.currentNote.latestContent == state.currentNote.content
+    },
+  },
   actions: {
     set_current_note(currentNote: DNote) {
       this.currentNote = currentNote
@@ -73,6 +87,7 @@ export const useEditorStore = defineStore('editor', {
             SC: data.SC,
             isSave: true,
             content: '',
+            latestContent: '',
           }
           this.set_current_note(current)
         }
@@ -163,6 +178,7 @@ export const useEditorStore = defineStore('editor', {
         return
       }
       if (isSave) {
+        console.log('no need save')
         return
       }
       const origin = await nModel.get(id)
@@ -234,8 +250,9 @@ export const useEditorStore = defineStore('editor', {
       if (markdown && markdown != this.currentNote.markdown) {
         this.set_markdown(markdown)
         isSave = false
+        console.log('markdown changed')
       }
-      this.set_save_status(isSave)
+      this.currentNote.isSave = isSave
       this.handleAutoSave(this.currentNote)
     },
 

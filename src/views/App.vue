@@ -15,7 +15,6 @@ const user = useUserStore()
 const store = useSysStore()
 const router = useRouter()
 // 初始化editor窗口逻辑
-// let ustate = user
 user
   .loadActiver()
   .then(() => {
@@ -70,5 +69,6 @@ const logout = () => {
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
   color #2c3e50
-  overflow hidden
+  overflow auto
+  height 100vh
 </style>

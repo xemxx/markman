@@ -12,7 +12,6 @@ import ActivityBar from './activityBar.vue'
 import TocBar from './tocBar.vue'
 
 const preference = usePreferenceStore()
-console.log(preference.toggleSidebar)
 const { toggleSidebar } = storeToRefs(preference)
 </script>
 
