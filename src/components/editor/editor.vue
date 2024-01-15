@@ -4,13 +4,13 @@
       <input v-model="title" class="editor-title" />
     </div>
     <div class="editor-wrapper">
-      <Markdown :markdown="markdown" />
+      <Mark :markdown="markdown" />
     </div>
   </a-flex>
 </template>
 
 <script setup lang="ts">
-import Markdown from './markdown.vue'
+import Mark from './markdown.vue'
 import { ref, computed } from 'vue'
 import { useEditorStore } from '@/store/editor'
 

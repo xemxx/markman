@@ -37,6 +37,9 @@ devDependencies:
   '@ant-design/icons-vue':
     specifier: ^6.1.0
     version: 6.1.0(vue@3.4.12)
+  '@tsconfig/node20':
+    specifier: ^20.1.2
+    version: 20.1.2
   '@types/node':
     specifier: ^20.11.0
     version: 20.11.0
@@ -55,6 +58,9 @@ devDependencies:
   '@vue/devtools':
     specifier: ^6.5.1
     version: 6.5.1
+  '@vue/tsconfig':
+    specifier: ^0.5.1
+    version: 0.5.1
   axios:
     specifier: ^1.6.5
     version: 1.6.5
@@ -775,6 +781,10 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: true
 
+  /@tsconfig/node20@20.1.2:
+    resolution: {integrity: sha512-madaWq2k+LYMEhmcp0fs+OGaLFk0OenpHa4gmI4VEmCKX4PJntQ6fnnGADVFrVkBj0wIdAlQnK/MrlYTHsa1gQ==}
+    dev: true
+
   /@types/cacheable-request@6.0.3:
     resolution: {integrity: sha512-IQ3EbTzGxIigb1I3qPZc1rWJnH0BmSKv5QYTalEwweFvyBDLSAe24zP0le/hyi7ecGfZVlIVAg4BZqb8WBwKqw==}
     dependencies:
@@ -1165,6 +1175,10 @@ packages:
 
   /@vue/shared@3.4.12:
     resolution: {integrity: sha512-UpH4YkS1da8sCGVi9Z+EACffRagnIvpb62NG5O5Y8tKepLl7Z8DXrQBhqybBLzQQbnuc8zKUto/mSqSydwY6SQ==}
+
+  /@vue/tsconfig@0.5.1:
+    resolution: {integrity: sha512-VcZK7MvpjuTPx2w6blwnwZAu5/LgBUtejFOi3pPGQFXQN5Ela03FUtd2Qtg4yWGGissVL0dr6Ro1LfOFh+PCuQ==}
+    dev: true
 
   /@webassemblyjs/ast@1.11.6:
     resolution: {integrity: sha512-IN1xI7PwOvLPgjcf180gC1bqn3q/QaOCwYUahIOhbYUu8KA/3tw2RT/T0Gidi1l7Hhj5D/INhJxiICObqpMu4Q==}
