@@ -26,7 +26,9 @@ import { usePreferenceStore } from '@/store/preference'
 import { useListenStore } from '@/store/listen'
 import { useSyncStore } from '@/store/sync'
 import { useEditorStore } from '@/store/editor'
-import { computed } from 'vue'
+import { computed, onUnmounted } from 'vue'
+import { emitter } from '@/emitter'
+import { Modal } from 'ant-design-vue'
 
 const preference = usePreferenceStore()
 const listen = useListenStore()
@@ -56,8 +58,29 @@ const handleChange = (value: string) => {
     markdown: value,
   })
 }
+const showCloseQuery = (id: any) => {
+  Modal.confirm({
+    content: '当前笔记改动是否保存？',
+    title: '提示',
+    okText: '是',
+    cancelText: '否',
+    onOk: async () => {
+      await editorS.saveNote()
+      return await editorS.loadNote(id)
+    },
+    onCancel: () => {
+      return
+    },
+  })
+}
+
+emitter.on('query-close-note', showCloseQuery)
 
 sync.sync()
+
+onUnmounted(() => {
+  emitter.off('query-close-note', showCloseQuery)
+})
 </script>
 <style lang="stylus" scoped>
 
