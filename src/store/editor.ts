@@ -57,7 +57,6 @@ export const useEditorStore = defineStore('editor', {
   actions: {
     set_current_note(currentNote: DNote) {
       this.currentNote = currentNote
-      emitter.emit('note-loaded', currentNote)
     },
     set_save_status(status: boolean) {
       this.currentNote.isSave = status
@@ -130,6 +129,7 @@ export const useEditorStore = defineStore('editor', {
           SC: data.SC,
           isSave: true,
           content: '',
+          latestContent: '',
         }
 
         this.set_current_note(current)
@@ -198,7 +198,6 @@ export const useEditorStore = defineStore('editor', {
         modifyState: modifyState == 0 ? 2 : modifyState,
         modifyDate: time,
       }
-
       return nModel
         .update(id, data)
         .then(() => {
