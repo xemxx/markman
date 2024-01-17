@@ -36,7 +36,7 @@ const defaultNote: DNote = {
 
 export const useEditorStore = defineStore('editor', {
   state: () => ({
-    isEdit: true,
+    isEdit: false,
     currentNote: <DNote>{
       id: 0,
       markdown: '',
@@ -49,11 +49,11 @@ export const useEditorStore = defineStore('editor', {
     },
     modify: false,
   }),
-  getters: {
-    isSave: state => {
-      state.currentNote.latestContent == state.currentNote.content
-    },
-  },
+  // getters: {
+  //   isSave: state => {
+  //     state.currentNote.latestContent == state.currentNote.content
+  //   },
+  // },
   actions: {
     set_current_note(currentNote: DNote) {
       this.currentNote = currentNote
@@ -89,6 +89,7 @@ export const useEditorStore = defineStore('editor', {
             latestContent: '',
           }
           this.set_current_note(current)
+          this.isEdit = true
         }
         // local has changed and server has changed too,need fix conflict
         else await this.__fixConflict()
@@ -131,8 +132,8 @@ export const useEditorStore = defineStore('editor', {
           content: '',
           latestContent: '',
         }
-
         this.set_current_note(current)
+        this.isEdit = true
       } catch (err) {
         console.log(err)
       }
@@ -165,13 +166,11 @@ export const useEditorStore = defineStore('editor', {
     },
 
     // save note to sqlite
-    async saveNote({
-      markdown = '',
-      id = '',
-      title = '',
-      SC = 0,
-      isSave = false,
-    } = {}) {
+    async saveNote(
+      { markdown = '', id = '', title = '', SC = 0, isSave = false } = <
+        DNote
+      >{},
+    ) {
       const sidebar = useSidebarStore()
 
       if (id == undefined || id == '') {
@@ -224,6 +223,7 @@ export const useEditorStore = defineStore('editor', {
         sidebar.loadNotes().then(() => {
           if (id == this.currentNote.id) {
             this.set_current_note(defaultNote)
+            this.isEdit = false
           }
         })
         const sync = useSyncStore()

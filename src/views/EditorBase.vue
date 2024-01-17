@@ -1,8 +1,10 @@
 <template>
   <a-flex class="container">
     <Sidebar />
-    <!-- <Editor /> -->
-    <a-flex vertical class="editor">
+    <a-flex v-if="!editorS.isEdit" class="default-view">
+      <h1>Welcome</h1>
+    </a-flex>
+    <a-flex vertical class="editor" v-else>
       <div>
         <input v-model="title" class="editor-title" />
       </div>
@@ -20,7 +22,6 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-// import Editor from '@/components/editor/editor.vue'
 import MarkDown from '@/components/MarkDown/Markdown.vue'
 import { usePreferenceStore } from '@/store/preference'
 import { useListenStore } from '@/store/listen'
@@ -65,11 +66,12 @@ const showCloseQuery = (id: any) => {
     okText: '是',
     cancelText: '否',
     onOk: async () => {
-      await editorS.saveNote()
+      await editorS.saveNote(editorS.currentNote)
       return await editorS.loadNote(id)
     },
     onCancel: () => {
-      return
+      editorS.currentNote.isSave = true
+      return editorS.loadNote(id)
     },
   })
 }
@@ -83,6 +85,12 @@ onUnmounted(() => {
 })
 </script>
 <style lang="stylus" scoped>
+.default-view
+  flex 1
+  width 100%
+  height 100%
+  justify-content center
+  align-items center
 
 .container
   height 100vh
