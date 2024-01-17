@@ -12,7 +12,7 @@ export const useListenStore = defineStore('listen', {
   actions: {
     listenFileSave() {
       ipcRenderer.on('m::file-save', async () => {
-        await editor.saveNote()
+        await editor.saveNote(editor.currentNote)
         await sync.sync()
       })
     },
