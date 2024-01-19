@@ -35,11 +35,11 @@ const router = useRouter()
 //   }
 // },
 
-const handleSelect = item => {
-  router.push({
-    path: `/preference/${item.category.toLowerCase()}`,
-  })
-}
+// const handleSelect = item => {
+//   router.push({
+//     path: `/preference/${item.category.toLowerCase()}`,
+//   })
+// }
 
 const handleCategoryItemClick = path => {
   router.push(path).catch(err => err)

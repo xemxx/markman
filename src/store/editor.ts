@@ -1,4 +1,4 @@
-import { NoteModel, noteItem } from '@/model/note'
+import { NoteModel } from '@/model/note'
 import { v1 as uuid } from 'uuid'
 
 import { emitter } from '@/emitter'
@@ -17,11 +17,11 @@ interface DNote {
   id: number
   markdown: string
   title: string
-  content: string
-  modifyState: number
+  content?: string
+  modifyState?: number
   SC: number
   isSave: boolean
-  latestContent: string
+  latestContent?: string
 }
 const defaultNote: DNote = {
   id: 0,

@@ -9,17 +9,17 @@
 </template>
 
 <script setup lang="ts">
-const { getCurrentWindow } = window.require('@electron/remote')
+// const { getCurrentWindow } = window.require('@electron/remote')
 
-const ew = getCurrentWindow()
+// const ew = getCurrentWindow()
 
-const minimizeWindow = () => {
-  ew.minimize()
-}
+// const minimizeWindow = () => {
+//   ew.minimize()
+// }
 
-const closeWindow = () => {
-  ew.close()
-}
+// const closeWindow = () => {
+//   ew.close()
+// }
 </script>
 
 <style lang="stylus" scoped>

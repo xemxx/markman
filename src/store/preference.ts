@@ -32,7 +32,7 @@ export const usePreferenceStore = defineStore('preference', {
     getLocal() {
       ipcRenderer.send('m::get-user-pref')
 
-      ipcRenderer.on('m::user-pref', (e, preferences) => {
+      ipcRenderer.on('m::user-pref', (_, preferences) => {
         this.SET_PREFERENCE(preferences)
       })
     },

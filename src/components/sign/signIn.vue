@@ -19,11 +19,11 @@
       <a-input
         v-model:value="signIn.password"
         type="password"
-        @keyup.enter="handleSubmit('signIn')"
+        @keyup.enter="handleSubmit()"
       ></a-input>
     </a-form-item>
     <a-form-item>
-      <a-button type="primary" @click="handleSubmit('signIn')">登陆</a-button>
+      <a-button type="primary" @click="handleSubmit()">登陆</a-button>
     </a-form-item>
   </a-form>
 </template>
@@ -55,7 +55,7 @@ const router = useRouter()
 const user = useUserStore()
 const signInRef = ref()
 
-const handleSubmit = (name: string) => {
+const handleSubmit = () => {
   const msg = message
   const { username, password, server } = signIn.value
 

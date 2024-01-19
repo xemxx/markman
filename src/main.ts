@@ -30,7 +30,7 @@ import { useUserStore } from '@/store/user'
 
 const user = useUserStore()
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   if (to.matched.some(m => m.meta.auth)) {
     if (user.token === '') {
       next({

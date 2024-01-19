@@ -29,7 +29,6 @@
 import { ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useRouter } from '@/router'
-import { useUserStore } from '@/store/user'
 import axios from '@/plugins/axios'
 const router = useRouter()
 const signUpRef = ref()
