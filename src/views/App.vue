@@ -38,6 +38,9 @@ user
                 if (res.status == 200 && res.data.code != 200) {
                   logout()
                 }
+                // 切换到离线模式
+                store.update_online(false)
+                router.push('/editorBase').catch(err => err)
               })
           }
         } else {

@@ -16,6 +16,7 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve'
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
   return {
+    type: "module",
     plugins: [
       vue(),
       Components({
@@ -42,9 +43,13 @@ export default defineConfig(({ command }) => {
       }),
       electron({
         main: {
-          entry: 'electron/main/index.ts',
           vite: {
             build: {
+              lib: {
+               entry: 'electron/main/index.ts',
+               formats: ['cjs'],
+               fileName: () => '[name].js',
+             },
               outDir: 'dist/electron/main',
               sourcemap,
               minify: isBuild,
