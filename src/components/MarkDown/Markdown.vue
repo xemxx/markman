@@ -32,17 +32,12 @@ const attrs = useAttrs()
 
 const wrapRef = ref(null)
 const vditorRef = ref(null) as Ref<Vditor | null>
-const initedRef = ref(false)
 
-const valueRef = ref(props.value || '')
-
+// 当传入的内容变更时，无条件变更，但是当内部进行修改时，外部不应该改变这个内容
 watch(
   () => props.value,
   v => {
-    if (v !== valueRef.value) {
-      instance.getVditor()?.setValue(v)
-    }
-    valueRef.value = v
+    instance.getVditor()?.setValue(v)
   },
 )
 
@@ -82,21 +77,14 @@ function init() {
       actions: [],
     },
     input: v => {
-      valueRef.value = v
-      emit('update:value', v)
       emit('change', v)
     },
     after: () => {
       nextTick(() => {
-        insEditor.setValue(valueRef.value)
         vditorRef.value = insEditor
-        initedRef.value = true
-        emit('get', instance)
       })
     },
-    blur: () => {
-      // unref(vditorRef)?.setValue(props.value);
-    },
+    blur: () => {},
     ...bindValue,
     cache: {
       enable: false,
@@ -117,7 +105,6 @@ function destroy() {
     //
   }
   vditorRef.value = null
-  initedRef.value = false
 }
 
 onMountedOrActivated(init)

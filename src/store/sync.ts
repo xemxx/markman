@@ -58,7 +58,6 @@ export const useSyncStore = defineStore('sync', {
       //更新完成刷新显示
       sidebar.loadNotebooks()
       sidebar.loadNotes()
-      editor.flashNote()
     },
 
     async pull({ localSC, serverSC }) {
@@ -78,7 +77,7 @@ export const useSyncStore = defineStore('sync', {
           // push过程中出现另一客户端对服务端进行了修改，需要重新pull
           setTimeout(() => {
             this.sync()
-          }, 10000)
+          }, 5000)
         }
         return Promise.reject(err)
       }
@@ -87,7 +86,7 @@ export const useSyncStore = defineStore('sync', {
     /**
      * pull细节
      */
-    _pullNotebooks(afterSC) {
+    _pullNotebooks(afterSC: any) {
       const server = user.server
       return axios
         .get(`${server}/notebook/getSync?afterSC=${afterSC}&maxCount=10`)
@@ -219,8 +218,10 @@ export const useSyncStore = defineStore('sync', {
                     modifyDate,
                     modifyState: 0,
                   })
+                  // 本地编辑器已经打开了需要同步
+                  editor.flashNote(title, content, SC)
                   break
-                case 1: // 代表本地新建，并且uuid冲突了，更新本地uuid即可，并且等会儿需要发送到服务端同步，暂时不需要更改modifyState
+                case 1: // 代表本地之前新建没同步，并且uuid冲突了，更新本地uuid即可，并且等会儿需要发送到服务端同步，暂时不需要更改modifyState
                   if (server.name == local.name) {
                     model.update(local.id, {
                       guid: uuid(),
@@ -243,6 +244,8 @@ export const useSyncStore = defineStore('sync', {
                     modifyDate: newModifyDate,
                     SC, //SC也要更新，代表与服务端是统一版本的基础上做的修改
                   })
+                  // 如果有冲突需要更新到编辑器上
+                  editor.flashNote(newTitle, newContent, SC)
                   break
                 }
                 case 3: //代表本地进行了删除操作，并且没有发送到服务器同步，但是服务端的数据却在另一个客户端更新了还同步了，这是用户自己逻辑不清楚，所以不考虑
@@ -298,7 +301,7 @@ export const useSyncStore = defineStore('sync', {
       }
       const server = user.server
       const uid = user.id
-      let result
+      let result: Promise<any>
       const local = data[count]
       switch (local.modifyState) {
         case 1: {
@@ -312,6 +315,9 @@ export const useSyncStore = defineStore('sync', {
         case 3: {
           result = axios.post(`${server}/notebook/delete`, local)
           break
+        }
+        default: {
+          result = Promise.resolve({ isErr: true })
         }
       }
       return result.then(({ isErr, SC, isRepeat }) => {

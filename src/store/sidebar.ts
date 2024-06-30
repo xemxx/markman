@@ -121,7 +121,6 @@ export const useSidebarStore = defineStore('sidebar', {
     async loadNotes({ type = '', flagId = '' } = {}) {
       const uid = user.id
       let list: Promise<{}>
-      console.log(type, flagId)
       if (type == undefined || type == '') {
         type = this.type
       }

@@ -10,7 +10,7 @@
       </div>
       <a-flex class="editor-wrapper">
         <MarkDown
-          :value="editorS.currentNote.markdown"
+          :value="editorS.currentNote.content"
           @change="handleChange"
           placeholder="请输入内容"
         />
@@ -47,17 +47,11 @@ const title = computed({
     return editorS.currentNote.title
   },
   set: function (newVal) {
-    editorS.listenContentChange({
-      title: newVal,
-      markdown: undefined,
-    })
+    editorS.updateTitle(newVal)
   },
 })
 const handleChange = (value: string) => {
-  editorS.listenContentChange({
-    title: undefined,
-    markdown: value,
-  })
+  editorS.updateContent(value)
 }
 const showCloseQuery = (id: any) => {
   Modal.confirm({

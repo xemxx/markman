@@ -2,7 +2,6 @@ import { NoteModel } from '@/model/note'
 import { v1 as uuid } from 'uuid'
 
 import { emitter } from '@/emitter'
-import { Debug } from 'main/log'
 import { useUserStore } from './user'
 import { useSidebarStore } from './sidebar'
 import { defineStore } from 'pinia'
@@ -18,7 +17,6 @@ interface DNote {
   markdown: string
   title: string
   content?: string
-  modifyState?: number
   SC: number
   isSave: boolean
   latestContent?: string
@@ -29,7 +27,6 @@ const defaultNote: DNote = {
   content: '',
   latestContent: '',
   title: '',
-  modifyState: 0,
   SC: 0,
   isSave: true,
 }
@@ -43,59 +40,22 @@ export const useEditorStore = defineStore('editor', {
       content: '',
       latestContent: '',
       title: '',
-      modifyState: 0,
       SC: 0,
       isSave: true,
     },
     modify: false,
+    isSaving: false,
   }),
-  // getters: {
-  //   isSave: state => {
-  //     state.currentNote.latestContent == state.currentNote.content
-  //   },
-  // },
   actions: {
     set_current_note(currentNote: DNote) {
       this.currentNote = currentNote
     },
-    set_save_status(status: boolean) {
-      this.currentNote.isSave = status
-    },
-    set_title(value: string) {
-      this.currentNote.title = value
-    },
-    set_markdown(value: string) {
-      this.currentNote.markdown = value
-    },
     // flash note
-    async flashNote() {
-      const { id, isSave, SC } = this.currentNote
-      try {
-        const data = await nModel.get(id)
-        if (data == undefined) return
-        // current note has no updated
-        if (data.SC == SC) return
-
-        // flash current note from server new version
-        if (isSave) {
-          let current: DNote = {
-            id: data.id,
-            markdown: data.content,
-            title: data.title,
-            modifyState: data.modifyState,
-            SC: data.SC,
-            isSave: true,
-            content: '',
-            latestContent: '',
-          }
-          this.set_current_note(current)
-          this.isEdit = true
-        }
-        // local has changed and server has changed too,need fix conflict
-        else await this.__fixConflict()
-      } catch (err) {
-        console.log(err)
-      }
+    flashNote(title: string, content: string, SC: number) {
+      this.currentNote.title = title
+      this.currentNote.content = content
+      this.currentNote.markdown = content
+      this.currentNote.SC = SC
     },
 
     // click note to load note from sqlite
@@ -126,10 +86,9 @@ export const useEditorStore = defineStore('editor', {
           id: data.id,
           markdown: data.content,
           title: data.title,
-          modifyState: data.modifyState,
           SC: data.SC,
           isSave: true,
-          content: '',
+          content: data.content,
           latestContent: '',
         }
         this.set_current_note(current)
@@ -177,15 +136,18 @@ export const useEditorStore = defineStore('editor', {
         return
       }
       if (isSave) {
-        console.log('no need save')
+        console.debug('no need save')
         return
       }
       const origin = await nModel.get(id)
       if (origin.content == markdown && origin.title == title) {
         return
       }
-      // server have new version and local note be changed
-      if (origin.SC != SC) {
+      // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
+      if (origin.SC > SC) {
+        console.debug('need fix conflict')
+        console.debug(origin.SC)
+        console.debug(SC)
         return this.__fixConflict
       }
       // update sqlite
@@ -197,13 +159,9 @@ export const useEditorStore = defineStore('editor', {
         modifyState: modifyState == 0 ? 2 : modifyState,
         modifyDate: time,
       }
-      return nModel
-        .update(id, data)
-        .then(() => {
-          sidebar.loadNotes()
-          this.set_save_status(true)
-        })
-        .catch((err: any) => console.log(err))
+      await nModel.update(id, data)
+      this.currentNote.isSave = true
+      await sidebar.loadNotes()
     },
 
     async deleteNote(id: number) {
@@ -233,26 +191,20 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
-    // listen the content change and apply to state
-    listenContentChange({
-      title = undefined,
-      markdown = undefined,
-    }: {
-      title: string | undefined
-      markdown: string | undefined
-    }) {
-      let { isSave } = this.currentNote
-      if (title && title != this.currentNote.title) {
-        this.set_title(title)
-        isSave = false
+    updateTitle(title: string) {
+      if (title != this.currentNote.title) {
+        this.currentNote.title = title
+        this.currentNote.isSave = false
+        this.handleAutoSave(this.currentNote)
       }
-      if (markdown && markdown != this.currentNote.markdown) {
-        this.set_markdown(markdown)
-        isSave = false
-        console.log('markdown changed')
+    },
+
+    updateContent(content: string) {
+      if (content != this.currentNote.markdown) {
+        this.currentNote.markdown = content
+        this.currentNote.isSave = false
+        this.handleAutoSave(this.currentNote)
       }
-      this.currentNote.isSave = isSave
-      this.handleAutoSave(this.currentNote)
     },
 
     handleAutoSave({ id, title, markdown, SC, isSave }) {
@@ -266,7 +218,7 @@ export const useEditorStore = defineStore('editor', {
       }
       const timeFunc = setTimeout(async () => {
         autoSaveTimers.delete(id)
-        Debug('do auto save')
+        console.debug('do auto save')
         await this.saveNote({ id, title, markdown, SC, isSave })
       }, autoSaveDelay)
       autoSaveTimers.set(id, timeFunc)
@@ -290,8 +242,8 @@ export const useEditorStore = defineStore('editor', {
         })
 
         local.title = newTitle
+        local.content = newContent
         local.markdown = newContent
-        local.modifyState = 2
         local.SC = server.SC
         local.isSave = true
         this.set_current_note(local)
