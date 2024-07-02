@@ -45,3 +45,4 @@ release
 .vscode/.debug.env
 package-lock.json
 yarn.lock
+.venv
