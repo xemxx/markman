@@ -50,4 +50,12 @@ export default [
   tid INTEGER,
   nid INTEGER
 )`,
+  // v0.3.0
+  `ALTER TABLE user ADD COLUMN uuid TEXT;`,
+  `DELETE FROM user
+WHERE id NOT IN (
+    select id from (SELECT max(lastSC),id,username
+    FROM user
+    GROUP BY username)
+)`,
 ]

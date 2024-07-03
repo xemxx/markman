@@ -63,21 +63,27 @@ const handleSubmit = () => {
     .validate()
     .then(async () => {
       // 向服务器发起登录请求
-      const data: { token: any } = await axios.post(server + '/signIn', {
-        username,
-        password,
-      })
+      const data: { token: string; uuid: string } = await axios.post(
+        server + '/signIn',
+        {
+          username,
+          password,
+        },
+      )
       await user.setActiver({
         username,
         token: data.token,
+        uuid: data.uuid,
         server,
       })
       // 显示消息框提示用户成功
       msg.success('登录成功:)')
-      return router.push('/editorBase')
+      await router.push('/editorBase')
       // 如果失败有后台封装的默认处理函数
     })
-    .catch(() => {})
+    .catch(err => {
+      console.error(err)
+    })
 }
 </script>
 

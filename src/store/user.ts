@@ -10,6 +10,7 @@ interface UserD {
   server: any
   username: any
   lastSC: any
+  uuid: string
 }
 
 export const useUserStore = defineStore('user', {
@@ -19,21 +20,25 @@ export const useUserStore = defineStore('user', {
     username: getCookie('username') ? getCookie('username') : '',
     server: getCookie('server') ? getCookie('server') : '',
     lastSC: getCookie('lastSC') ? getCookie('lastSC') : '',
+    uuid: getCookie('uuid') ? getCookie('uuid') : '',
   }),
   actions: {
-    loadActiver() {
-      return model.getActiver().then((user: UserD | undefined) => {
-        if (user != undefined) {
-          this.update_id(user.id)
-          this.update_lastSC(user.lastSC)
-          this.update_server(user.server)
-          this.update_token(user.token)
-          this.update_username(user.username)
-          return Promise.resolve()
-        } else {
-          return Promise.reject('not login')
+    async loadActiver() {
+      let user: UserD | undefined = await model.getActiver()
+      if (user != undefined) {
+        // v0.3.0 适配新增uuid的逻辑，后续迭代版本可以考虑删除，因为现在不一定有用户。。。
+        if (user.uuid == '' || user.uuid == undefined) {
+          throw new Error('need relogin with uuid')
         }
-      })
+        this.update_id(user.id)
+        this.update_lastSC(user.lastSC)
+        this.update_server(user.server)
+        this.update_token(user.token)
+        this.update_username(user.username)
+        this.update_uuid(user.uuid)
+      } else {
+        throw new Error('not login')
+      }
     },
 
     flashToken(token: string) {
@@ -48,30 +53,31 @@ export const useUserStore = defineStore('user', {
       this.update_server('')
       this.update_token('')
       this.update_username('')
+      this.update_uuid('')
       return model.update(id!, { state: 0 })
     },
 
-    setActiver({ username, token, server }) {
-      return model.existUser(username, server).then((id: string) => {
-        if (id !== '') {
-          return model
-            .update(id, { state: 1, token })
-            .then(() => {
-              return this.loadActiver()
-            })
-            .catch((err: any) => {
-              console.log(err)
-            })
+    async setActiver({ username, token, uuid, server }) {
+      let id = await model.existUser(username, uuid)
+      if (id != '') {
+        await model.update(id, { state: 1, token, server })
+      } else {
+        // v0.3.0 适配新增uuid的逻辑，后续迭代版本可以考虑删除，因为现在不一定有用户。。。
+        let data = await model.getByUserName(username)
+        if (data != undefined && (data.uuid == undefined || data.uuid == '')) {
+          await model.update(data.id, { state: 1, token, uuid, server })
+        } else {
+          await model.add({
+            username,
+            server,
+            token,
+            state: 1,
+            lastSC: 0,
+            uuid: uuid,
+          })
         }
-        return model
-          .add({ username, server, token, state: 1, lastSC: 0 })
-          .then(() => {
-            return this.loadActiver()
-          })
-          .catch((err: any) => {
-            console.log(err)
-          })
-      })
+      }
+      await this.loadActiver()
     },
 
     update_id(value: any) {
@@ -93,6 +99,10 @@ export const useUserStore = defineStore('user', {
     update_lastSC(value: any) {
       setCookie('lastSC', value)
       this.lastSC = value
+    },
+    update_uuid(value: string) {
+      setCookie('uuid', value)
+      this.uuid = value
     },
   },
 })

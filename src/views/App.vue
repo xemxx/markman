@@ -7,6 +7,8 @@
 
 <script setup lang="ts">
 import TitleBar from '@/components/titleBar.vue'
+import { message } from 'ant-design-vue'
+
 import { useUserStore } from '@/store/user'
 import { useSysStore } from '@/store/sys'
 import axios from '@/plugins/axios'
@@ -49,20 +51,25 @@ user
         }
       } else {
         // 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
-        logout()
+        return logout()
       }
-    } catch (err) {
+    } catch (err: any) {
       //可能token被串改不符合格式导致window.atob报错
-      logout()
+      return logout()
     }
   })
-  .catch(() => {
+  .catch(err => {
+    message.warning(err.message, 5)
     router.push('/sign/in').catch(err => err)
   })
 
-const logout = () => {
+const logout = async () => {
   user.unSetActiver()
-  router.push('/sign/in').catch(err => err)
+  try {
+    return await router.push('/sign/in')
+  } catch (err) {
+    return err
+  }
 }
 </script>
 
