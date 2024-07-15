@@ -7,6 +7,7 @@ import { useSidebarStore } from './sidebar'
 import { defineStore } from 'pinia'
 import { useSyncStore } from './sync'
 import { usePreferenceStore } from './preference'
+import Vditor from 'vditor'
 
 const nModel = new NoteModel()
 
@@ -19,13 +20,11 @@ interface DNote {
   content?: string
   SC: number
   isSave: boolean
-  latestContent?: string
 }
 const defaultNote: DNote = {
   id: 0,
   markdown: '',
   content: '',
-  latestContent: '',
   title: '',
   SC: 0,
   isSave: true,
@@ -38,13 +37,13 @@ export const useEditorStore = defineStore('editor', {
       id: 0,
       markdown: '',
       content: '',
-      latestContent: '',
       title: '',
       SC: 0,
       isSave: true,
     },
     modify: false,
     isSaving: false,
+    vidtor: <Vditor | null>null,
   }),
   actions: {
     set_current_note(currentNote: DNote) {
@@ -89,7 +88,6 @@ export const useEditorStore = defineStore('editor', {
           SC: data.SC,
           isSave: true,
           content: data.content,
-          latestContent: '',
         }
         this.set_current_note(current)
         this.isEdit = true
@@ -125,17 +123,25 @@ export const useEditorStore = defineStore('editor', {
     },
 
     // save note to sqlite
-    async saveNote(
-      { markdown = '', id = '', title = '', SC = 0, isSave = false } = <
-        DNote
-      >{},
-    ) {
-      const sidebar = useSidebarStore()
-
-      if (id == undefined || id == '') {
+    async saveNote() {
+      if (this.vidtor == null) {
+        throw new Error('not init vditor')
+      }
+      let {
+        markdown = '',
+        id = 0,
+        title = '',
+        SC = 0,
+        isSave = false,
+      } = this.currentNote
+      if (id == undefined || id == 0) {
         return
       }
-      if (isSave) {
+      const newContent = this.vidtor?.getValue()
+      this.currentNote.markdown = newContent
+      markdown = newContent
+      if (isSave && newContent == this.currentNote.content) {
+        console.debug(markdown, title, SC)
         console.debug('no need save')
         return
       }
@@ -161,6 +167,7 @@ export const useEditorStore = defineStore('editor', {
       }
       await nModel.update(id, data)
       this.currentNote.isSave = true
+      const sidebar = useSidebarStore()
       await sidebar.loadNotes()
     },
 
@@ -195,33 +202,34 @@ export const useEditorStore = defineStore('editor', {
       if (title != this.currentNote.title) {
         this.currentNote.title = title
         this.currentNote.isSave = false
-        this.handleAutoSave(this.currentNote)
+        this.handleAutoSave()
       }
     },
 
     updateContent(content: string) {
-      if (content != this.currentNote.markdown) {
+      console.debug('update content', content)
+      if (content != this.currentNote.content) {
         this.currentNote.markdown = content
         this.currentNote.isSave = false
-        this.handleAutoSave(this.currentNote)
+        this.handleAutoSave()
       }
     },
 
-    handleAutoSave({ id, title, markdown, SC, isSave }) {
+    handleAutoSave() {
       const preference = usePreferenceStore()
       const { autoSave, autoSaveDelay } = preference
       if (!autoSave) return
 
-      if (autoSaveTimers.has(id)) {
-        clearTimeout(autoSaveTimers.get(id))
-        autoSaveTimers.delete(id)
+      if (autoSaveTimers.has(this.currentNote.id)) {
+        clearTimeout(autoSaveTimers.get(this.currentNote.id))
+        autoSaveTimers.delete(this.currentNote.id)
       }
       const timeFunc = setTimeout(async () => {
-        autoSaveTimers.delete(id)
+        autoSaveTimers.delete(this.currentNote.id)
         console.debug('do auto save')
-        await this.saveNote({ id, title, markdown, SC, isSave })
+        await this.saveNote()
       }, autoSaveDelay)
-      autoSaveTimers.set(id, timeFunc)
+      autoSaveTimers.set(this.currentNote.id, timeFunc)
     },
 
     //no feel to conflict

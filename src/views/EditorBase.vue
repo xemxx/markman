@@ -60,7 +60,7 @@ const showCloseQuery = (id: any) => {
     okText: '是',
     cancelText: '否',
     onOk: async () => {
-      await editorS.saveNote(editorS.currentNote)
+      await editorS.saveNote()
       return await editorS.loadNote(id)
     },
     onCancel: () => {

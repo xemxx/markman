@@ -11,12 +11,12 @@ import {
   watch,
   onBeforeUnmount,
   onDeactivated,
-  useAttrs,
 } from 'vue'
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import { onMountedOrActivated } from '@/hooks'
 import { getTheme } from './getTheme'
+import { useEditorStore } from '@/store/editor'
 
 type Lang = 'zh_CN' | 'en_US' | 'ja_JP' | 'ko_KR' | undefined
 
@@ -26,9 +26,8 @@ const props = defineProps({
   value: { type: String, default: '' },
 })
 
-const emit = defineEmits(['change', 'get', 'update:value'])
-
-const attrs = useAttrs()
+const emit = defineEmits(['change'])
+const editorS = useEditorStore()
 
 const wrapRef = ref(null)
 const vditorRef = ref(null) as Ref<Vditor | null>
@@ -37,7 +36,7 @@ const vditorRef = ref(null) as Ref<Vditor | null>
 watch(
   () => props.value,
   v => {
-    instance.getVditor()?.setValue(v)
+    if (v != vditorRef.value?.getValue()) vditorRef.value?.setValue(v)
   },
 )
 
@@ -52,7 +51,6 @@ const theme = 'light'
 function init() {
   const wrapEl = unref(wrapRef)
   if (!wrapEl) return
-  const bindValue = { ...attrs, ...props }
   const insEditor = new Vditor(wrapEl, {
     // 设置外观主题
     theme: getTheme(theme) as any,
@@ -77,23 +75,23 @@ function init() {
       actions: [],
     },
     input: v => {
+      console.debug('new v', v)
       emit('change', v)
     },
     after: () => {
       nextTick(() => {
+        insEditor.setValue(props.value)
         vditorRef.value = insEditor
+        editorS.vidtor = insEditor
       })
     },
     blur: () => {},
-    ...bindValue,
+    height: props.height,
+    width: props.width,
     cache: {
       enable: false,
     },
   })
-}
-
-const instance = {
-  getVditor: (): Vditor => vditorRef.value!,
 }
 
 function destroy() {

@@ -56,8 +56,8 @@ export const useSyncStore = defineStore('sync', {
         setTimeout(() => this.update_isSyncing(false), 1000)
       }
       //更新完成刷新显示
-      sidebar.loadNotebooks()
-      sidebar.loadNotes()
+      await sidebar.loadNotebooks()
+      await sidebar.loadNotes()
     },
 
     async pull({ localSC, serverSC }) {
@@ -74,6 +74,7 @@ export const useSyncStore = defineStore('sync', {
         await this._pushNotes()
       } catch (err: any) {
         if (err.rePull) {
+          console.debug('need repull')
           // push过程中出现另一客户端对服务端进行了修改，需要重新pull
           setTimeout(() => {
             this.sync()
@@ -400,6 +401,13 @@ export const useSyncStore = defineStore('sync', {
           }
           user.update_lastSC(SC)
           userModel.update(uid!, { lastSC: SC })
+          if (data[count].id == editor.currentNote.id) {
+            editor.flashNote(
+              editor.currentNote.title,
+              editor.currentNote.markdown,
+              SC,
+            )
+          }
           return this._updateNotesToServer({ data, count: count + 1 })
         } else {
           console.log('not update')
