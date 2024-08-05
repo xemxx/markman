@@ -2,10 +2,10 @@
   "name": "markman",
   "version": "0.3.0",
   "main": "dist/electron/main/index.js",
-  "description": "Really simple Electron + Vue + Vite boilerplate.",
+  "description": "A markdown editor based on electron and vue3",
   "displayName": "Markman",
   "license": "GPL-3.0-or-later",
-  "repository": "https://github.com/xemxx/markman-client",
+  "repository": "https://github.com/xemxx/markman",
   "author": "xem <xemxx@qq.com>",
   "private": true,
   "scripts": {
