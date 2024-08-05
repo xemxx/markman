@@ -6,11 +6,11 @@ export default class User extends Model {
     return db.get(`select * from user where state= ?`, [1])
   }
 
-  existUser(username: string, server: string) {
+  existUser(username: string, uuid: string) {
     return db
-      .get(`select id from user where username = ? and server =?`, [
+      .get(`select id from user where username = ? and uuid = ?`, [
         username,
-        server,
+        uuid,
       ])
       .then((data: { id: any } | undefined) => {
         if (data != undefined) {
@@ -18,6 +18,17 @@ export default class User extends Model {
         } else {
           return ''
         }
+      })
+  }
+
+  getByUserName(username: string) {
+    return db
+      .get(
+        `select id,uuid from user where username = ? order by lastSC desc limit 1`,
+        [username],
+      )
+      .then((data: { id: any; uuid: string } | undefined) => {
+        return data
       })
   }
 

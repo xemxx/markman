@@ -20,7 +20,7 @@ export const WindowType = {
   SETTINGS: 'settings',
 }
 
-const url = `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}/`
+const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(ROOT_PATH.dist, 'index.html')
 
 class BaseWindow extends EventEmitter {

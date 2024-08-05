@@ -29,7 +29,6 @@
 import { ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { useRouter } from '@/router'
-import { useUserStore } from '@/store/user'
 import axios from '@/plugins/axios'
 const router = useRouter()
 const signUpRef = ref()
@@ -53,15 +52,20 @@ const signUpRules = {
 const handleSubmit = () => {
   signUpRef.value
     .validate()
-    .then(async () => {
-      await axios.post(signUp.value.server + '/signUp', {
+    .then(() => {
+      return axios.post(signUp.value.server + '/signUp', {
         username: signUp.value.user,
         password: signUp.value.password,
       })
-      message.success('注册成功!请手动登录:)')
-      return await router.push('/sign/in')
     })
-    .catch((err: any) => err)
+    .then(() => {
+      message.success('注册成功!请手动登录:)')
+      return router.push('/sign/in')
+    })
+    .catch((err: any) => {
+      console.error(err)
+      message.error('注册失败')
+    })
 }
 const handleReset = () => {
   signUpRef.value.resetFields()

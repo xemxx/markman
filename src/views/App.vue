@@ -1,12 +1,14 @@
 <template>
   <div class="editor-container">
     <TitleBar />
-    <router-view class="main"></router-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script setup lang="ts">
 import TitleBar from '@/components/titleBar.vue'
+import { message } from 'ant-design-vue'
+
 import { useUserStore } from '@/store/user'
 import { useSysStore } from '@/store/sys'
 import axios from '@/plugins/axios'
@@ -15,15 +17,12 @@ const user = useUserStore()
 const store = useSysStore()
 const router = useRouter()
 // 初始化editor窗口逻辑
-// let ustate = user
 user
   .loadActiver()
   .then(() => {
     //先自身解析token是否超时
     try {
-      let data = JSON.parse(
-        decodeURIComponent(escape(window.atob(user.token!.split('.')[1]))),
-      )
+      let data = JSON.parse(window.atob(user.token!.split('.')[1]))
       if (data.exp > Date.parse(Date()) / 1000) {
         if (data.exp - Date.parse(Date()) / 1000 < 60 * 60 * 24 * 30) {
           // 代表在60天的后30天，需要刷新token
@@ -41,6 +40,9 @@ user
                 if (res.status == 200 && res.data.code != 200) {
                   logout()
                 }
+                // 切换到离线模式
+                store.update_online(false)
+                router.push('/editorBase').catch(err => err)
               })
           }
         } else {
@@ -49,20 +51,25 @@ user
         }
       } else {
         // 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
-        logout()
+        return logout()
       }
-    } catch (err) {
+    } catch (err: any) {
       //可能token被串改不符合格式导致window.atob报错
-      logout()
+      return logout()
     }
   })
-  .catch(() => {
+  .catch(err => {
+    message.warning(err.message, 5)
     router.push('/sign/in').catch(err => err)
   })
 
-const logout = () => {
+const logout = async () => {
   user.unSetActiver()
-  router.push('/sign/in').catch(err => err)
+  try {
+    return await router.push('/sign/in')
+  } catch (err) {
+    return err
+  }
 }
 </script>
 
@@ -72,6 +79,6 @@ const logout = () => {
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
   color #2c3e50
+  overflow auto
   height 100vh
-  overflow hidden
 </style>

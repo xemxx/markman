@@ -1,0 +1,47 @@
+name: Build Windows
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  release:
+    name: build and release electron app
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-12, ubuntu-latest]
+
+    steps:
+      - name: Check out git repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install Python 3.11.4
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11.4"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Release for MacOS
+        if: matrix.os == 'macos-12'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          pnpm release
+
+      - name: Release for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          pnpm release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}

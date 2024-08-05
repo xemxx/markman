@@ -121,7 +121,6 @@ export const useSidebarStore = defineStore('sidebar', {
     async loadNotes({ type = '', flagId = '' } = {}) {
       const uid = user.id
       let list: Promise<{}>
-      console.log(type, flagId)
       if (type == undefined || type == '') {
         type = this.type
       }
@@ -139,16 +138,12 @@ export const useSidebarStore = defineStore('sidebar', {
         return Promise.reject(new Error('flagID and type is not define'))
       }
 
-      try {
-        const notes = await list
-        this.update_notes({
-          type,
-          flagId,
-          notes: notes,
-        })
-      } catch (err) {
-        return console.log(err)
-      }
+      const notes = await list
+      this.update_notes({
+        type,
+        flagId,
+        notes: notes,
+      })
     },
 
     moveNote({ id, bid }) {
@@ -160,6 +155,22 @@ export const useSidebarStore = defineStore('sidebar', {
           this.loadNotebooks()
         })
         .catch((err: any) => console.log(err))
+    },
+
+    async searchNotes(search: string) {
+      let list = []
+      if (this.type == 'note') {
+        list = await nModel.searchContentInBook(user.id, this.flagId, search)
+      } else if (this.type == 'tag') {
+        list = nModel.searchContentInTag(user.id, this.flagId, search)
+      } else if (this.type == 'all') {
+        list = await nModel.searchContentInAll(user.id, search)
+      }
+      this.update_notes({
+        type: this.type,
+        flagId: this.flagId,
+        notes: list,
+      })
     },
   },
 })

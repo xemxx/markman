@@ -19,11 +19,11 @@
       <a-input
         v-model:value="signIn.password"
         type="password"
-        @keyup.enter="handleSubmit('signIn')"
+        @keyup.enter="handleSubmit()"
       ></a-input>
     </a-form-item>
     <a-form-item>
-      <a-button type="primary" @click="handleSubmit('signIn')">登陆</a-button>
+      <a-button type="primary" @click="handleSubmit()">登陆</a-button>
     </a-form-item>
   </a-form>
 </template>
@@ -55,7 +55,7 @@ const router = useRouter()
 const user = useUserStore()
 const signInRef = ref()
 
-const handleSubmit = (name: string) => {
+const handleSubmit = () => {
   const msg = message
   const { username, password, server } = signIn.value
 
@@ -63,21 +63,27 @@ const handleSubmit = (name: string) => {
     .validate()
     .then(async () => {
       // 向服务器发起登录请求
-      const data: { token: any } = await axios.post(server + '/signIn', {
-        username,
-        password,
-      })
+      const data: { token: string; uuid: string } = await axios.post(
+        server + '/signIn',
+        {
+          username,
+          password,
+        },
+      )
       await user.setActiver({
         username,
         token: data.token,
+        uuid: data.uuid,
         server,
       })
       // 显示消息框提示用户成功
       msg.success('登录成功:)')
-      return router.push('/editorBase')
+      await router.push('/editorBase')
       // 如果失败有后台封装的默认处理函数
     })
-    .catch(() => {})
+    .catch(err => {
+      console.error(err)
+    })
 }
 </script>
 

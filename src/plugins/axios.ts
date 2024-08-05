@@ -22,10 +22,10 @@ axios.interceptors.request.use(
     if (config.headers) {
       config.headers['Authorization'] = token ? token : ''
     }
-
     return config
   },
   error => {
+    console.error('请求拦截器错误：', error)
     return Promise.reject(error)
   },
 )
@@ -59,11 +59,12 @@ axios.interceptors.response.use(
   },
   // 请求失败
   err => {
-    //TODO 日志记录
+    console.error('响应拦截器错误：', err)
     if (err.response) {
       //接收到响应，认为服务器错误，或者用户输入服务器地址错误导致请求成功，但是接口失败
-      message.error('服务器错误，ERROR：' + err)
-    } else if (!err.request) {
+      message.error('服务器错误,' + err)
+      return Promise.reject('服务器错误,' + err)
+    } else if (err.code == 'ERR_NETWORK') {
       //发送请求失败，可能是用户url地址错误或者代码错误
       //or
       //成功发送请求，但是未接收到响应
@@ -71,10 +72,12 @@ axios.interceptors.response.use(
         const store = useSysStore()
         store.update_online(false)
       } else {
-        message.error('网络错误，请检查，ERROR：' + err)
+        message.error('网络错误,请检查,' + err)
+        return Promise.reject('网络错误,请检查,' + err)
       }
+    } else {
+      return Promise.reject(err)
     }
-    return Promise.reject(err)
   },
 )
 

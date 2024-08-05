@@ -2,15 +2,15 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 import router from '@/router'
-
 import devtools from '@vue/devtools'
+
 console.log(process.env.NODE_ENV)
 if (process.env.NODE_ENV === 'development') {
   devtools.connect()
 }
 
 import '@/plugins/sqlite3/init'
-import 'ant-design-vue/dist/antd.css'
+import 'ant-design-vue/dist/reset.css'
 import '@/assets/css/index.styl'
 
 import 'virtual:svg-icons-register'
@@ -31,7 +31,7 @@ import { useUserStore } from '@/store/user'
 
 const user = useUserStore()
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   if (to.matched.some(m => m.meta.auth)) {
     if (user.token === '') {
       next({

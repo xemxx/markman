@@ -1,41 +1,46 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
     "module": "ESNext",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "jsx": "preserve",
-    "esModuleInterop": true,
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
-    "baseUrl": "./",
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    /* Linting */
     "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    // custom
     "paths": {
       "main/*": [
-        "electron/main/*"
+        "./electron/main/*"
       ],
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
     "noImplicitAny": false,
     "allowJs": true
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/**/*.js",
-  ],
-  "exclude": [
-    "src/bootstrap.js",
   ],
   "references": [
     {
       "path": "./tsconfig.node.json"
     }
-  ],
+  ]
 }
