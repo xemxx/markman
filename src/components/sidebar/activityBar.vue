@@ -140,39 +140,9 @@ const scrollSettings = ref({
 const searchStr = ref('')
 const doSearch = () => {
   //TODO: 搜索笔记
-  console.log(searchStr)
+  console.log(searchStr.value)
+  sidebar.searchNotes(searchStr.value)
 }
-
-// return {
-//   // store
-//   books,
-
-//   loadList,
-
-//   // addBook
-//   bookInputShow,
-//   bookInputRef,
-//   bookName,
-
-//   showAddBook,
-//   doAddBook,
-//   blurAddBook,
-
-//   // renameBook
-//   bookRenameInputRef,
-//   bookReName,
-
-//   renameBook,
-//   doRenameBook,
-//   blurRenameBook,
-
-//   // rightMenu
-//   rightMenu,
-
-//   // search
-//   searchStr,
-//   doSearch,
-// }
 </script>
 <style lang="stylus" scoped>
 .search-wrapper

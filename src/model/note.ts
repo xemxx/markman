@@ -64,4 +64,21 @@ export class NoteModel extends Model {
   getModify(uid) {
     return db.all(`select * from note where uid=? and modifyState>0`, [uid])
   }
+
+  searchContentInBook(uid, bid, search) {
+    return db.all(
+      `select * from note where uid=? and bid=? and (content like ? or title like ?) order by modifyDate desc`,
+      [uid, bid, `%${search}%`, `%${search}%`],
+    )
+  }
+  searchContentInTag(uid, tid, search) {
+    // TODO: 支持tag
+    return []
+  }
+  searchContentInAll(uid, search) {
+    return db.all(
+      `select * from note where uid=? and (content like ? or title like ?) order by modifyDate desc`,
+      [uid, `%${search}%`, `%${search}%`],
+    )
+  }
 }
