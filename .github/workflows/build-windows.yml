@@ -36,6 +36,7 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      # Replace the shebang in the pnpm.cjs file, fix pnpm on Windows
       - name: Replace single file
         uses: richardrigutins/replace-in-files@v2
         with:
