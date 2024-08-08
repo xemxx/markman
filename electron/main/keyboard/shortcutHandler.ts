@@ -44,7 +44,7 @@ class Keybindings {
       // ["view.source-code-mode", "CmdOrCtrl+Alt+S"],
       // ["view.typewriter-mode", "CmdOrCtrl+Alt+T"],
       // ["view.focus-mode", "CmdOrCtrl+Shift+F"],
-      ['view.toggle-sidebar', 'Ctrl+1'],
+      ['view.toggle-sidebar', 'Ctrl+b'],
       // ["view.toggle-tabbar", "CmdOrCtrl+Alt+B"],
       ['view.toggle-dev-tools', 'CmdOrCtrl+Alt+I'],
       ['view.dev-reload', 'CmdOrCtrl+R'],
