@@ -1,7 +1,9 @@
-export default function (keybindings) {
-  return {
+import Keybindings from '../../keyboard/shortcutHandler'
+
+export default function (keybindings: Keybindings) {
+  return <Electron.MenuItemConstructorOptions>{
     label: 'Edit',
-    role: 'edit',
+    role: 'editMenu',
     submenu: [
       {
         label: 'Undo',

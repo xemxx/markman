@@ -26,20 +26,16 @@ const checkVersion = async () => {
       const latest = res.data.name // 获取版本号
       const result = compareVersion2Update(version, latest) // 比对版本号，如果本地版本低于远端则更新
       if (result) {
-        dialog.showMessageBoxSync(
-          {
-            type: 'info',
-            title: '升级提示',
-            buttons: ['Yes', 'No'],
-            message: '发现新版本，更新了很多功能，是否去下载最新的版本？',
-            cancelId: 1,
-          },
-          res => {
-            if (res === 0) {
-              shell.openExternal(downloadUrl)
-            }
-          },
-        )
+        const clickResult = dialog.showMessageBoxSync({
+          type: 'info',
+          title: '升级提示',
+          buttons: ['Yes', 'No'],
+          message: '发现新版本，更新了很多功能，是否去下载最新的版本？',
+          cancelId: 1,
+        })
+        if (clickResult === 0) {
+          shell.openExternal(downloadUrl)
+        }
       } else {
         dialog.showMessageBoxSync({
           type: 'info',

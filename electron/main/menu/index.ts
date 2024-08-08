@@ -12,7 +12,7 @@ export const MenuType = {
 }
 
 interface MenuCustom {
-  menu: Electron.Menu
+  menu: Electron.Menu | null
   type: number
 }
 
@@ -80,7 +80,10 @@ class AppMenu {
    */
   updateAlwaysOnTopMenu(windowId: number, flag) {
     const menus = this.getWindowMenuById(windowId)
-    const menu = menus.getMenuItemById('alwaysOnTopMenuItem')
+    const menu = menus?.getMenuItemById('alwaysOnTopMenuItem')
+    if (!menu) {
+      return
+    }
     menu.checked = flag
   }
 
@@ -90,7 +93,7 @@ class AppMenu {
    * @param {number} windowId The window id.
    * @returns {Electron.Menu} The menu.
    */
-  getWindowMenuById(windowId: number): Electron.Menu {
+  getWindowMenuById(windowId: number): Electron.Menu | null {
     const menu = this.windowMenus.get(windowId)
     if (!menu) {
       throw new Error(`Cannot find window menu for id ${windowId}.`)
@@ -105,7 +108,7 @@ class AppMenu {
         return
       }
 
-      const menuItem = menu.getMenuItemById('autoSaveMenuItem')
+      const menuItem = menu?.getMenuItemById('autoSaveMenuItem')
       menuItem!.checked = autoSave
     })
   }
@@ -117,7 +120,7 @@ class AppMenu {
         return
       }
 
-      const menuItem = menu.getMenuItemById('sideBarMenuItem')
+      const menuItem = menu?.getMenuItemById('sideBarMenuItem')
       menuItem!.checked = toggleSidebar
     })
   }
@@ -129,7 +132,7 @@ class AppMenu {
         return
       }
 
-      const menuItem = menu.getMenuItemById('previewMenuItem')
+      const menuItem = menu?.getMenuItemById('previewMenuItem')
       if (!menuItem) {
         return
       }
@@ -201,8 +204,11 @@ class AppMenu {
  * @param {string} menuId Menu ID
  * @returns {Electron.MenuItem} Returns the menu or null.
  */
-export const getMenuItemById = (menuId: string): Electron.MenuItem => {
+export const getMenuItemById = (menuId: string): Electron.MenuItem | null => {
   const menus = Menu.getApplicationMenu()
+  if (!menus) {
+    return null
+  }
   return menus.getMenuItemById(menuId)
 }
 

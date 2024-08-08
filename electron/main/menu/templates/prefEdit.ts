@@ -1,7 +1,8 @@
 import { isDevelopment } from '../../config'
+import Keybindings from '../../keyboard/shortcutHandler'
 
-export default function (keybindings) {
-  let viewMenu = {
+export default function (keybindings: Keybindings) {
+  let viewMenu = <Electron.MenuItemConstructorOptions>{
     label: 'Edit',
     submenu: [
       {
@@ -27,22 +28,24 @@ export default function (keybindings) {
         accelerator: keybindings.getAccelerator('edit.select-all'),
         role: 'selectAll',
       },
+      {
+        label: 'Toggle Developer Tools',
+        accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
+        role: 'toggledevtools',
+      },
+      ...(isDevelopment
+        ? [
+            {
+              type: 'separator',
+            },
+            {
+              label: 'Reload',
+              accelerator: keybindings.getAccelerator('view.dev-reload'),
+              role: 'reload',
+            },
+          ]
+        : []),
     ],
-  }
-  viewMenu.submenu.push({
-    label: 'Toggle Developer Tools',
-    accelerator: keybindings.getAccelerator('view.toggle-dev-tools'),
-    role: 'toggledevtools',
-  })
-  if (isDevelopment) {
-    viewMenu.submenu.push({
-      type: 'separator',
-    })
-    viewMenu.submenu.push({
-      label: 'Reload',
-      accelerator: keybindings.getAccelerator('view.dev-reload'),
-      role: 'reload',
-    })
   }
   return viewMenu
 }

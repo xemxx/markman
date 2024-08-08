@@ -2,12 +2,13 @@ import { app } from 'electron'
 import * as actions from '../actions/file'
 import { userSetting } from '../actions/markman'
 import { isOsx } from '../../config'
+import Keybindings from '../../keyboard/shortcutHandler'
 
-export default function (keybindings, preference) {
+export default function (keybindings: Keybindings, preference: any) {
   const { autoSave } = preference.getAll()
-  const fileMenu = {
+  const fileMenu = <Electron.MenuItemConstructorOptions>{
     label: 'File',
-    submenu: [
+    submenu: <Electron.MenuItemConstructorOptions[]>[
       {
         label: 'Save',
         accelerator: keybindings.getAccelerator('file.save'),
@@ -62,14 +63,16 @@ export default function (keybindings, preference) {
         visible: !isOsx,
         click: app.quit,
       },
+      ...(isOsx
+        ? [
+            {
+              label: 'Close Window',
+              accelerator: keybindings.getAccelerator('file.close-window'),
+              role: 'close',
+            },
+          ]
+        : []),
     ],
-  }
-  if (isOsx) {
-    fileMenu.submenu.push({
-      label: 'Close Window',
-      accelerator: keybindings.getAccelerator('file.close-window'),
-      role: 'close',
-    })
   }
   return fileMenu
 }

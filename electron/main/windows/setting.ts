@@ -62,7 +62,6 @@ class SettingWindow extends BaseWindow {
     // The window is now destroyed.
     win.on('closed', () => {
       this.emit('window-closed')
-      win = null
     })
     require('@electron/remote/main').enable(win.webContents)
     win.loadURL(this.url)

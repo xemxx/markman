@@ -1,13 +1,14 @@
-import { app } from 'electron'
+import { app, MenuItemConstructorOptions } from 'electron'
 import { checkUpdates, userSetting } from '../actions/markman'
 
 import path from 'path'
 import About from 'electron-about'
 import pkg from '../../../../package.json'
 import { ROOT_PATH } from '../../config'
+import Keybindings from '../../keyboard/shortcutHandler'
 
-export default function (keybindings) {
-  return {
+export default function (keybindings: Keybindings) {
+  return <MenuItemConstructorOptions>{
     label: 'Markman',
     submenu: [
       About.makeMenuItem('Markman', {
@@ -18,8 +19,8 @@ export default function (keybindings) {
       }),
       {
         label: 'Check for updates...',
-        click(menuItem, browserWindow) {
-          checkUpdates(browserWindow)
+        click() {
+          checkUpdates()
         },
       },
       {

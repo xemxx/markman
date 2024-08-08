@@ -7,8 +7,8 @@ import BaseWindow from '../windows/base'
 class WindowManager extends EventEmitter {
   private _activeWindowId: any
   private _appMenu: AppMenu
-  private _editor: BaseWindow
-  private _setting: BaseWindow
+  private _editor: BaseWindow | null
+  private _setting: BaseWindow | null
   /**
    *
    * @param {AppMenu} appMenu The application menu instance.
@@ -34,7 +34,7 @@ class WindowManager extends EventEmitter {
 
     window.on('window-closed', () => {
       this._appMenu.removeWindowMenu(window.id)
-      this._editor.destroy()
+      this._editor?.destroy()
       this._editor = null
       if (this._setting !== null) {
         this._setting.emit('window-closed')
@@ -51,7 +51,7 @@ class WindowManager extends EventEmitter {
 
     window.on('window-closed', () => {
       this._appMenu.removeWindowMenu(window.id)
-      this._setting.destroy()
+      this._setting?.destroy()
       this._setting = null
     })
 
@@ -60,10 +60,10 @@ class WindowManager extends EventEmitter {
     })
   }
 
-  get editor(): BaseWindow {
+  get editor(): BaseWindow | null {
     return this._editor
   }
-  get setting(): BaseWindow {
+  get setting(): BaseWindow | null {
     return this._setting
   }
 
@@ -77,7 +77,7 @@ class WindowManager extends EventEmitter {
           this._setting != null &&
           this._setting.id == windowId
         ) {
-          this._setting.browserWindow.setMenu(
+          this._setting.browserWindow?.setMenu(
             this._appMenu.getWindowMenuById(windowId),
           )
         } else {
@@ -95,9 +95,9 @@ class WindowManager extends EventEmitter {
     })
     ipcMain.on('broadcast-pref-changed', prefs => {
       if (this._editor !== null)
-        this._editor.browserWindow.webContents.send('m::user-pref', prefs)
+        this._editor.browserWindow?.webContents.send('m::user-pref', prefs)
       if (this._setting !== null)
-        this._setting.browserWindow.webContents.send('m::user-pref', prefs)
+        this._setting.browserWindow?.webContents.send('m::user-pref', prefs)
     })
 
     // ipcMain.on('m::show-activeBar-context-menu', ({ menus }) => {})

@@ -81,9 +81,9 @@ export default class App {
       // 如果已经存在
       const browserSettingWindow = settingWins.browserWindow
       if (isLinux) {
-        browserSettingWindow.focus()
+        browserSettingWindow?.focus()
       } else {
-        browserSettingWindow.moveTop()
+        browserSettingWindow?.moveTop()
       }
     } else this._createSettingWindow() // 不存在则需要创建
   }

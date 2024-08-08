@@ -6,7 +6,6 @@ import {
   isWindows,
   //  isLinux
 } from '../config'
-import { Debug } from '../log'
 import Accessor from '../app/accessor'
 
 class EditorWindow extends BaseWindow {
@@ -16,7 +15,7 @@ class EditorWindow extends BaseWindow {
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.EDITOR
-    this.url = this._buildUrlString()
+    this.url = this._buildUrlString() || ''
   }
 
   /**
@@ -55,16 +54,10 @@ class EditorWindow extends BaseWindow {
       super.bringToFront()
     })
 
-    // Make all links open with the browser, not with the application
-    // win.webContents.setWindowOpenHandler(({ url }) => {
-    //   if (url.startsWith('https:')) shell.openExternal(url)
-    //   return { action: 'deny' }
-    // })
-
     // 页面崩溃提示框
-    win.webContents.once('crashed', async (event, killed) => {
-      const msg = `The renderer process has crashed unexpected or is killed (${killed}).`
-
+    win.webContents.once('render-process-gone', async (event, details) => {
+      if (details.reason !== 'crashed' && details.reason !== 'killed') return
+      const msg = `The renderer process has crashed unexpected or is killed (${details.reason}).`
       const { response } = await dialog.showMessageBox(win, {
         type: 'warning',
         buttons: ['Close', 'Reload', 'Keep It Open'],
@@ -89,8 +82,6 @@ class EditorWindow extends BaseWindow {
     // The window is now destroyed.
     win.on('closed', () => {
       this.emit('window-closed')
-      // Free window reference
-      win = null
     })
 
     win.on('resize', () => {

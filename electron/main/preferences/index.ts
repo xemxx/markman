@@ -39,7 +39,7 @@ class Preference extends EventEmitter {
   }
 
   init() {
-    let defaultSettings = null
+    let defaultSettings: any = null
     try {
       defaultSettings = fse.readJsonSync(this.staticPath)
     } catch (err) {
@@ -114,7 +114,7 @@ class Preference extends EventEmitter {
   _listenForIpcMain() {
     ipcMain.on('m::get-user-pref', e => {
       const win = BrowserWindow.fromWebContents(e.sender)
-      win.webContents.send('m::user-pref', this.getAll())
+      win?.webContents.send('m::user-pref', this.getAll())
     })
     ipcMain.on('m::set-user-pref', (e, settings) => {
       Debug(settings)

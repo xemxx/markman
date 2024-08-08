@@ -1,8 +1,9 @@
 import { toggleAlwaysOnTop } from '../actions/window'
 import { isOsx } from '../../config'
+import Keybindings from '../../keyboard/shortcutHandler'
 
-export default function (keybindings) {
-  const menu = {
+export default function (keybindings: Keybindings) {
+  const menu = <Electron.MenuItemConstructorOptions>{
     label: 'Window',
     role: 'window',
     submenu: [
@@ -28,14 +29,15 @@ export default function (keybindings) {
         accelerator: keybindings.getAccelerator('window.toggle-full-screen'),
         role: 'togglefullscreen',
       },
+      ...(isOsx
+        ? [
+            {
+              label: 'Bring All to Front',
+              role: 'front',
+            },
+          ]
+        : []),
     ],
-  }
-
-  if (isOsx) {
-    menu.submenu.push({
-      label: 'Bring All to Front',
-      role: 'front',
-    })
   }
   return menu
 }
