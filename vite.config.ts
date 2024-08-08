@@ -7,6 +7,7 @@ import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import pkg from './package.json'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
@@ -16,9 +17,10 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve'
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
   return {
-    type: "module",
+    type: 'module',
     plugins: [
       vue(),
+      vueDevTools(),
       Components({
         dts: true,
         resolvers: [AntDesignVueResolver({ importStyle: false })],
@@ -46,10 +48,10 @@ export default defineConfig(({ command }) => {
           vite: {
             build: {
               lib: {
-               entry: 'electron/main/index.ts',
-               formats: ['cjs'],
-               fileName: () => '[name].js',
-             },
+                entry: 'electron/main/index.ts',
+                formats: ['cjs'],
+                fileName: () => '[name].js',
+              },
               outDir: 'dist/electron/main',
               sourcemap,
               minify: isBuild,
@@ -128,6 +130,7 @@ export default defineConfig(({ command }) => {
       esbuildOptions: {
         target: 'esnext',
       },
+      exclude: ['@vue/devtools'],
     },
     // 设置路径别名
     resolve: {

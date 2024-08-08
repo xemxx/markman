@@ -42,7 +42,6 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-vue": "^5.1.2",
-    "@vue/devtools": "^6.6.3",
     "@vue/tsconfig": "^0.5.1",
     "axios": "^1.7.3",
     "core-js": "^3.38.0",
@@ -66,8 +65,8 @@
     "vditor": "^3.10.4",
     "vite": "^5.3.5",
     "vite-plugin-electron": "^0.28.7",
-    "vite-plugin-electron-renderer": "^0.14.5",
     "vite-plugin-svg-icons": "^2.0.1",
+    "vite-plugin-vue-devtools": "^7.3.7",
     "vue": "^3.4.35",
     "vue-router": "^4.4.2",
     "vue-tsc": "^2.0.29"

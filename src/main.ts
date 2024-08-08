@@ -2,12 +2,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 import router from '@/router'
-import devtools from '@vue/devtools'
-
-console.log(process.env.NODE_ENV)
-if (process.env.NODE_ENV === 'development') {
-  devtools.connect()
-}
 
 import '@/plugins/sqlite3/init'
 import 'ant-design-vue/dist/reset.css'
