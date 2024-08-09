@@ -9,6 +9,7 @@ import {
   ROOT_PATH,
 } from '../config'
 import Accessor from '../app/accessor'
+import { enable } from '@electron/remote/main'
 
 class SettingWindow extends BaseWindow {
   /**
@@ -63,7 +64,7 @@ class SettingWindow extends BaseWindow {
     win.on('closed', () => {
       this.emit('window-closed')
     })
-    require('@electron/remote/main').enable(win.webContents)
+    enable(win.webContents)
     win.loadURL(this.url)
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 

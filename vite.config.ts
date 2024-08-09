@@ -8,6 +8,7 @@ import Components from 'unplugin-vue-components/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import pkg from './package.json'
 import vueDevTools from 'vite-plugin-vue-devtools'
+const __dirname = import.meta.dirname
 
 rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
@@ -26,21 +27,9 @@ export default defineConfig(({ command }) => {
         resolvers: [AntDesignVueResolver({ importStyle: false })],
       }),
       createSvgIconsPlugin({
-        // 指定需要缓存的图标文件夹
         iconDirs: [resolve('./src/assets/icons/')],
-        // 指定symbolId格式
         symbolId: 'icon-[dir]-[name]',
-
-        /**
-         * 自定义插入位置
-         * @default: body-last
-         */
         inject: 'body-last',
-
-        /**
-         * custom dom id
-         * @default: __svg__icons__dom__
-         */
         customDomId: '__svg__icons__dom__',
       }),
       electron({
@@ -49,8 +38,8 @@ export default defineConfig(({ command }) => {
             build: {
               lib: {
                 entry: 'electron/main/index.ts',
-                formats: ['cjs'],
-                fileName: () => '[name].js',
+                formats: ['es'],
+                fileName: () => '[name].mjs',
               },
               outDir: 'dist/electron/main',
               sourcemap,

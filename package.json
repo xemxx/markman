@@ -1,27 +1,26 @@
 {
   "name": "markman",
   "version": "0.3.0",
-  "main": "dist/electron/main/index.js",
+  "main": "dist/electron/main/index.mjs",
   "description": "A markdown editor based on electron and vue3",
   "displayName": "Markman",
   "license": "GPL-3.0-or-later",
   "repository": "https://github.com/xemxx/markman",
   "author": "xem <xemxx@qq.com>",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite dev",
     "vue:tools": "vue-devtools",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
     "build:all": "vue-tsc --noEmit && vite build && electron-builder -mwl",
-    "lint": "eslint src electron  --ext .ts,.tsx,.vue",
-    "lint:fix": "eslint src electron --fix --ext .ts,.tsx,.vue",
     "release": "vue-tsc --noEmit && vite build && electron-builder --publish onTagOrDraft",
     "patch": "npm version patch && git push origin master && git push origin --tags",
     "minor": "npm version minor && git push origin master && git push origin --tags",
     "major": "npm version major && git push origin master && git push origin --tags"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.11.0"
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",
@@ -32,7 +31,7 @@
     "fs-extra": "^11.2.0",
     "json-schema-typed": "^7.0.3",
     "regenerator-runtime": "^0.13.11",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "5.1.6"
   },
   "devDependencies": {
     "@ant-design/icons-vue": "^7.0.1",
@@ -59,6 +58,7 @@
     "vditor": "^3.10.4",
     "vite": "^5.3.5",
     "vite-plugin-electron": "^0.28.7",
+    "vite-plugin-electron-renderer": "^0.14.5",
     "vite-plugin-svg-icons": "^2.0.1",
     "vite-plugin-vue-devtools": "^7.3.7",
     "vue": "^3.4.35",

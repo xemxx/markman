@@ -7,6 +7,7 @@ import {
   //  isLinux
 } from '../config'
 import Accessor from '../app/accessor'
+import { enable } from '@electron/remote/main'
 
 class EditorWindow extends BaseWindow {
   /**
@@ -88,7 +89,7 @@ class EditorWindow extends BaseWindow {
       win.webContents.send('m::resize-editor')
     })
 
-    require('@electron/remote/main').enable(win.webContents)
+    enable(win.webContents)
     win.loadURL(this.url)
 
     win.setSheetOffset(TITLE_BAR_HEIGHT)

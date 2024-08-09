@@ -50,7 +50,7 @@ import { useSidebarStore } from '@/store/sidebar'
 import { AlignLeftOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
-const { Menu, MenuItem, getCurrentWindow } = window.require('@electron/remote')
+import { Menu, MenuItem, getCurrentWindow } from '@electron/remote'
 
 const showMove = ref(false)
 const moveCheck = ref(0)

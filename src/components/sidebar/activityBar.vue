@@ -48,7 +48,7 @@ import { useSidebarStore } from '@/store/sidebar'
 import Footer from './footer.vue'
 import ScrollBar from '@/components/common/scrollBar.vue'
 
-const { Menu, MenuItem, getCurrentWindow } = window.require('@electron/remote')
+import { Menu, MenuItem, getCurrentWindow } from '@electron/remote'
 
 // load store
 const sidebar = useSidebarStore()

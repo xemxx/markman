@@ -3,8 +3,8 @@ import { release } from 'os'
 import App from './app'
 import Accessor from './app/accessor'
 import { isDevelopment, isWindows, userDataPath } from './config'
-
-require('@electron/remote/main').initialize()
+import { initialize } from '@electron/remote/main'
+initialize()
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()

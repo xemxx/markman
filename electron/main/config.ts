@@ -6,6 +6,8 @@ export const isDevelopment = process.env.NODE_ENV !== 'production'
 import { app } from 'electron'
 import { join } from 'path'
 
+const __dirname = import.meta.dirname
+
 export const userDataPath = app.getPath('userData')
 const preload = join(__dirname, '../preload/index.js')
 export const editorWinOptions = {
