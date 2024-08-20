@@ -1,4 +1,4 @@
-import { db } from '../plugins/sqlite3/db'
+import { db } from '../plugins/sqlite3/index'
 import { Model } from './base'
 
 export interface noteItem {
@@ -15,23 +15,25 @@ export interface noteItem {
 }
 
 export class NoteModel extends Model {
-  get(id: any) {
-    return db.get(`select * from note where id=?`, [id])
+  get(id: any): Promise<noteItem> {
+    return db.get<noteItem>(`select * from note where id=?`, [
+      id,
+    ]) as Promise<noteItem>
   }
   getAllByBook(uid, bid) {
-    return db.all(
+    return db.all<noteItem>(
       `select * from note where uid=? and bid=? and modifyState<3 order by modifyDate desc`,
       [uid, bid],
     )
   }
   getAllByTag(uid, tid) {
-    return db.all(
+    return db.all<noteItem>(
       `select b.* from note_tag as a left join note as b on a.nid=b.id where a.tid=? and b.uid=? and modifyState<3 order by modifyDate desc`,
       [tid, uid],
     )
   }
   getAll(uid) {
-    return db.all(
+    return db.all<noteItem>(
       `select * from note where uid=? and modifyState<3 order by modifyDate desc`,
       [uid],
     )
@@ -52,7 +54,7 @@ export class NoteModel extends Model {
       return row.guid
     })
     guids.push(uid)
-    return db.all(
+    return db.all<noteItem>(
       `select * from note where guid in (${sql.substr(
         0,
         sql.length - 1,
@@ -62,11 +64,14 @@ export class NoteModel extends Model {
   }
 
   getModify(uid) {
-    return db.all(`select * from note where uid=? and modifyState>0`, [uid])
+    return db.all<noteItem>(
+      `select * from note where uid=? and modifyState>0`,
+      [uid],
+    )
   }
 
   searchContentInBook(uid, bid, search) {
-    return db.all(
+    return db.all<noteItem>(
       `select * from note where uid=? and bid=? and (content like ? or title like ?) order by modifyDate desc`,
       [uid, bid, `%${search}%`, `%${search}%`],
     )
@@ -76,7 +81,7 @@ export class NoteModel extends Model {
     return []
   }
   searchContentInAll(uid, search) {
-    return db.all(
+    return db.all<noteItem>(
       `select * from note where uid=? and (content like ? or title like ?) order by modifyDate desc`,
       [uid, `%${search}%`, `%${search}%`],
     )

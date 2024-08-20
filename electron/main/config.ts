@@ -9,7 +9,7 @@ import { join } from 'path'
 const __dirname = import.meta.dirname
 
 export const userDataPath = app.getPath('userData')
-const preload = join(__dirname, '../preload/index.js')
+const preload = join(__dirname, '../preload/index.mjs')
 export const editorWinOptions = {
   title: 'markman',
   minWidth: 500,

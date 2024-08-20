@@ -4,7 +4,7 @@ const sqlite = sqlite3.verbose()
 
 class Sqlite {
   db!: sqlite3.Database
-  static instance: any
+  static instance: Sqlite | undefined
   constructor(dbPath: string) {
     this.connect(dbPath)
   }
@@ -46,7 +46,7 @@ class Sqlite {
   }
   // 查询一条数据
   get<T>(sql: string, params: any) {
-    return new Promise((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
       this.db.get(sql, params, (err, data: T) => {
         if (err) {
           console.log('run:' + err)
@@ -58,9 +58,9 @@ class Sqlite {
     })
   }
   // 查询所有数据
-  all(sql: string, params: any) {
-    return new Promise((resolve, reject) => {
-      this.db.all(sql, params, (err, data) => {
+  all<T>(sql: string, params: any) {
+    return new Promise<T[]>((resolve, reject) => {
+      this.db.all(sql, params, (err, data: T[]) => {
         if (err) {
           reject(err)
         } else {

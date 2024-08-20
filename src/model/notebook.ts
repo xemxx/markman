@@ -1,4 +1,4 @@
-import { db } from '../plugins/sqlite3/db'
+import { db } from '../plugins/sqlite3/index'
 import { Model } from './base.js'
 
 export interface notebookItem {
@@ -18,7 +18,10 @@ export interface notebookItem {
 
 export class Notebook extends Model {
   getAll(uid: any) {
-    return db.all(`select * from notebook where uid=? and modifyState<3`, [uid])
+    return db.all<notebookItem>(
+      `select * from notebook where uid=? and modifyState<3`,
+      [uid],
+    )
   }
   add(data: { [x: string]: any }) {
     return super.insert('notebook', data)
@@ -45,7 +48,7 @@ export class Notebook extends Model {
       return row.guid
     })
     guids.push(uid)
-    return db.all(
+    return db.all<notebookItem>(
       `select * from notebook where guid in (${sql.substr(
         0,
         sql.length - 1,
@@ -55,6 +58,9 @@ export class Notebook extends Model {
   }
 
   getModify(uid: any) {
-    return db.all(`select * from notebook where uid=? and modifyState>0`, [uid])
+    return db.all<notebookItem>(
+      `select * from notebook where uid=? and modifyState>0`,
+      [uid],
+    )
   }
 }

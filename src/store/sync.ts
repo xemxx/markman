@@ -1,5 +1,5 @@
 import axios from '@/plugins/axios'
-import User from '@/model/user'
+import { User } from '@/model/user'
 import { NoteModel } from '@/model/note'
 import { Notebook } from '@/model/notebook'
 import { v1 as uuid } from 'uuid'

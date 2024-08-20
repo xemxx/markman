@@ -14,10 +14,7 @@
     "vue:tools": "vue-devtools",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
     "build:all": "vue-tsc --noEmit && vite build && electron-builder -mwl",
-    "release": "vue-tsc --noEmit && vite build && electron-builder --publish onTagOrDraft",
-    "patch": "npm version patch && git push origin master && git push origin --tags",
-    "minor": "npm version minor && git push origin master && git push origin --tags",
-    "major": "npm version major && git push origin master && git push origin --tags"
+    "release": "vue-tsc --noEmit && vite build && electron-builder --publish onTagOrDraft"
   },
   "engines": {
     "node": ">=20.11.0"

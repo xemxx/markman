@@ -1,35 +1,38 @@
-import { db } from '../plugins/sqlite3/db'
+import { db } from '../plugins/sqlite3/index'
 import { Model } from './base'
 
-export default class User extends Model {
+export interface userItem {
+  id: any
+  token: any
+  server: any
+  username: any
+  lastSC: any
+  uuid: string
+}
+
+export class User extends Model {
   getActiver() {
-    return db.get(`select * from user where state= ?`, [1])
+    return db.get<userItem>(`select * from user where state= ?`, [1])
   }
 
-  existUser(username: string, uuid: string) {
-    return db
-      .get(`select id from user where username = ? and uuid = ?`, [
-        username,
-        uuid,
-      ])
-      .then((data: { id: any } | undefined) => {
-        if (data != undefined) {
-          return data.id
-        } else {
-          return ''
-        }
-      })
+  async existUser(username: string, uuid: string) {
+    const data = await db.get<userItem>(
+      `select id from user where username = ? and uuid = ?`,
+      [username, uuid],
+    )
+    if (data != undefined) {
+      return data.id
+    } else {
+      return ''
+    }
   }
 
-  getByUserName(username: string) {
-    return db
-      .get(
-        `select id,uuid from user where username = ? order by lastSC desc limit 1`,
-        [username],
-      )
-      .then((data: { id: any; uuid: string } | undefined) => {
-        return data
-      })
+  async getByUserName(username: string) {
+    const data = await db.get<userItem>(
+      `select id,uuid from user where username = ? order by lastSC desc limit 1`,
+      [username],
+    )
+    return data
   }
 
   add(data: { [x: string]: any }) {
@@ -41,6 +44,6 @@ export default class User extends Model {
   }
 
   getLastSC(uid: any) {
-    return db.get(`select lastSC from user where id= ?`, [uid])
+    return db.get<userItem>(`select lastSC from user where id= ?`, [uid])
   }
 }

@@ -3,13 +3,15 @@ import App from './App.vue'
 
 import router from '@/router'
 
-import '@/plugins/sqlite3/init'
+import { initDB } from '@/plugins/sqlite3/index'
 import 'ant-design-vue/dist/reset.css'
 import '@/assets/css/index.styl'
 
 import 'virtual:svg-icons-register'
 
 import pinia from '@/store'
+
+initDB()
 
 const app = createApp(App)
 

@@ -158,7 +158,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     async searchNotes(search: string) {
-      let list = []
+      let list: noteItem[] = []
       if (this.type == 'note') {
         list = await nModel.searchContentInBook(user.id, this.flagId, search)
       } else if (this.type == 'tag') {

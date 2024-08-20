@@ -1,17 +1,8 @@
-import User from '@/model/user.js'
+import { User, userItem } from '@/model/user'
 import { getCookie, setCookie } from '../tools'
 import { defineStore } from 'pinia'
 
 const model = new User()
-
-interface UserD {
-  id: any
-  token: any
-  server: any
-  username: any
-  lastSC: any
-  uuid: string
-}
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -24,7 +15,7 @@ export const useUserStore = defineStore('user', {
   }),
   actions: {
     async loadActiver() {
-      let user: UserD | undefined = await model.getActiver()
+      let user: userItem | undefined = await model.getActiver()
       if (user != undefined) {
         // v0.3.0 适配新增uuid的逻辑，后续迭代版本可以考虑删除，因为现在不一定有用户。。。
         if (user.uuid == '' || user.uuid == undefined) {

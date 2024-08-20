@@ -68,7 +68,7 @@ export default function (keybindings: Keybindings, preference: any) {
             {
               label: 'Close Window',
               accelerator: keybindings.getAccelerator('file.close-window'),
-              role: 'close',
+              role: 'hide',
             },
           ]
         : []),
