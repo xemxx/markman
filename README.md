@@ -1,16 +1,16 @@
 # markman
 
-[![Build Status](https://app.travis-ci.com/xemxx/markman.svg?branch=master)](https://app.travis-ci.com/xemxx/markman)
+一款简单的markdown云同步笔记，基于vue+vite+electron开发，服务端采用golang开发，依赖数据库mysql
 
-[![Build status](https://ci.appveyor.com/api/projects/status/necfva92gr7it59q?svg=true)](https://ci.appveyor.com/project/xemxx/markman-client)
+客户端数据保存在本地sqlite3，无加密（性能党，实在没找到合适的js开发的数据库）
+
+主打一个数据私有化，功能够用就行
 
 ## 配置开发环境
 
-```
-pnpm i
-```
+推荐pnpm，省空间，但是有些坑：
 
-electron builder 搭配pnpm配置
+### electron builder 搭配pnpm配置
 
 ```
 # .npmrc
@@ -24,3 +24,7 @@ node-linker=hoisted
 python3 版本太新，不支持distutils，需要手动安装setuptools
 
 pip3 install setuptools
+
+### sqlite3 版本
+
+需要锁定 5.1.6 5.1.7有坑会导致打包失败
