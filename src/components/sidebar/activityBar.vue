@@ -7,35 +7,42 @@
         @keyup.enter="doSearch"
       />
     </div>
-    <ScrollBar class="list-wrapper" :settings="scrollSettings">
-      <div class="item" @click="loadList({ type: 'all' })">
-        所有笔记
-        <PlusCircleOutlined @click.stop="showAddBook" />
-      </div>
-      <div v-if="bookInputShow" key="addBook" class="item">
-        <input
-          ref="bookInputRef"
-          v-model="bookName"
-          @keyup.enter="doAddBook"
-          @blur="blurAddBook"
-        />
-      </div>
-      <div
-        v-for="item in books"
-        :key="item.id + ''"
-        class="item"
-        @click="loadList({ type: 'note', flagId: item.guid })"
-        @click.right="rightMenu(item.id)"
-      >
-        <span v-if="!item.rename">{{ item.name }} </span>
-        <input
-          v-if="item.rename"
-          ref="bookRenameInputRef"
-          v-model="bookReName"
-          @blur="blurRenameBook(item.id)"
-          @keyup.enter="doRenameBook(item.id)"
-        />
-      </div>
+    <ScrollBar :settings="scrollSettings">
+      <a-list size="small" :data-source="books">
+        <template #header>
+          <div class="item" @click="loadList({ type: 'all' })">
+            所有笔记
+            <PlusCircleOutlined @click.stop="showAddBook" />
+          </div>
+          <div v-if="bookInputShow" key="addBook" class="item">
+            <input
+              ref="bookInputRef"
+              v-model="bookName"
+              @keyup.enter="doAddBook"
+              @blur="blurAddBook"
+            />
+          </div>
+        </template>
+        <template #renderItem="{ item }">
+          <a-list-item
+            :key="item.id + ''"
+            class="item"
+            @click="loadList({ type: 'note', flagId: item.guid })"
+            @click.right="rightMenu(item.id)"
+          >
+            <span v-if="!item.rename">
+              <FolderOpenOutlined /> {{ item.name }}
+            </span>
+            <input
+              v-if="item.rename"
+              ref="bookRenameInputRef"
+              v-model="bookReName"
+              @blur="blurRenameBook(item.id)"
+              @keyup.enter="doRenameBook(item.id)"
+            />
+          </a-list-item>
+        </template>
+      </a-list>
     </ScrollBar>
     <Footer />
   </a-flex>
@@ -43,7 +50,7 @@
 
 <script setup lang="ts">
 import { nextTick, computed, ref } from 'vue'
-import { PlusCircleOutlined } from '@ant-design/icons-vue'
+import { PlusCircleOutlined, FolderOpenOutlined } from '@ant-design/icons-vue'
 import { useSidebarStore } from '@/store/sidebar'
 import Footer from './footer.vue'
 import ScrollBar from '@/components/common/scrollBar.vue'
@@ -154,24 +161,15 @@ const doSearch = () => {
   & input
     padding 0 10px
 
-.list-wrapper
-  background-color transparent
-
-.add
-  display flex
-  position relative
-  border-radius 50px
-  justify-items center
 
 .item
   font-size 16px
-  padding 5px 10px
+  color: #fff
 
 input
   width 90%
-  font-size 14px
 
   &:focus
-    border 0
+    border 1
     outline none
 </style>
