@@ -56,9 +56,39 @@ function init() {
     theme: getTheme(theme) as any,
     lang: unref(getCurrentLang),
     mode: 'wysiwyg',
+    undoDelay: 100,
     fullscreen: {
       index: 520,
     },
+    toolbar: [
+      'undo',
+      'redo',
+      '|',
+      'headings',
+      'bold',
+      'italic',
+      'strike',
+      'link',
+      '|',
+      'list',
+      'ordered-list',
+      'outdent',
+      'indent',
+      '|',
+      'quote',
+      'line',
+      'code',
+      'insert-after',
+      'insert-before',
+      '|',
+      'upload',
+      'table',
+      '|',
+      'edit-mode',
+      'code-theme',
+      'preview',
+      'outline',
+    ],
     counter: {
       enable: true,
       type: 'markdown',
@@ -75,7 +105,6 @@ function init() {
       actions: [],
     },
     input: v => {
-      console.debug('new v', v)
       emit('change', v)
     },
     after: () => {
