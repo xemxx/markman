@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <ScrollBar class="list" :settings="scrollSettings">
+    <ScrollBar :settings="scrollSettings">
       <a-list size="small" :data-source="notes">
         <template #renderItem="{ item }">
           <a-list-item
@@ -105,23 +105,13 @@ const doMove = () => {
 </script>
 
 <style lang="stylus" scoped>
-.list
-  padding 5px
 
 .card
-  line-height 1.5715
   background-color transparent
-  margin 0
-  display flex
-  color #fff
-  margin 0
-  padding 8px 12px
-  font-size 16px
-  line-height 24px
-  font-weight 500
   white-space nowrap
   overflow hidden
   text-overflow ellipsis
+  display block
 
 .toolbar
   background-color transparent

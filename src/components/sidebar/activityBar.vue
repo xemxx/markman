@@ -26,7 +26,6 @@
         <template #renderItem="{ item }">
           <a-list-item
             :key="item.id + ''"
-            class="item"
             @click="loadList({ type: 'note', flagId: item.guid })"
             @click.right="rightMenu(item.id)"
           >
@@ -160,11 +159,6 @@ const doSearch = () => {
 
   & input
     padding 0 10px
-
-
-.item
-  font-size 16px
-  color: #fff
 
 input
   width 90%
