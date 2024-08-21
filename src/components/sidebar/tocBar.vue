@@ -10,19 +10,18 @@
     </div>
 
     <ScrollBar class="list" :settings="scrollSettings">
-      <div
-        v-for="item in notes"
-        :key="item.id"
-        class="card"
-        @click="checkoutNote(item.id)"
-        @click.right="rightMenu(item.id, item.bid)"
-      >
-        <div class="card-title">{{ item.title }}</div>
-        <div class="card-content">
-          <p>{{ item.content }}</p>
-        </div>
-        <hr />
-      </div>
+      <a-list size="small" :data-source="notes">
+        <template #renderItem="{ item }">
+          <a-list-item
+            :key="item.id"
+            class="card"
+            @click="checkoutNote(item.id)"
+            @click.right="rightMenu(item.id, item.bid)"
+          >
+            {{ item.title }}
+          </a-list-item>
+        </template>
+      </a-list>
     </ScrollBar>
 
     <a-modal title="移动笔记" :open="showMove" width="30%">
@@ -113,22 +112,14 @@ const doMove = () => {
   line-height 1.5715
   background-color transparent
   margin 0
-
-.card-title
+  display flex
+  color #fff
   margin 0
   padding 8px 12px
   font-size 16px
   line-height 24px
   font-weight 500
   white-space nowrap
-  overflow hidden
-  text-overflow ellipsis
-
-.card-content
-  font-size 14px
-  height 46px
-  margin 0
-  padding 0 12px 5px 12px
   overflow hidden
   text-overflow ellipsis
 
