@@ -96,7 +96,7 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
-    addNote(bid: any) {
+    async addNote(bid: any) {
       const user = useUserStore()
       const sidebar = useSidebarStore()
 
@@ -112,14 +112,13 @@ export const useEditorStore = defineStore('editor', {
         addDate: time,
         modifyDate: time,
       }
-      return nModel
-        .add(note)
-        .then((id: any) => {
-          return sidebar.loadNotes().then(() => {
-            this.loadNote(id)
-          })
-        })
-        .catch((err: any) => console.log(err))
+      try {
+        const id = await nModel.add(note)
+        await sidebar.loadNotes()
+        await this.loadNote(id)
+      } catch (err) {
+        return console.log(err)
+      }
     },
 
     // save note to sqlite
