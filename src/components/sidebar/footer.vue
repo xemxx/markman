@@ -23,7 +23,7 @@ const router = useRouter()
 
 const quit = () => {
   user.unSetActiver().then(() => {
-    router.push('/sign/in').catch(err => err)
+    router.push('/login').catch(err => err)
   })
 }
 </script>

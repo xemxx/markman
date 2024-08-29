@@ -4,6 +4,7 @@ import { message } from 'ant-design-vue'
 import { useUserStore } from '@/store/user'
 import { useSysStore } from '@/store/sys'
 import router from '@/router'
+import { resolve } from 'path'
 
 const errCode = {
   SUCCESS: 200, //请求成功
@@ -12,10 +13,13 @@ const errCode = {
   ErrorAuthToken: 20003, //"Token参数错误"
 }
 
-axios.defaults.withCredentials = false
+const http = axios.create({
+  // timeout: 1000 * 4,
+  withCredentials: false,
+})
 
 // 请求拦截器
-axios.interceptors.request.use(
+http.interceptors.request.use(
   config => {
     const user = useUserStore()
     const token = user.token
@@ -31,33 +35,31 @@ axios.interceptors.request.use(
 )
 
 // 响应拦截器
-axios.interceptors.response.use(
+http.interceptors.response.use(
   // 请求成功
   async res => {
     const user = useUserStore()
-    if (res.status === 200) {
-      const code = res.data.code
-      const msg = res.data.msg
-      switch (code) {
-        case errCode.SUCCESS:
-          return Promise.resolve(res.data.data)
-        case errCode.ErrorAuthToken:
-        case errCode.ErrorAuthCheckTokenFail:
-        case errCode.ErrorAuthCheckTokenTimeout:
-          message.error('登录失效，请重新登录,ERROR：' + msg)
-          user.update_token('')
-          router.push('/sign/in').catch(err => err)
-          return Promise.reject(res)
-        default:
-          message.error('ERROR：' + msg)
-          return Promise.reject(res)
-      }
-    } else {
-      message.error('服务器出错了:(，ERROR：' + res)
-      return Promise.reject(res)
+    const code = res.data.code
+    const msg = res.data.msg
+    if (res.data.message == 'pong') {
+      return Promise.resolve(res.data)
+    }
+    switch (code) {
+      case errCode.SUCCESS:
+        return Promise.resolve(res.data.data)
+      case errCode.ErrorAuthToken:
+      case errCode.ErrorAuthCheckTokenFail:
+      case errCode.ErrorAuthCheckTokenTimeout:
+        message.error('登录失效，请重新登录,ERROR：' + msg)
+        user.update_token('')
+        router.push('/login').catch(err => err)
+        return Promise.resolve(res)
+      default:
+        message.error('ERROR：' + msg)
+        return Promise.reject(res)
     }
   },
-  // 请求失败
+  // 请求失败，非200自动进入
   err => {
     console.error('响应拦截器错误：', err)
     if (err.response) {
@@ -70,10 +72,12 @@ axios.interceptors.response.use(
       //成功发送请求，但是未接收到响应
       if (!window.navigator.onLine) {
         const store = useSysStore()
-        store.update_online(false)
+        store.online = false
+        message.error('检测到网络离线，请检查网络状况')
+        return Promise.reject('检测到网络离线，请检查网络状况')
       } else {
-        message.error('网络错误,请检查,' + err)
-        return Promise.reject('网络错误,请检查,' + err)
+        message.error('网络错误,请检查服务器地址配置或者网络状况')
+        return Promise.reject('网络错误,请检查服务器地址配置或者网络状况')
       }
     } else {
       return Promise.reject(err)
@@ -81,4 +85,4 @@ axios.interceptors.response.use(
   },
 )
 
-export default axios
+export default http

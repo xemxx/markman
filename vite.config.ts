@@ -10,6 +10,9 @@ import pkg from './package.json'
 import vueDevTools from 'vite-plugin-vue-devtools'
 const __dirname = import.meta.dirname
 
+import tailwind from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
+
 rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
 // https://vitejs.dev/config/
@@ -101,6 +104,9 @@ export default defineConfig(({ command }) => {
         },
       },
       devSourcemap: false,
+      postcss: {
+        plugins: [tailwind(), autoprefixer()],
+      },
     },
     server:
       process.env.VSCODE_DEBUG &&

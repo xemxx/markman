@@ -23,12 +23,9 @@ export const useUserStore = defineStore('user', {
         }
         this.update_id(user.id)
         this.update_lastSC(user.lastSC)
-        this.update_server(user.server)
         this.update_token(user.token)
         this.update_username(user.username)
         this.update_uuid(user.uuid)
-      } else {
-        throw new Error('not login')
       }
     },
 
@@ -41,26 +38,30 @@ export const useUserStore = defineStore('user', {
       let id = this.id
       this.update_id(0)
       this.update_lastSC(0)
-      this.update_server('')
       this.update_token('')
       this.update_username('')
       this.update_uuid('')
       return model.update(id!, { state: 0 })
     },
 
-    async setActiver({ username, token, uuid, server }) {
+    async setActiver({ username, token, uuid }) {
       let id = await model.existUser(username, uuid)
       if (id != '') {
-        await model.update(id, { state: 1, token, server })
+        await model.update(id, { state: 1, token, server: this.server })
       } else {
         // v0.3.0 适配新增uuid的逻辑，后续迭代版本可以考虑删除，因为现在不一定有用户。。。
         let data = await model.getByUserName(username)
         if (data != undefined && (data.uuid == undefined || data.uuid == '')) {
-          await model.update(data.id, { state: 1, token, uuid, server })
+          await model.update(data.id, {
+            state: 1,
+            token,
+            uuid,
+            server: this.server,
+          })
         } else {
           await model.add({
             username,
-            server,
+            server: this.server,
             token,
             state: 1,
             lastSC: 0,

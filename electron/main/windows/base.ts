@@ -20,8 +20,8 @@ export const WindowType = {
   SETTINGS: 'settings',
 }
 
-const url = process.env.VITE_DEV_SERVER_URL
-const indexHtml = join(ROOT_PATH.dist, 'index.html')
+const url = process.env.VITE_DEV_SERVER_URL + '#/editorBase'
+const indexHtml = join(ROOT_PATH.dist, 'index.html/#/editorBase')
 
 class BaseWindow extends EventEmitter {
   protected _accessor: Accessor
@@ -40,6 +40,7 @@ class BaseWindow extends EventEmitter {
     this.id = 0
     this.browserWindow = null
     this.type = WindowType.BASE
+    this.url = ''
   }
 
   bringToFront() {

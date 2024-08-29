@@ -9,7 +9,6 @@
 
 <script setup lang="ts">
 import SideBar from '@/preferences/sideBar/index.vue'
-
 import { usePreferenceStore } from '@/store/preference'
 
 const preference = usePreferenceStore()

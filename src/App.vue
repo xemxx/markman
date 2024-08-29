@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { theme } from 'ant-design-vue'
+import Toaster from '@/components/ui/toast/Toaster.vue'
 </script>
 
 <template>
-  <a-config-provider
-    :theme="{
-      algorithm: theme.darkAlgorithm,
-    }"
-  >
-    <router-view />
-  </a-config-provider>
+  <Toaster />
+  <router-view />
 </template>
 
 <style></style>
