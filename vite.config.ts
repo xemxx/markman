@@ -8,7 +8,6 @@ import Components from 'unplugin-vue-components/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import pkg from './package.json'
 import vueDevTools from 'vite-plugin-vue-devtools'
-const __dirname = import.meta.dirname
 
 import tailwind from 'tailwindcss'
 import autoprefixer from 'autoprefixer'

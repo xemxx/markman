@@ -20,27 +20,26 @@
     "node": ">=20.11.0"
   },
   "dependencies": {
+    "sqlite3": "5.1.6"
+  },
+  "devDependencies": {
+    "electron-about": "^2.0.1",
+    "electron-store": "^8.2.0",
     "@electron/remote": "^2.1.2",
+    "fs-extra": "^11.2.0",
+    "ant-design-vue": "^4.2.3",
     "@vee-validate/zod": "^4.13.2",
     "@vueuse/core": "^11.0.3",
-    "ant-design-vue": "^4.2.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "electron-about": "^2.0.1",
-    "electron-log": "^4.4.8",
-    "electron-store": "^8.2.0",
-    "fs-extra": "^11.2.0",
     "json-schema-typed": "^7.0.3",
     "lucide-vue-next": "^0.436.0",
     "radix-vue": "^1.9.5",
     "regenerator-runtime": "^0.13.11",
-    "sqlite3": "5.1.6",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.13.2",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
+    "zod": "^3.23.8",
     "@ant-design/icons-vue": "^7.0.1",
     "@internationalized/date": "^3.5.5",
     "@tsconfig/node20": "^20.1.4",

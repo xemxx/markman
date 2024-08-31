@@ -4,7 +4,6 @@ import path from 'path'
 import EventEmitter from 'events'
 import Store from 'electron-store'
 import { BrowserWindow, ipcMain } from 'electron'
-import log from 'electron-log'
 import { hasSameKeys } from '../utils'
 import { Debug } from '../log'
 import { ROOT_PATH } from '../config'
@@ -43,7 +42,7 @@ class Preference extends EventEmitter {
     try {
       defaultSettings = fse.readJsonSync(this.staticPath)
     } catch (err) {
-      log.error(err)
+      console.error(err)
     }
 
     if (!defaultSettings) {
@@ -100,7 +99,7 @@ class Preference extends EventEmitter {
    */
   setItems(settings: Electron.IpcMainEvent) {
     if (!settings) {
-      log.error(
+      console.error(
         'Cannot change settings without entires: object is undefined or null.',
       )
       return

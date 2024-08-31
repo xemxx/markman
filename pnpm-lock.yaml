@@ -8,67 +8,16 @@ importers:
 
   .:
     dependencies:
-      '@electron/remote':
-        specifier: ^2.1.2
-        version: 2.1.2(electron@31.3.1)
-      '@vee-validate/zod':
-        specifier: ^4.13.2
-        version: 4.13.2(vue@3.4.35(typescript@5.5.4))
-      '@vueuse/core':
-        specifier: ^11.0.3
-        version: 11.0.3(vue@3.4.35(typescript@5.5.4))
-      ant-design-vue:
-        specifier: ^4.2.3
-        version: 4.2.3(vue@3.4.35(typescript@5.5.4))
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.0
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      electron-about:
-        specifier: ^2.0.1
-        version: 2.0.1
-      electron-log:
-        specifier: ^4.4.8
-        version: 4.4.8
-      electron-store:
-        specifier: ^8.2.0
-        version: 8.2.0
-      fs-extra:
-        specifier: ^11.2.0
-        version: 11.2.0
-      json-schema-typed:
-        specifier: ^7.0.3
-        version: 7.0.3
-      lucide-vue-next:
-        specifier: ^0.436.0
-        version: 0.436.0(vue@3.4.35(typescript@5.5.4))
-      radix-vue:
-        specifier: ^1.9.5
-        version: 1.9.5(vue@3.4.35(typescript@5.5.4))
-      regenerator-runtime:
-        specifier: ^0.13.11
-        version: 0.13.11
       sqlite3:
         specifier: 5.1.6
         version: 5.1.6(encoding@0.1.13)
-      tailwind-merge:
-        specifier: ^2.5.2
-        version: 2.5.2
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.10)
-      vee-validate:
-        specifier: ^4.13.2
-        version: 4.13.2(vue@3.4.35(typescript@5.5.4))
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
     devDependencies:
       '@ant-design/icons-vue':
         specifier: ^7.0.1
         version: 7.0.1(vue@3.4.35(typescript@5.5.4))
+      '@electron/remote':
+        specifier: ^2.1.2
+        version: 2.1.2(electron@31.3.1)
       '@internationalized/date':
         specifier: ^3.5.5
         version: 3.5.5
@@ -81,30 +30,60 @@ importers:
       '@types/sqlite3':
         specifier: ^3.1.11
         version: 3.1.11
+      '@vee-validate/zod':
+        specifier: ^4.13.2
+        version: 4.13.2(vue@3.4.35(typescript@5.5.4))
       '@vitejs/plugin-vue':
         specifier: ^5.1.2
         version: 5.1.2(vite@5.3.5(@types/node@20.14.14)(stylus@0.62.0)(terser@5.27.0))(vue@3.4.35(typescript@5.5.4))
       '@vue/tsconfig':
         specifier: ^0.5.1
         version: 0.5.1
+      '@vueuse/core':
+        specifier: ^11.0.3
+        version: 11.0.3(vue@3.4.35(typescript@5.5.4))
+      ant-design-vue:
+        specifier: ^4.2.3
+        version: 4.2.3(vue@3.4.35(typescript@5.5.4))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@5.2.18)
       axios:
         specifier: ^1.7.3
         version: 1.7.3
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       core-js:
         specifier: ^3.38.0
         version: 3.38.0
       electron:
         specifier: ^31.3.1
         version: 31.3.1
+      electron-about:
+        specifier: ^2.0.1
+        version: 2.0.1
       electron-builder:
         specifier: ^24.13.3
         version: 24.13.3(electron-builder-squirrel-windows@24.13.3(dmg-builder@24.13.3))
+      electron-store:
+        specifier: ^8.2.0
+        version: 8.2.0
+      fs-extra:
+        specifier: ^11.2.0
+        version: 11.2.0
       highlight.js:
         specifier: ^11.10.0
         version: 11.10.0
+      json-schema-typed:
+        specifier: ^7.0.3
+        version: 7.0.3
+      lucide-vue-next:
+        specifier: ^0.436.0
+        version: 0.436.0(vue@3.4.35(typescript@5.5.4))
       marked:
         specifier: ^5.1.2
         version: 5.1.2
@@ -120,12 +99,24 @@ importers:
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
+      radix-vue:
+        specifier: ^1.9.5
+        version: 1.9.5(vue@3.4.35(typescript@5.5.4))
+      regenerator-runtime:
+        specifier: ^0.13.11
+        version: 0.13.11
       stylus:
         specifier: ^0.62.0
         version: 0.62.0
+      tailwind-merge:
+        specifier: ^2.5.2
+        version: 2.5.2
       tailwindcss:
         specifier: ^3.4.10
         version: 3.4.10
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.10)
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
@@ -141,6 +132,9 @@ importers:
       vditor:
         specifier: ^3.10.4
         version: 3.10.4
+      vee-validate:
+        specifier: ^4.13.2
+        version: 4.13.2(vue@3.4.35(typescript@5.5.4))
       vite:
         specifier: ^5.3.5
         version: 5.3.5(@types/node@20.14.14)(stylus@0.62.0)(terser@5.27.0)
@@ -165,6 +159,9 @@ importers:
       vue-tsc:
         specifier: ^2.0.29
         version: 2.0.29(typescript@5.5.4)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
 
 packages:
 
@@ -1595,9 +1592,6 @@ packages:
     resolution: {integrity: sha512-yZSgVHft5dNVlo31qmJAe4BVKQfFdwpRw7sFp1iQglDRCDD6r22zfRJuZlhtB5gp9FHUxCMEoWGq10SkCnMAIg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
-
-  electron-log@4.4.8:
-    resolution: {integrity: sha512-QQ4GvrXO+HkgqqEOYbi+DHL7hj5JM+nHi/j+qrN9zeeXVKy8ZABgbu4CnG+BBqDZ2+tbeq9tUC4DZfIWFU5AZA==}
 
   electron-publish@24.13.1:
     resolution: {integrity: sha512-2ZgdEqJ8e9D17Hwp5LEq5mLQPjqU3lv/IALvgp+4W8VeNhryfGhYEQC/PgDPMrnWUp+l60Ou5SJLsu+k4mhQ8A==}
@@ -5370,8 +5364,6 @@ snapshots:
     transitivePeerDependencies:
       - electron-builder-squirrel-windows
       - supports-color
-
-  electron-log@4.4.8: {}
 
   electron-publish@24.13.1:
     dependencies:
