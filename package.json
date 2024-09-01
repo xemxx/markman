@@ -1,6 +1,6 @@
 {
   "name": "markman",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "dist/electron/main/index.js",
   "description": "A markdown editor based on electron and vue3",
   "displayName": "Markman",
@@ -32,7 +32,7 @@
     "fs-extra": "^11.2.0",
     "json-schema-typed": "^7.0.3",
     "regenerator-runtime": "^0.13.11",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "5.1.6"
   },
   "devDependencies": {
     "@ant-design/icons-vue": "^7.0.1",
