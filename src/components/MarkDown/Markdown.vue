@@ -1,5 +1,5 @@
 <template>
-  <div ref="wrapRef" class="con"></div>
+  <div ref="wrapRef"></div>
 </template>
 <script lang="ts" setup>
 import type { Ref } from 'vue'
@@ -140,7 +140,4 @@ onBeforeUnmount(destroy)
 onDeactivated(destroy)
 </script>
 
-<style lang="stylus" scoped>
-.con
-  position relative
-</style>
+<style lang="stylus" scoped></style>

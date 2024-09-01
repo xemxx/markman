@@ -1,10 +1,10 @@
 <template>
-  <a-flex class="toolbar" justify="space-between">
+  <div class="flex justify-between border-t toolbar">
     <SyncOutlined v-model:spin="isSyncing" @click.stop="doSync" />
     <p v-if="isSyncing">同步中</p>
     <p v-else>同步完成</p>
     <LogoutOutlined @click.stop="quit" />
-  </a-flex>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -31,9 +31,7 @@ const quit = () => {
 <style lang="stylus" scoped>
 .toolbar
   height 36px
-  color var(--sideBarColor)
   align-items center
-  border-top 1px solid black
   padding 2px 5px
   p
     text-align center

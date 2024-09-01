@@ -18,4 +18,9 @@ export const schema = {
     description: 'View Menu--Sidebar status.',
     default: true,
   },
+  nativeBar: {
+    type: JSONSchemaType.Boolean,
+    description: 'View Menu--Native menu bar status.',
+    default: true,
+  },
 }

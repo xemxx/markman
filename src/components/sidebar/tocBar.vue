@@ -1,5 +1,5 @@
 <template>
-  <a-flex vertical>
+  <div class="flex flex-col">
     <div class="toolbar">
       <div>
         <AlignLeftOutlined />
@@ -39,7 +39,7 @@
         <a-button key="submit" type="primary" @click="doMove">确 定</a-button>
       </template>
     </a-modal>
-  </a-flex>
+  </div>
 </template>
 
 <script setup lang="ts">

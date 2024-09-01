@@ -106,11 +106,11 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AutoForm, AutoFormField } from '@/components/ui/auto-form'
+import { AutoForm } from '@/components/ui/auto-form'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
-import axios from '@/plugins/axios'
+import http from '@/plugins/axios'
 import { useRouter } from '@/router'
 import { useUserStore } from '@/store/user'
 import { ref } from 'vue'
@@ -139,7 +139,7 @@ const router = useRouter()
 const user = useUserStore()
 function onSubmit(values: Record<string, any>) {
   const { username, password } = values
-  axios
+  http
     .post<{ token: string; uuid: string }, any>(user.server + '/signIn', {
       username,
       password,
@@ -190,7 +190,7 @@ const registerFormSchema = z
   })
 
 function onRegister(values: Record<string, any>) {
-  axios
+  http
     .post(user.server + '/signUp', {
       username: values.username,
       password: values.password,

@@ -1,5 +1,5 @@
 <template>
-  <a-flex gap="small" vertical justify="space-between">
+  <div class="flex flex-col flex-1">
     <div class="search-wrapper">
       <input
         v-model="searchStr"
@@ -7,7 +7,7 @@
         @keyup.enter="doSearch"
       />
     </div>
-    <ScrollBar :settings="scrollSettings">
+    <!-- <ScrollBar>
       <a-list size="small" :data-source="books">
         <template #header>
           <div class="item" @click="loadList({ type: 'all' })">
@@ -42,9 +42,9 @@
           </a-list-item>
         </template>
       </a-list>
-    </ScrollBar>
+    </ScrollBar> -->
     <Footer />
-  </a-flex>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -136,11 +136,11 @@ const rightMenu = id => {
   menu.popup({ window: getCurrentWindow() })
 }
 
-const scrollSettings = ref({
-  suppressScrollY: false,
-  suppressScrollX: true,
-  wheelPropagation: false,
-})
+// const scrollSettings = ref({
+//   suppressScrollY: false,
+//   suppressScrollX: true,
+//   wheelPropagation: false,
+// })
 
 // search
 const searchStr = ref('')

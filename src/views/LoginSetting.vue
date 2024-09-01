@@ -32,7 +32,7 @@ import { AutoForm } from '@/components/ui/auto-form'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
-import axios from '@/plugins/axios'
+import http from '@/plugins/axios'
 import { useRouter } from '@/router'
 import { useUserStore } from '@/store/user'
 const user = useUserStore()
@@ -50,10 +50,9 @@ const formSchema = z.object({
 })
 
 function onSubmit(values: Record<string, any>) {
-  // set single field error
   const router = useRouter()
   const { server } = values
-  axios
+  http
     .get<{ ok: boolean }, any>(server + '/ping')
     .then(res => {
       if (res) {

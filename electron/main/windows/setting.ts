@@ -18,7 +18,7 @@ class SettingWindow extends BaseWindow {
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.SETTINGS
-    this.url = this._buildUrlString() + '#/preference'
+    this.url = this._buildUrlString() + '#/preference/'
   }
 
   /**

@@ -19,6 +19,7 @@ class Preference extends EventEmitter {
     autoSave: unknown
     autoSaveDelay: unknown
     toggleSidebar: unknown
+    nativeBar: unknown
   }>
   staticPath: string
   constructor(preferencesPath: string) {
@@ -111,9 +112,11 @@ class Preference extends EventEmitter {
   }
 
   _listenForIpcMain() {
-    ipcMain.on('m::get-user-pref', e => {
-      const win = BrowserWindow.fromWebContents(e.sender)
-      win?.webContents.send('m::user-pref', this.getAll())
+    ipcMain.handle('m::get-user-pref', e => {
+      return this.getAll()
+    })
+    ipcMain.handle('m::get-user-pref-one', (event, key: string) => {
+      return this.store.get(key)
     })
     ipcMain.on('m::set-user-pref', (e, settings) => {
       Debug(settings)

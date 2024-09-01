@@ -1,25 +1,41 @@
 <template>
-  <div class="h-screen">
-    <TitleBar />
-    <a-flex class="container">
-      <Sidebar />
-      <a-flex v-if="!editorS.isEdit" class="default-view">
-        <h1>Welcome</h1>
-      </a-flex>
-      <a-flex vertical class="editor" v-else>
-        <div>
-          <input v-model="title" class="editor-title" />
+  <div class="flex flex-col h-screen">
+    <TitleBar v-show="!nativeBar" />
+    <ResizablePanelGroup
+      id="sidebar"
+      direction="horizontal"
+      class="flex flex-row flex-1 overflow-auto border-t"
+    >
+      <ResizablePanel
+        id="demo-panel-1"
+        :default-size="15"
+        :min-size="13"
+        :max-size="25"
+      >
+        <Sidebar class="h-full" />
+      </ResizablePanel>
+      <ResizableHandle id="handle-1" />
+      <ResizablePanel id="editor" :default-size="85">
+        <div class="flex flex-1 h-full">
+          <div
+            class="flex content-center justify-center w-full h-full"
+            v-show="!editorS.isEdit"
+          >
+            <h1>Welcome</h1>
+          </div>
+          <div class="flex flex-col w-full h-full" v-show="editorS.isEdit">
+            <input v-model="title" class="editor-title" />
+            <MarkDown
+              :value="editorS.currentNote.content"
+              @change="handleChange"
+              placeholder="请输入内容"
+              class="flex-1 overflow-auto"
+            />
+            <div class="tags">tags</div>
+          </div>
         </div>
-        <a-flex class="editor-wrapper">
-          <MarkDown
-            :value="editorS.currentNote.content"
-            @change="handleChange"
-            placeholder="请输入内容"
-          />
-        </a-flex>
-        <div class="tags">tags</div>
-      </a-flex>
-    </a-flex>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   </div>
 </template>
 
@@ -27,11 +43,17 @@
 import Sidebar from '@/components/sidebar/index.vue'
 import MarkDown from '@/components/MarkDown/Markdown.vue'
 import TitleBar from '@/components/titleBar.vue'
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable'
+
 import { usePreferenceStore } from '@/store/preference'
 import { useListenStore } from '@/store/listen'
 import { useSyncStore } from '@/store/sync'
 import { useEditorStore } from '@/store/editor'
-import { computed, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { emitter } from '@/emitter'
 import { Modal } from 'ant-design-vue'
 
@@ -124,11 +146,6 @@ async function init() {
     logout()
     return
   }
-  sync.sync()
-  // 监听内容变动
-  listen.listenFileSave()
-  // 监听偏好设置即时生效
-  preference.getLocal()
 }
 
 const logout = async () => {
@@ -143,29 +160,21 @@ emitter.on('query-close-note', showCloseQuery)
 // 调用主函数
 init()
 
+const nativeBar = computed(() => preference.nativeBar)
+
+onMounted(() => {
+  sync.sync()
+  // 监听内容变动
+  listen.listenFileSave()
+})
+
 onUnmounted(() => {
   emitter.off('query-close-note', showCloseQuery)
 })
 </script>
 <style lang="stylus" scoped>
-.default-view
-  flex 1
-  width 100%
-  height 100%
-  justify-content center
-  align-items center
 
-.container
-  height 100vh
 
-.editor
-  flex 1
-  min-width 0
-  max-width 100%
-  padding-top var(--titleBarHeight)
-
-.editor, .editor-title
-  background-color var(--editorBgColor)
 
 .editor-title
   width 100%
@@ -176,27 +185,10 @@ onUnmounted(() => {
   &:focus
     outline none
 
-.editor-wrapper
-  height 100%
-  min-width 150px
-  overflow auto
 
 .tags
-  bottom 0px
   width 100%
   height auto
-  min-height 20px
+  min-height 26px
   background-color #aaeedd
-
-  ul
-    list-style-type none
-    display inline
-
-    li
-      border 1px
-      border-radius 5px
-      background-color aqua
-      padding-left 10px
-      color black
-      float left
 </style>

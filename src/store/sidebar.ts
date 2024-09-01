@@ -18,6 +18,10 @@ interface State {
   type: string
   flagId: string
   notes: noteItem[]
+  noteTree: {
+    book: notebookItem
+    notes: noteItem[]
+  }[]
   tid: string
 }
 const state: State = {
@@ -26,12 +30,13 @@ const state: State = {
   flagId: '',
   notes: [],
   tid: '',
+  noteTree: [],
 }
 
 export const useSidebarStore = defineStore('sidebar', {
   state: () => state,
   actions: {
-    update_notebooks(value: []) {
+    update_notebooks(value: notebookItem[]) {
       this.notebooks = value
     },
     update_notes({ type, flagId, notes }) {
@@ -39,22 +44,36 @@ export const useSidebarStore = defineStore('sidebar', {
       this.flagId = flagId ? flagId : this.tid
       this.notes = notes ? notes : this.notes
     },
-    loadNotebooks() {
-      return model
-        .getAll(user.id)
-        .then((notebooks: any) => {
-          this.update_notebooks(notebooks)
-        })
-        .catch((err: any) => {
-          console.log(err)
-        })
+    async loadNodeTree() {
+      try {
+        const notebooks = await model.getAll(user.id)
+        this.noteTree = await Promise.all(
+          notebooks.map(async item => {
+            const notes = await nModel.getAllByBook(user.id, item.guid)
+            return {
+              book: item,
+              notes: notes,
+            }
+          }),
+        )
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async loadNotebooks() {
+      try {
+        const notebooks = await model.getAll(user.id)
+        this.update_notebooks(notebooks)
+      } catch (err) {
+        console.log(err)
+      }
     },
 
-    addNotebook(name: any) {
+    async addNotebook(name: any) {
       const sync = useSyncStore(pinia)
       const time = Date.parse(Date()) / 1000
-      return model
-        .add({
+      try {
+        await model.add({
           uid: user.id,
           name: name,
           guid: uuid(),
@@ -65,14 +84,14 @@ export const useSidebarStore = defineStore('sidebar', {
           addDate: time,
           modifyDate: time,
         })
-        .then(() => {
-          //同步服务器
-          sync.sync()
-        })
-        .catch((err: any) => console.log(err))
+        //同步服务器
+        sync.sync()
+      } catch (err) {
+        return console.log(err)
+      }
     },
 
-    deleteNotebook(id: any) {
+    async deleteNotebook(id: any) {
       const sync = useSyncStore(pinia)
       let guid = ''
       for (let i = 0; i < this.notebooks.length; i++) {
@@ -80,18 +99,18 @@ export const useSidebarStore = defineStore('sidebar', {
           guid = this.notebooks[i].guid
         }
       }
-      return model
-        .deleteLocal(id, guid)
-        .then(() => {
-          //更新列表显示
-          this.loadNotebooks()
-          if (this.type != 'all' && this.flagId == guid) {
-            this.loadNotes({ type: 'all' })
-          }
-          //同步服务器
-          sync.sync()
-        })
-        .catch((err: any) => console.log(err))
+      try {
+        await model.deleteLocal(id, guid)
+        //更新列表显示
+        this.loadNotebooks()
+        if (this.type != 'all' && this.flagId == guid) {
+          this.loadNotes({ type: 'all' })
+        }
+        //同步服务器
+        sync.sync()
+      } catch (err) {
+        return console.log(err)
+      }
     },
 
     updateNotebook({ id, name }) {
@@ -146,15 +165,14 @@ export const useSidebarStore = defineStore('sidebar', {
       })
     },
 
-    moveNote({ id, bid }) {
+    async moveNote({ id, bid }) {
       const sync = useSyncStore(pinia)
-      return nModel
-        .update(id, { bid, modifyState: 2 })
-        .then(() => {
-          sync.sync()
-          this.loadNotebooks()
-        })
-        .catch((err: any) => console.log(err))
+      try {
+        await nModel.update(id, { bid, modifyState: 2 })
+        sync.sync()
+      } catch (err) {
+        return console.log(err)
+      }
     },
 
     async searchNotes(search: string) {

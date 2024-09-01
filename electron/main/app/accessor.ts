@@ -7,7 +7,7 @@ import Preference from '../preferences'
 class Accessor {
   preferences: any
   keybindings: any
-  menu: any
+  menu: AppMenu
   windowManager: any
   constructor(args: { userDataPath: any }) {
     let userDataPath = args.userDataPath
