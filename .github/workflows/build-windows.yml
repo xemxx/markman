@@ -21,7 +21,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.9.0
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -40,7 +40,7 @@ jobs:
       - name: Replace single file
         uses: richardrigutins/replace-in-files@v2
         with:
-          files: 'C:\Users\runneradmin\setup-pnpm\node_modules\.pnpm\pnpm@9.6.0\node_modules\pnpm\bin\pnpm.cjs'
+          files: 'C:\Users\runneradmin\setup-pnpm\node_modules\.pnpm\pnpm@9.9.0\node_modules\pnpm\bin\pnpm.cjs'
           search-text: '#!/usr/bin/env node'
           replacement-text: '#!node'
 
