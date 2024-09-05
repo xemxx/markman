@@ -76,6 +76,7 @@ declare module 'vue' {
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
+    List: typeof import('./src/components/sidebar/list.vue')['default']
     Markdown: typeof import('./src/components/MarkDown/Markdown.vue')['default']
     MarkdownViewer: typeof import('./src/components/MarkDown/MarkdownViewer.vue')['default']
     Menu: typeof import('./src/components/sidebar/menu.vue')['default']

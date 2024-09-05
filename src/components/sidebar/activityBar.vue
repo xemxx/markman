@@ -7,7 +7,7 @@
         @keyup.enter="doSearch"
       />
     </div>
-    <!-- <ScrollBar>
+    <ScrollBar>
       <a-list size="small" :data-source="books">
         <template #header>
           <div class="item" @click="loadList({ type: 'all' })">
@@ -42,7 +42,7 @@
           </a-list-item>
         </template>
       </a-list>
-    </ScrollBar> -->
+    </ScrollBar>
     <Footer />
   </div>
 </template>
