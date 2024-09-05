@@ -8,8 +8,8 @@
     >
       <ResizablePanel
         id="demo-panel-1"
-        :default-size="15"
-        :min-size="13"
+        :default-size="18"
+        :min-size="12"
         :max-size="25"
       >
         <Sidebar class="h-full" />
@@ -24,7 +24,7 @@
             <h1>Welcome</h1>
           </div>
           <div class="flex flex-col w-full h-full" v-show="editorS.isEdit">
-            <input v-model="title" class="editor-title" />
+            <input v-model="title" class="h-10 border-b editor-title" />
             <MarkDown
               :value="editorS.currentNote.content"
               @change="handleChange"

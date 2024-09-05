@@ -23,12 +23,7 @@ import Bool from './common/bool.vue'
 import { usePreferenceStore } from '@/store/preference'
 import { storeToRefs } from 'pinia'
 const preference = usePreferenceStore()
-// computed: {
-//   ...mapState({
-//     autoSave: state => state.preference.autoSave,
-//     autoSaveDelay: state => state.preference.autoSaveDelay,
-//   }),
-// },
+
 const { autoSave, autoSaveDelay } = storeToRefs(preference)
 
 const onSelectChange = (type, value) => {

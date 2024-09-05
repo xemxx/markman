@@ -7,9 +7,6 @@ import pinia from '@/store'
 import { useUserStore } from '@/store/user'
 
 import './assets/index.css'
-import PrimeVue from 'primevue/config'
-import Aura from '@/presets/aura'
-import 'primeicons/primeicons.css'
 
 initDB()
 
@@ -18,10 +15,6 @@ const app = createApp(App)
 app
   .use(router)
   .use(pinia)
-  .use(PrimeVue, {
-    unstyled: true,
-    pt: Aura,
-  })
   .mount('#app')
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*')

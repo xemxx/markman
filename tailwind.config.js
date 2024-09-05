@@ -94,5 +94,5 @@ module.exports = {
       },
     },
   },
-  plugins: [animate, require('tailwindcss-primeui'), addDynamicIconSelectors()],
+  plugins: [animate, addDynamicIconSelectors()],
 }

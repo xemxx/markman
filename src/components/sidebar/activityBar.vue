@@ -52,7 +52,6 @@ import { nextTick, computed, ref } from 'vue'
 import { PlusCircleOutlined, FolderOpenOutlined } from '@ant-design/icons-vue'
 import { useSidebarStore } from '@/store/sidebar'
 import Footer from './footer.vue'
-import ScrollBar from '@/components/common/scrollBar.vue'
 
 import { Menu, MenuItem, getCurrentWindow } from '@electron/remote'
 
