@@ -15,6 +15,11 @@ const app = createApp(App)
 app
   .use(router)
   .use(pinia)
+  .directive('focus', {
+    mounted(el) {
+      el.focus()
+    },
+  })
   .mount('#app')
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*')

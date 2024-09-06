@@ -114,7 +114,6 @@ export const useEditorStore = defineStore('editor', {
       }
       try {
         const id = await nModel.add(note)
-        await sidebar.loadNotes()
         await this.loadNote(id)
       } catch (err) {
         return console.log(err)

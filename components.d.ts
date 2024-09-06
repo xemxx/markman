@@ -91,6 +91,7 @@ declare module 'vue' {
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     Item: typeof import('./src/components/sidebar/item.vue')['default']
+    ItemOld: typeof import('./src/components/sidebar/itemOld.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
     List: typeof import('./src/components/sidebar/list.vue')['default']
     Markdown: typeof import('./src/components/MarkDown/Markdown.vue')['default']
@@ -153,5 +154,8 @@ declare module 'vue' {
     ToastViewport: typeof import('./src/components/ui/toast/ToastViewport.vue')['default']
     TocBar: typeof import('./src/components/sidebar/tocBar.vue')['default']
     Tree: typeof import('./src/components/sidebar/tree.vue')['default']
+    TreeItem: typeof import('./src/components/sidebar/treeItem.vue')['default']
+    TreeItemVal: typeof import('./src/components/sidebar/treeItemVal.vue')['default']
+    TreeNode: typeof import('./src/components/sidebar/treeNode.vue')['default']
   }
 }

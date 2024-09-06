@@ -22,7 +22,7 @@ const modelValue = useVModel(props, 'modelValue', emits, {
 
 const elRef = useTemplateRef('inputRef')
 
-const inputRef = watch(
+watch(
   () => props.focus,
   focus => {
     console.log(focus)

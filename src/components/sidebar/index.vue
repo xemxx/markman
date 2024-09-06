@@ -32,66 +32,11 @@
           />
         </div>
         <TreeRoot
-          v-slot="{ flattenItems }"
-          class="w-full p-1 pr-3 text-sm font-medium list-none bg-white rounded-lg select-none text-blackA11"
+          class="w-full p-1 text-sm font-medium list-none rounded-lg select-none bg-background text-blackA11"
           :items="treeLabels"
           :get-key="item => item.key"
         >
-          <TreeItem
-            v-for="item in flattenItems"
-            v-slot="{ isExpanded }"
-            :key="item._id"
-            :style="{ 'padding-left': `${item.level - 0.5}rem` }"
-            v-bind="item.bind"
-            class="flex items-center py-1 px-2 my-0.5 rounded outline-none focus:ring-grass8 focus:ring-2 data-[selected]:bg-grass4 group"
-            @click.stop="onNodeSelect(item.value)"
-          >
-            <Input
-              :focus="renames[item._id] ?? false"
-              v-if="renames[item._id]"
-              v-model="bookReName"
-              @blur="blurRenameBook(item.value)"
-              @keyup.enter="doRenameBook(item.value)"
-              class="w-full h-6"
-            />
-
-            <template v-else>
-              <template v-if="item.hasChildren">
-                <span
-                  v-if="!isExpanded"
-                  class="size-5 icon-[lucide--folder] flex-none"
-                />
-                <span
-                  v-else
-                  class="size-5 icon-[lucide--folder-open] flex-none"
-                />
-              </template>
-              <span
-                v-else
-                class="size-5 icon-[ion--document-text-outline] flex-none"
-              />
-              <div class="flex-1 pl-2 truncate">
-                <ContextMenu>
-                  <ContextMenuTrigger>
-                    {{ item.value.label }}
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem @click="renameBook(item.value)"
-                      >重命名</ContextMenuItem
-                    >
-                    <ContextMenuItem @click="sidebar.deleteNotebook(item.value)"
-                      >删除</ContextMenuItem
-                    >
-                  </ContextMenuContent>
-                </ContextMenu>
-              </div>
-              <div
-                class="grid grid-cols-1 transition-opacity duration-300 opacity-0 place-content-center group-hover:opacity-100"
-              >
-                <span class="icon-[lucide--plus]"></span>
-              </div>
-            </template>
-          </TreeItem>
+          <Tree :tree-items="treeLabels" />
         </TreeRoot>
       </ScrollArea>
     </div>
@@ -104,7 +49,10 @@ import { usePreferenceStore } from '@/store/preference'
 import { storeToRefs } from 'pinia'
 import Menu from './menu.vue'
 import Footer from './footer.vue'
-import { TreeItem, TreeRoot } from 'radix-vue'
+import { TreeRoot } from 'radix-vue'
+import Tree from './tree.vue'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { TreeNode } from './types.ts'
 
 const preference = usePreferenceStore()
 const { toggleSidebar } = storeToRefs(preference)
@@ -112,39 +60,44 @@ const { toggleSidebar } = storeToRefs(preference)
 import { useSidebarStore } from '@/store/sidebar'
 import { ref, computed, onMounted, nextTick, useTemplateRef } from 'vue'
 
-onMounted(() => {
-  sidebar.loadNodeTree()
-})
-
 const sidebar = useSidebarStore()
+sidebar.loadNodeTree()
+
 const treeLabels = computed(() => {
   return sidebar.noteTree.map(item => {
+    // const i = <TreeNode>{
+    //   label: item.book.name,
+    //   icon: 'icon-[ion--folder-outline]',
+    //   data: item.book,
+    //   key: item.book.guid,
+    // }
+    // if (item.notes && item.notes.length > 0) {
+    //   i.children = item.notes.map(child => {
+    //     return {
+    //       label: child.title,
+    //       icon: 'icon-[ion--document-text-outline]',
+    //       data: child,
+    //       key: child.guid,
+    //     }
+    //   })
+    // }
+    // return i
     return {
       label: item.book.name,
       icon: 'icon-[ion--folder-outline]',
       data: item.book,
       key: item.book.guid,
-      rename: false,
       children: item.notes.map(child => {
         return {
           label: child.title,
           icon: 'icon-[ion--document-text-outline]',
           data: child,
           key: child.guid,
-          rename: false,
         }
       }),
     }
   })
 })
-
-import { useEditorStore } from '@/store/editor'
-const editor = useEditorStore()
-const onNodeSelect = (node: any) => {
-  if (node.data.title) {
-    editor.checkoutNote(node.data.id)
-  }
-}
 
 // add book
 const bookInputShow = ref(false)
@@ -170,42 +123,6 @@ const doAddBook = async () => {
     await sidebar.loadNodeTree()
     blurAddBook()
   }
-}
-
-// right click
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu'
-// rename book
-const bookReName = ref('')
-const renameOld = ref('')
-const renames = ref({})
-const renameBook = node => {
-  let name = ''
-  if (node.data.title) {
-    name = node.data.title
-  } else {
-    name = node.data.name
-  }
-  renameOld.value = name
-  bookReName.value = name
-  renames.value[node.key] = true
-  console.log(renames.value)
-}
-const doRenameBook = node => {
-  if (bookReName.value != '' && bookReName.value != renameOld.value) {
-    console.log(bookReName.value)
-    sidebar.updateNotebook({ id: node.data.id, name: bookReName.value })
-    sidebar.loadNodeTree()
-  }
-  blurRenameBook(node)
-}
-const blurRenameBook = node => {
-  renames.value[node.key] = false
-  bookReName.value = ''
 }
 </script>
 <style scoped></style>
