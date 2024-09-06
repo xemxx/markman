@@ -106,7 +106,10 @@ const renameBook = (node: TreeNode) => {
   renames.value[node.key] = true
   renameKey.value = node.key
   nextTick(() => {
-    // bookRenameInputRef.value?.focus()
+    // 必须使用setTimeout，否则无法获取焦点，会被contextMenu的事件覆盖
+    setTimeout(() => {
+      bookRenameInputRef.value?.focus()
+    }, 0)
   })
 }
 const doRenameBook = async (node: TreeNode) => {
