@@ -33,10 +33,10 @@
         </div>
         <TreeRoot
           class="w-full p-1 text-sm font-medium list-none rounded-lg select-none bg-background text-blackA11"
-          :items="treeLabels"
+          :items="sidebar.treeLabels"
           :get-key="item => item.key"
         >
-          <Tree :tree-items="treeLabels" />
+          <Tree :tree-items="sidebar.treeLabels" />
         </TreeRoot>
       </ScrollArea>
     </div>
@@ -52,52 +52,14 @@ import Footer from './footer.vue'
 import { TreeRoot } from 'radix-vue'
 import Tree from './tree.vue'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { TreeNode } from './types.ts'
-
 const preference = usePreferenceStore()
 const { toggleSidebar } = storeToRefs(preference)
 
 import { useSidebarStore } from '@/store/sidebar'
-import { ref, computed, onMounted, nextTick, useTemplateRef } from 'vue'
+import { ref, nextTick, useTemplateRef } from 'vue'
 
 const sidebar = useSidebarStore()
 sidebar.loadNodeTree()
-
-const treeLabels = computed(() => {
-  return sidebar.noteTree.map(item => {
-    // const i = <TreeNode>{
-    //   label: item.book.name,
-    //   icon: 'icon-[ion--folder-outline]',
-    //   data: item.book,
-    //   key: item.book.guid,
-    // }
-    // if (item.notes && item.notes.length > 0) {
-    //   i.children = item.notes.map(child => {
-    //     return {
-    //       label: child.title,
-    //       icon: 'icon-[ion--document-text-outline]',
-    //       data: child,
-    //       key: child.guid,
-    //     }
-    //   })
-    // }
-    // return i
-    return {
-      label: item.book.name,
-      icon: 'icon-[ion--folder-outline]',
-      data: item.book,
-      key: item.book.guid,
-      children: item.notes.map(child => {
-        return {
-          label: child.title,
-          icon: 'icon-[ion--document-text-outline]',
-          data: child,
-          key: child.guid,
-        }
-      }),
-    }
-  })
-})
 
 // add book
 const bookInputShow = ref(false)

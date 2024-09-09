@@ -33,12 +33,16 @@ export class Notebook extends Model {
     return super.delete(id, 'notebook')
   }
 
-  deleteLocal(id: any, guid: any) {
-    return this.update(id, { modifyState: 3 })
-      .then(() => {
-        return db.run(`update note set modifyState=? where bid=?`, [3, guid])
-      })
-      .catch((err: any) => console.log(err))
+  async deleteLocal(id: any, guid: any) {
+    try {
+      await this.update(id, { modifyState: 3 })
+      return await db.run(`update note set modifyState=? where bid=?`, [
+        3,
+        guid,
+      ])
+    } catch (err) {
+      return console.log(err)
+    }
   }
 
   getLocalByServer(uid: any, serverData: any[]) {

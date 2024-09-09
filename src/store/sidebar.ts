@@ -6,6 +6,7 @@ import { useUserStore } from './user'
 import { useSyncStore } from './sync'
 
 import pinia from './index'
+import { useEditorStore } from './editor'
 
 const user = useUserStore(pinia)
 
@@ -13,16 +14,23 @@ const model = new Notebook()
 
 const nModel = new NoteModel()
 
+export interface TreeNode {
+  icon: string
+  key: string
+  label: string
+  children?: TreeNode[]
+  data: any
+  type: string
+  selected: boolean
+}
+
 interface State {
   notebooks: notebookItem[]
   type: string
   flagId: string
   notes: noteItem[]
-  noteTree: {
-    book: notebookItem
-    notes: noteItem[]
-  }[]
   tid: string
+  treeLabels: TreeNode[]
 }
 const state: State = {
   notebooks: [],
@@ -30,7 +38,69 @@ const state: State = {
   flagId: '',
   notes: [],
   tid: '',
-  noteTree: [],
+  treeLabels: [],
+}
+
+const removeNode = (nodes: TreeNode[], targetNode: TreeNode): boolean => {
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+    if (node.key === targetNode.key) {
+      nodes.splice(i, 1)
+      return true
+    }
+    if (node.children) {
+      const removed = removeNode(node.children, targetNode)
+      if (removed) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+const renameNode = (
+  nodes: TreeNode[],
+  targetNode: TreeNode,
+  newName: string,
+): boolean => {
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+    if (node.key === targetNode.key) {
+      node.label = newName
+      return true
+    }
+    if (node.children) {
+      const renamed = renameNode(node.children, targetNode, newName)
+      if (renamed) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+const insertNode = (
+  nodes: TreeNode[],
+  targetNode: TreeNode,
+  newNode: TreeNode,
+): boolean => {
+  for (let i = 0; i < nodes.length; i++) {
+    const currentNode = nodes[i]
+    if (currentNode.key === targetNode.key) {
+      if (!currentNode.children) {
+        currentNode.children = []
+      }
+      currentNode.children.push(newNode)
+      return true
+    }
+    if (currentNode.children) {
+      const inserted = insertNode(currentNode.children, targetNode, newNode)
+      if (inserted) {
+        return true
+      }
+    }
+  }
+  return false
 }
 
 export const useSidebarStore = defineStore('sidebar', {
@@ -46,9 +116,10 @@ export const useSidebarStore = defineStore('sidebar', {
     },
     async loadNodeTree() {
       try {
-        const notebooks = await model.getAll(user.id)
-        this.noteTree = await Promise.all(
-          notebooks.map(async item => {
+        this.notebooks = await model.getAll(user.id)
+
+        const noteTree = await Promise.all(
+          this.notebooks.map(async item => {
             const notes = await nModel.getAllByBook(user.id, item.guid)
             return {
               book: item,
@@ -56,9 +127,70 @@ export const useSidebarStore = defineStore('sidebar', {
             }
           }),
         )
+        this.treeLabels = noteTree.map(item => {
+          const i = <TreeNode>{
+            label: item.book.name,
+            icon: 'icon-[ion--folder-outline]',
+            data: item.book,
+            key: item.book.guid,
+            type: 'folder',
+            selected: false,
+          }
+          if (item.notes && item.notes.length > 0) {
+            i.children = item.notes.map(child => {
+              return {
+                label: child.title,
+                icon: 'icon-[ion--document-text-outline]',
+                data: child,
+                key: child.guid,
+                type: 'file',
+                selected: false,
+              }
+            })
+          }
+          return i
+        })
       } catch (err) {
         console.log(err)
       }
+    },
+    async addNoteInFolder(folderId: string): Promise<string | undefined> {
+      const user = useUserStore()
+      const time = Date.parse(Date()) / 1000
+      const note = {
+        uid: user.id,
+        guid: uuid(),
+        bid: folderId,
+        title: '未命名',
+        content: '',
+        modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
+        SC: 0, //新建时该值无用
+        addDate: time,
+        modifyDate: time,
+      }
+      try {
+        const id = await nModel.add(note)
+        const editor = useEditorStore()
+        editor.loadNote(id)
+        return note.guid
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    async addTreeNode(node: TreeNode, guid: string) {
+      const note = await nModel.getByGuid(guid)
+
+      insertNode(this.treeLabels, node, <TreeNode>{
+        label: note.title,
+        icon: 'icon-[ion--document-text-outline]',
+        data: note,
+        key: guid,
+        type: 'file',
+        selected: true,
+      })
+    },
+    async deleteTreeNode(node: TreeNode) {
+      removeNode(this.treeLabels, node)
     },
     async loadNotebooks() {
       try {
@@ -101,11 +233,6 @@ export const useSidebarStore = defineStore('sidebar', {
       }
       try {
         await model.deleteLocal(id, guid)
-        //更新列表显示
-        this.loadNotebooks()
-        if (this.type != 'all' && this.flagId == guid) {
-          this.loadNotes({ type: 'all' })
-        }
         //同步服务器
         sync.sync()
       } catch (err) {
@@ -127,9 +254,6 @@ export const useSidebarStore = defineStore('sidebar', {
             modifyState: modifyState === 0 ? 2 : modifyState,
           })
           .then(() => {
-            //更新列表显示
-            this.loadNotebooks()
-            //同步服务器
             sync.sync()
           })
           .catch((err: any) => console.log(err))
@@ -173,6 +297,27 @@ export const useSidebarStore = defineStore('sidebar', {
       } catch (err) {
         return console.log(err)
       }
+    },
+
+    renameTreeNode(node: TreeNode, newName: string) {
+      const renamed = renameNode(this.treeLabels, node, newName)
+      // console.log(this.treeLabels)
+      // if (renamed) {
+      //   this.treeLabels = [...this.treeLabels] // 触发 Vue 的响应式系统
+      // }
+      return renamed
+    },
+
+    async moveTreeNode(node: TreeNode, targetNodeKey: string) {
+      const nodeToMove = removeNode(this.treeLabels, node)
+      if (nodeToMove) {
+        return insertNode(
+          this.treeLabels,
+          <TreeNode>{ key: targetNodeKey },
+          node,
+        )
+      }
+      return false
     },
 
     async searchNotes(search: string) {

@@ -96,30 +96,6 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
-    async addNote(bid: any) {
-      const user = useUserStore()
-      const sidebar = useSidebarStore()
-
-      const time = Date.parse(Date()) / 1000
-      const note = {
-        uid: user.id,
-        guid: uuid(),
-        bid,
-        title: '未命名',
-        content: '',
-        modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
-        SC: 0, //新建时该值无用
-        addDate: time,
-        modifyDate: time,
-      }
-      try {
-        const id = await nModel.add(note)
-        await this.loadNote(id)
-      } catch (err) {
-        return console.log(err)
-      }
-    },
-
     // save note to sqlite
     async saveNote() {
       if (this.vidtor == null) {
@@ -170,7 +146,6 @@ export const useEditorStore = defineStore('editor', {
     },
 
     async deleteNote(id: number) {
-      const sidebar = useSidebarStore()
       try {
         const { modifyState } = await nModel.get(id)
         if (modifyState == 1) {
@@ -183,12 +158,10 @@ export const useEditorStore = defineStore('editor', {
           }
           await nModel.update(id, data)
         }
-        sidebar.loadNotes().then(() => {
-          if (id == this.currentNote.id) {
-            this.set_current_note(defaultNote)
-            this.isEdit = false
-          }
-        })
+        if (id == this.currentNote.id) {
+          this.set_current_note(defaultNote)
+          this.isEdit = false
+        }
         const sync = useSyncStore()
         sync.sync()
       } catch (err) {

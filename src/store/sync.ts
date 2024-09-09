@@ -32,10 +32,9 @@ export const useSyncStore = defineStore('sync', {
       this.isSyncing = value
     },
     async sync() {
-      const sidebar = useSidebarStore(pinia)
       // 防止用户重复点击
       if (this.isSyncing) return
-      this.update_isSyncing(true)
+      this.isSyncing = true
       const uid = user.id
       const server = user.server
       try {
@@ -55,9 +54,6 @@ export const useSyncStore = defineStore('sync', {
         console.log(err)
         setTimeout(() => this.update_isSyncing(false), 1000)
       }
-      //更新完成刷新显示
-      await sidebar.loadNotebooks()
-      await sidebar.loadNotes()
     },
 
     async pull({ localSC, serverSC }) {
