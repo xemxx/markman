@@ -64,16 +64,22 @@ const preference = usePreferenceStore()
 const { toggleSidebar } = storeToRefs(preference)
 
 import { useSidebarStore } from '@/store/sidebar'
-import { ref, nextTick, useTemplateRef, computed, watch } from 'vue'
+import { ref, nextTick, useTemplateRef, computed, watch, onMounted } from 'vue'
 import { Input } from '@/components/ui/input'
+import { useSyncStore } from '@/store/sync'
 
 const sidebar = useSidebarStore()
-sidebar.loadNodeTree()
 const trees = computed(() => {
   if (sidebar.inSearch) {
     return sidebar.searchResult
   }
   return sidebar.treeLabels
+})
+
+onMounted(async () => {
+  const sync = useSyncStore()
+  await sync.sync()
+  sidebar.loadNodeTree()
 })
 
 // add book

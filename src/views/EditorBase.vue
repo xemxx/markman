@@ -51,7 +51,6 @@ import {
 
 import { usePreferenceStore } from '@/store/preference'
 import { useListenStore } from '@/store/listen'
-import { useSyncStore } from '@/store/sync'
 import { useEditorStore } from '@/store/editor'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { emitter } from '@/emitter'
@@ -99,7 +98,6 @@ const router = useRouter()
 const store = useSysStore()
 const preference = usePreferenceStore()
 const listen = useListenStore()
-const sync = useSyncStore()
 
 // 初始化editor窗口逻辑
 async function init() {
@@ -163,7 +161,6 @@ init()
 const nativeBar = computed(() => preference.nativeBar)
 
 onMounted(() => {
-  sync.sync()
   // 监听内容变动
   listen.listenFileSave()
 })

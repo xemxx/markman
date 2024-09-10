@@ -54,6 +54,7 @@ export const useSyncStore = defineStore('sync', {
         console.log(err)
         setTimeout(() => this.update_isSyncing(false), 1000)
       }
+      // TODO 当同步完成需要判断是不是远端有更新，然后sidebar的数据
     },
 
     async pull({ localSC, serverSC }) {
