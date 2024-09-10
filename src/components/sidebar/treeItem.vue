@@ -165,8 +165,10 @@ const doMove = () => {
           <div class="flex-1 pl-1 truncate">
             <Dialog>
               <ContextMenu>
-                <ContextMenuTrigger>
-                  {{ tree.label }}
+                <ContextMenuTrigger as-child>
+                  <div class="flex w-full">
+                    <span class="truncate"> {{ tree.label }}</span>
+                  </div>
                 </ContextMenuTrigger>
                 <ContextMenuContent v-if="tree.type == 'folder'">
                   <ContextMenuItem @click.stop="renameBook(tree)"

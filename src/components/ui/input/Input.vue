@@ -25,10 +25,8 @@ const elRef = useTemplateRef('inputRef')
 watch(
   () => props.focus,
   focus => {
-    console.log(focus)
     if (focus) {
       nextTick(() => {
-        console.log(elRef.value)
         elRef.value?.focus()
       })
     }

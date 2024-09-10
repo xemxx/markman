@@ -31,6 +31,8 @@ interface State {
   notes: noteItem[]
   tid: string
   treeLabels: TreeNode[]
+  inSearch: boolean
+  searchResult: TreeNode[]
 }
 const state: State = {
   notebooks: [],
@@ -39,6 +41,8 @@ const state: State = {
   notes: [],
   tid: '',
   treeLabels: [],
+  inSearch: false,
+  searchResult: [],
 }
 
 const removeNode = (nodes: TreeNode[], targetNode: TreeNode): boolean => {
@@ -334,6 +338,40 @@ export const useSidebarStore = defineStore('sidebar', {
         flagId: this.flagId,
         notes: list,
       })
+    },
+
+    searchTreeNodes(searchStr: string) {
+      if (searchStr === '') {
+        return
+      }
+      this.inSearch = true
+      const searchNodes = (
+        nodes: TreeNode[],
+        searchStr: string,
+      ): TreeNode[] => {
+        return nodes
+          .map(node => {
+            const children = node.children
+              ? searchNodes(node.children, searchStr)
+              : []
+            if (
+              node.label.includes(searchStr) ||
+              node.data.content?.includes(searchStr) ||
+              children.length > 0
+            ) {
+              return {
+                ...node,
+                children: children.length > 0 ? children : undefined,
+              }
+            }
+            return null
+          })
+          .filter(node => node !== null) as TreeNode[]
+      }
+      this.searchResult = searchNodes(state.treeLabels, searchStr)
+    },
+    exitSearch() {
+      this.inSearch = false
     },
   },
 })
