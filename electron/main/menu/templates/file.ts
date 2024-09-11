@@ -13,7 +13,7 @@ export default function (keybindings: Keybindings, preference: any) {
         label: 'Save',
         accelerator: keybindings.getAccelerator('file.save'),
         click(menuItem, browserWindow) {
-          actions.save(browserWindow)
+          actions.save(browserWindow as Electron.BrowserWindow)
         },
       },
       {

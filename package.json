@@ -10,6 +10,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "tsc:lint": "vue-tsc --noEmit",
     "dev": "vite dev",
     "vue:tools": "vue-devtools",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
@@ -57,6 +58,7 @@
     "pinia": "^2.2.2",
     "postcss": "^8.4.45",
     "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6",
     "radix-vue": "^1.9.5",
     "regenerator-runtime": "^0.13.11",
     "stylus": "^0.62.0",
