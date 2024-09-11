@@ -7,18 +7,11 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AButton: typeof import('ant-design-vue/es')['Button']
     Accordion: typeof import('./src/components/ui/accordion/Accordion.vue')['default']
     AccordionContent: typeof import('./src/components/ui/accordion/AccordionContent.vue')['default']
     AccordionItem: typeof import('./src/components/ui/accordion/AccordionItem.vue')['default']
     AccordionTrigger: typeof import('./src/components/ui/accordion/AccordionTrigger.vue')['default']
-    ActivityBar: typeof import('./src/components/sidebar/activityBar.vue')['default']
     AInput: typeof import('ant-design-vue/es')['Input']
-    AList: typeof import('ant-design-vue/es')['List']
-    AListItem: typeof import('ant-design-vue/es')['ListItem']
-    AModal: typeof import('ant-design-vue/es')['Modal']
-    ASelect: typeof import('ant-design-vue/es')['Select']
-    ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
     ASwitch: typeof import('ant-design-vue/es')['Switch']
     AutoForm: typeof import('./src/components/ui/auto-form/AutoForm.vue')['default']
     AutoFormField: typeof import('./src/components/ui/auto-form/AutoFormField.vue')['default']
@@ -99,10 +92,7 @@ declare module 'vue' {
     FormLabel: typeof import('./src/components/ui/form/FormLabel.vue')['default']
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
-    Item: typeof import('./src/components/sidebar/item.vue')['default']
-    ItemOld: typeof import('./src/components/sidebar/itemOld.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
-    List: typeof import('./src/components/sidebar/list.vue')['default']
     Markdown: typeof import('./src/components/MarkDown/Markdown.vue')['default']
     MarkdownViewer: typeof import('./src/components/MarkDown/MarkdownViewer.vue')['default']
     Menu: typeof import('./src/components/sidebar/menu.vue')['default']
@@ -161,10 +151,7 @@ declare module 'vue' {
     ToastProvider: typeof import('./src/components/ui/toast/ToastProvider.vue')['default']
     ToastTitle: typeof import('./src/components/ui/toast/ToastTitle.vue')['default']
     ToastViewport: typeof import('./src/components/ui/toast/ToastViewport.vue')['default']
-    TocBar: typeof import('./src/components/sidebar/tocBar.vue')['default']
     Tree: typeof import('./src/components/sidebar/tree.vue')['default']
     TreeItem: typeof import('./src/components/sidebar/treeItem.vue')['default']
-    TreeItemVal: typeof import('./src/components/sidebar/treeItemVal.vue')['default']
-    TreeNode: typeof import('./src/components/sidebar/treeNode.vue')['default']
   }
 }

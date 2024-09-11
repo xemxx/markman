@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col h-screen">
+  <div class="flex h-screen flex-col">
     <TitleBar v-show="!nativeBar" />
     <ResizablePanelGroup
       id="sidebar"
       direction="horizontal"
-      class="flex flex-row flex-1 overflow-auto border-t"
+      class="flex flex-1 flex-row overflow-auto border-t"
     >
       <ResizablePanel
         id="demo-panel-1"
@@ -16,15 +16,15 @@
       </ResizablePanel>
       <ResizableHandle id="handle-1" />
       <ResizablePanel id="editor" :default-size="85">
-        <div class="flex flex-1 h-full">
+        <div class="flex h-full flex-1">
           <div
-            class="flex content-center justify-center w-full h-full"
+            class="flex h-full w-full content-center justify-center"
             v-show="!editorS.isEdit"
           >
             <h1>Welcome</h1>
           </div>
-          <div class="flex flex-col w-full h-full" v-show="editorS.isEdit">
-            <input v-model="title" class="h-10 border-b editor-title" />
+          <div class="flex h-full w-full flex-col" v-show="editorS.isEdit">
+            <input v-model="title" class="editor-title h-10 border-b" />
             <MarkDown
               :value="editorS.currentNote.content"
               @change="handleChange"

@@ -35,7 +35,6 @@ export const usePreferenceStore = defineStore('preference', {
         this.SET_PREFERENCE(preferences)
       })
       const p = await ipcRenderer.invoke('m::get-user-pref')
-      console.log(p)
       this.SET_PREFERENCE(p)
     },
 

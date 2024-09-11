@@ -27,9 +27,15 @@ app
 
 const user = useUserStore()
 
-router.beforeEach((to, _, next) => {
+router.beforeEach((to, from, next) => {
   if (to.matched.some(m => m.meta.auth)) {
     if (user.token === '') {
+      if (user.server === '') {
+        next({
+          path: '/login-setting',
+        })
+        return
+      }
       next({
         path: '/login',
       })

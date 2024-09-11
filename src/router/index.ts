@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Base from '@/views/EditorBase.vue'
 import Login from '@/views/Login.vue'
-// import Register from '@/views/Register.vue'
 import Preference from '@/views/Preference.vue'
 import General from '@/preferences/general.vue'
 import LoginSetting from '@/views/LoginSetting.vue'

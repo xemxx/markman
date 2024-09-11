@@ -8,6 +8,7 @@ import {
 } from '../config'
 import Accessor from '../app/accessor'
 import { enable } from '@electron/remote/main'
+import { format } from 'url'
 
 class EditorWindow extends BaseWindow {
   /**
@@ -16,7 +17,7 @@ class EditorWindow extends BaseWindow {
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.EDITOR
-    this.url = this._buildUrlString() + '/#/editorBase' || ''
+    this.url = this._buildUrlString() + '#/editorBase'
   }
 
   /**
@@ -84,8 +85,7 @@ class EditorWindow extends BaseWindow {
     })
 
     enable(win.webContents)
-    win.loadURL(this.url)
-
+    win.loadURL(format(this.url))
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win

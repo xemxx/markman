@@ -20,9 +20,6 @@ export const WindowType = {
   SETTINGS: 'settings',
 }
 
-const url = process.env.VITE_DEV_SERVER_URL
-const indexHtml = join(ROOT_PATH.dist, 'index.html')
-
 class BaseWindow extends EventEmitter {
   protected _accessor: Accessor
   id: number
@@ -74,9 +71,9 @@ class BaseWindow extends EventEmitter {
 
   _buildUrlString() {
     if (app.isPackaged) {
-      return 'file://' + indexHtml
+      return 'file://' + join(ROOT_PATH.dist, 'index.html')
     }
-    return url
+    return process.env.VITE_DEV_SERVER_URL
   }
 }
 
