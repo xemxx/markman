@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog } from 'electron'
+import { BrowserWindow, dialog, shell } from 'electron'
 import BaseWindow, { WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
@@ -84,6 +84,11 @@ class EditorWindow extends BaseWindow {
       win.webContents.send('m::resize-editor')
     })
 
+    win.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url)
+      return { action: 'deny' }
+    })
+
     enable(win.webContents)
     win.loadURL(format(this.url))
     win.setSheetOffset(TITLE_BAR_HEIGHT)
@@ -93,3 +98,15 @@ class EditorWindow extends BaseWindow {
 }
 
 export default EditorWindow
+
+// function shouldOpenExternal(url) {
+//   // 在这里添加你的 URL 筛选逻辑
+//   // 例如，只允许特定域名的 URL
+//   const allowedDomains = ['example.com', 'anotherdomain.com']
+//   try {
+//     const { hostname } = new URL(url)
+//     return allowedDomains.includes(hostname)
+//   } catch (e) {
+//     return false
+//   }
+// }
