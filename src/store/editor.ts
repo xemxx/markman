@@ -37,13 +37,15 @@ export const useEditorStore = defineStore('editor', {
       SC: 0,
       isSave: true,
     },
+    editContent: '',
     modify: false,
     isSaving: false,
     vidtor: <Vditor | null>null,
+    isLoadNewNote: false,
   }),
   actions: {
-    set_current_note(currentNote: DNote) {
-      this.currentNote = currentNote
+    resetDefaultNote() {
+      this.currentNote = defaultNote
     },
     // flash note
     flashNote(title: string, content: string, SC: number) {
@@ -51,6 +53,7 @@ export const useEditorStore = defineStore('editor', {
       this.currentNote.content = content
       this.currentNote.markdown = content
       this.currentNote.SC = SC
+      this.editContent = content
     },
 
     // click note to load note from sqlite
@@ -76,8 +79,8 @@ export const useEditorStore = defineStore('editor', {
         // load new note
         const data = await nModel.get(id)
         if (data == undefined) return
-
-        let current: DNote = {
+        this.isLoadNewNote = true
+        this.currentNote = {
           id: data.id,
           markdown: data.content,
           title: data.title,
@@ -85,7 +88,6 @@ export const useEditorStore = defineStore('editor', {
           isSave: true,
           content: data.content,
         }
-        this.set_current_note(current)
         this.isEdit = true
       } catch (err) {
         console.log(err)
@@ -97,6 +99,10 @@ export const useEditorStore = defineStore('editor', {
       if (this.vidtor == null) {
         throw new Error('not init vditor')
       }
+      if (this.isSaving) {
+        return
+      }
+      this.isSaving = true
       let {
         markdown = '',
         id = 0,
@@ -105,76 +111,51 @@ export const useEditorStore = defineStore('editor', {
         isSave = false,
       } = this.currentNote
       if (id == undefined || id == 0) {
+        this.isSaving = false
         return
       }
       const newContent = this.vidtor?.getValue()
       this.currentNote.markdown = newContent
       markdown = newContent
       if (isSave && newContent == this.currentNote.content) {
-        console.debug(markdown, title, SC)
         console.debug('no need save')
+        this.isSaving = false
         return
       }
-      const origin = await nModel.get(id)
-      if (origin.content == markdown && origin.title == title) {
-        return
-      }
-      // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
-      if (origin.SC > SC) {
-        console.debug('need fix conflict')
-        console.debug(origin.SC)
-        console.debug(SC)
-        return this.__fixConflict
-      }
-      // update sqlite
-      const { modifyState } = origin
-      const time = Date.parse(Date()) / 1000
-      const data = {
-        content: markdown,
-        title,
-        modifyState: modifyState == 0 ? 2 : modifyState,
-        modifyDate: time,
-      }
-      await nModel.update(id, data)
-      this.currentNote.isSave = true
-      const sidebar = useSidebarStore()
-      await sidebar.loadNotes()
-    },
-
-    async deleteNote(id: number) {
       try {
-        const { modifyState } = await nModel.get(id)
-        if (modifyState == 1) {
-          await nModel.delete(id)
-        } else {
-          const time = Date.parse(Date()) / 1000
-          const data = {
-            modifyState: 3,
-            modifyDate: time,
-          }
-          await nModel.update(id, data)
+        const origin = await nModel.get(id)
+        if (origin.content == markdown && origin.title == title) {
+          this.isSaving = false
+          return
         }
-        if (id == this.currentNote.id) {
-          this.set_current_note(defaultNote)
-          this.isEdit = false
+        // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
+        if (origin.SC > SC) {
+          console.debug('need fix conflict')
+          console.debug(origin.SC)
+          console.debug(SC)
+          await this.__fixConflict()
+          this.isSaving = false
+          return
         }
-        const sync = useSyncStore()
-        sync.sync()
+        // update sqlite
+        const { modifyState } = origin
+        const time = Date.parse(Date()) / 1000
+        const data = {
+          content: markdown,
+          title,
+          modifyState: modifyState == 0 ? 2 : modifyState,
+          modifyDate: time,
+        }
+        await nModel.update(id, data)
+        this.currentNote.isSave = true
+        this.isSaving = false
       } catch (err) {
+        this.isSaving = false
         console.log(err)
       }
     },
 
-    updateTitle(title: string) {
-      if (title != this.currentNote.title) {
-        this.currentNote.title = title
-        this.currentNote.isSave = false
-        this.handleAutoSave()
-      }
-    },
-
     updateContent(content: string) {
-      console.debug('update content', content)
       if (content != this.currentNote.content) {
         this.currentNote.markdown = content
         this.currentNote.isSave = false
@@ -221,9 +202,7 @@ export const useEditorStore = defineStore('editor', {
         local.markdown = newContent
         local.SC = server.SC
         local.isSave = true
-        this.set_current_note(local)
-
-        sidebar.loadNotes()
+        this.currentNote = local
       } catch (err) {
         console.log(err)
       }

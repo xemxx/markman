@@ -22,21 +22,10 @@ interface State {
   notebooks: notebookItem[]
   type: string
   flagId: string
-  notes: noteItem[]
   tid: string
   treeLabels: TreeNode[]
   inSearch: boolean
   searchResult: TreeNode[]
-}
-const state: State = {
-  notebooks: [],
-  type: 'all',
-  flagId: '',
-  notes: [],
-  tid: '',
-  treeLabels: [],
-  inSearch: false,
-  searchResult: [],
 }
 
 const removeNode = (nodes: TreeNode[], targetNode: TreeNode): boolean => {
@@ -102,16 +91,17 @@ const insertNode = (
 }
 
 export const useSidebarStore = defineStore('sidebar', {
-  state: () => state,
+  state: () =>
+    <State>{
+      notebooks: [],
+      type: 'all',
+      flagId: '',
+      tid: '',
+      treeLabels: [],
+      inSearch: false,
+      searchResult: [],
+    },
   actions: {
-    update_notebooks(value: notebookItem[]) {
-      this.notebooks = value
-    },
-    update_notes({ type, flagId, notes }) {
-      this.type = type ? type : this.type
-      this.flagId = flagId ? flagId : this.tid
-      this.notes = notes ? notes : this.notes
-    },
     async loadNodeTree() {
       const user = useUserStore()
       try {
@@ -170,7 +160,7 @@ export const useSidebarStore = defineStore('sidebar', {
       try {
         const id = await nModel.add(note)
         const editor = useEditorStore()
-        editor.loadNote(id)
+        editor.checkoutNote(id)
         return note.guid
       } catch (err) {
         console.error(err)
@@ -195,13 +185,13 @@ export const useSidebarStore = defineStore('sidebar', {
       const user = useUserStore()
       try {
         const notebooks = await model.getAll(user.id)
-        this.update_notebooks(notebooks)
+        this.notebooks = notebooks
       } catch (err) {
         console.log(err)
       }
     },
 
-    async addNotebook(name: any) {
+    async addFolder(name: any) {
       const user = useUserStore()
       const sync = useSyncStore()
       const time = Date.parse(Date()) / 1000
@@ -224,7 +214,7 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    async deleteNotebook(id: any) {
+    async deleteFolder(id: any) {
       const sync = useSyncStore()
       let guid = ''
       for (let i = 0; i < this.notebooks.length; i++) {
@@ -241,54 +231,36 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    updateNotebook({ id, name }) {
+    async updateFolder({ id, name }) {
       const sync = useSyncStore()
-      let finded = this.notebooks.find(item => id === item.id)
-      if (finded == undefined) {
+      const folder = await model.get(id)
+      if (folder.name == name) {
         return
       }
-      const { modifyState } = finded
+      const { modifyState } = folder
       if (name != '') {
-        return model
-          .update(id, {
-            name,
-            modifyState: modifyState === 0 ? 2 : modifyState,
-          })
-          .then(() => {
-            sync.sync()
-          })
-          .catch((err: any) => console.log(err))
+        await model.update(id, {
+          name,
+          modifyState: modifyState === 0 ? 2 : modifyState,
+        })
+        sync.sync()
       }
     },
 
-    //更新state中的list，视图将自动更新
-    async loadNotes({ type = '', flagId = '' } = {}) {
-      const user = useUserStore()
-      const uid = user.id
-      let list: Promise<{}>
-      if (type == undefined || type == '') {
-        type = this.type
+    async updateNote({ id, title }) {
+      const sync = useSyncStore()
+      const note = await nModel.get(id)
+      if (note.title == title) {
+        return
       }
-      if (flagId == undefined || flagId == '') {
-        flagId = this.flagId
+      const { modifyState } = note
+      if (title != '') {
+        await nModel.update(id, {
+          title,
+          modifyState: modifyState === 0 ? 2 : modifyState,
+        })
+        sync.sync()
       }
-      if (type == 'note') {
-        list = nModel.getAllByBook(uid, flagId)
-      } else if (type == 'tag') {
-        list = nModel.getAllByTag(uid, flagId)
-      } else if (type == 'all') {
-        list = nModel.getAll(uid)
-        flagId = '0'
-      } else {
-        return Promise.reject(new Error('flagID and type is not define'))
-      }
-
-      const notes = await list
-      this.update_notes({
-        type,
-        flagId,
-        notes: notes,
-      })
     },
 
     async moveNote({ id, bid }) {
@@ -301,16 +273,36 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    renameTreeNode(node: TreeNode, newName: string) {
-      const renamed = renameNode(this.treeLabels, node, newName)
-      // console.log(this.treeLabels)
-      // if (renamed) {
-      //   this.treeLabels = [...this.treeLabels] // 触发 Vue 的响应式系统
-      // }
-      return renamed
+    async deleteNote(id: number) {
+      const editor = useEditorStore()
+      try {
+        const { modifyState } = await nModel.get(id)
+        if (modifyState == 1) {
+          await nModel.delete(id)
+        } else {
+          const time = Date.parse(Date()) / 1000
+          const data = {
+            modifyState: 3,
+            modifyDate: time,
+          }
+          await nModel.update(id, data)
+        }
+        if (id == editor.currentNote.id) {
+          editor.resetDefaultNote()
+          editor.isEdit = false
+        }
+        const sync = useSyncStore()
+        sync.sync()
+      } catch (err) {
+        console.log(err)
+      }
     },
 
-    async moveTreeNode(node: TreeNode, targetNodeKey: string) {
+    renameTreeNode(node: TreeNode, newName: string) {
+      return renameNode(this.treeLabels, node, newName)
+    },
+
+    moveTreeNode(node: TreeNode, targetNodeKey: string) {
       const nodeToMove = removeNode(this.treeLabels, node)
       if (nodeToMove) {
         return insertNode(
@@ -320,23 +312,6 @@ export const useSidebarStore = defineStore('sidebar', {
         )
       }
       return false
-    },
-
-    async searchNotes(search: string) {
-      const user = useUserStore()
-      let list: noteItem[] = []
-      if (this.type == 'note') {
-        list = await nModel.searchContentInBook(user.id, this.flagId, search)
-      } else if (this.type == 'tag') {
-        list = nModel.searchContentInTag(user.id, this.flagId, search)
-      } else if (this.type == 'all') {
-        list = await nModel.searchContentInAll(user.id, search)
-      }
-      this.update_notes({
-        type: this.type,
-        flagId: this.flagId,
-        notes: list,
-      })
     },
 
     searchTreeNodes(searchStr: string) {
@@ -367,7 +342,7 @@ export const useSidebarStore = defineStore('sidebar', {
           })
           .filter(node => node !== null) as TreeNode[]
       }
-      this.searchResult = searchNodes(state.treeLabels, searchStr)
+      this.searchResult = searchNodes(this.treeLabels, searchStr)
     },
     exitSearch() {
       this.inSearch = false

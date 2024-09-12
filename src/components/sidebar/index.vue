@@ -28,7 +28,7 @@
           </span>
         </div>
       </div>
-      <ScrollArea class="flex w-full flex-1" type="hover" scrollHideDelay="0">
+      <ScrollArea class="flex w-full flex-1" type="hover" :scrollHideDelay="0">
         <div v-show="bookInputShow" class="px-2 py-1">
           <input
             placeholder="未命名"
@@ -102,7 +102,7 @@ const doAddBook = async () => {
     blurAddBook()
   } else {
     // 添加到本地数据库和显示列表
-    await sidebar.addNotebook(name)
+    await sidebar.addFolder(name)
     await sidebar.loadNodeTree()
     blurAddBook()
   }

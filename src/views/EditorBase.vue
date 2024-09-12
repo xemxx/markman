@@ -18,20 +18,17 @@
       <ResizablePanel id="editor" :default-size="85">
         <div class="flex h-full flex-1">
           <div
-            class="flex h-full w-full content-center justify-center"
+            class="flex flex-1 content-center justify-center"
             v-show="!editorS.isEdit"
           >
             <h1>Welcome</h1>
           </div>
-          <div class="flex h-full w-full flex-col" v-show="editorS.isEdit">
-            <input v-model="title" class="editor-title h-10 border-b" />
-            <MarkDown
+          <div class="flex flex-1 flex-col" v-show="editorS.isEdit">
+            <Editor
               :value="editorS.currentNote.content"
               @change="handleChange"
-              placeholder="请输入内容"
-              class="flex-1 overflow-auto"
             />
-            <div class="tags">tags</div>
+            <!-- <div class="tags">tags</div> -->
           </div>
         </div>
       </ResizablePanel>
@@ -41,7 +38,7 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-import MarkDown from '@/components/MarkDown/Markdown.vue'
+import Editor from '@/components/editor/index.vue'
 import TitleBar from '@/components/titleBar.vue'
 import {
   ResizableHandle,
@@ -65,14 +62,6 @@ import { useRouter } from 'vue-router'
 
 const editorS = useEditorStore()
 
-const title = computed({
-  get: function () {
-    return editorS.currentNote.title
-  },
-  set: function (newVal) {
-    editorS.updateTitle(newVal)
-  },
-})
 const handleChange = (value: string) => {
   editorS.updateContent(value)
 }
@@ -97,7 +86,6 @@ const user = useUserStore()
 const router = useRouter()
 const store = useSysStore()
 const preference = usePreferenceStore()
-const listen = useListenStore()
 
 // 初始化editor窗口逻辑
 async function init() {
@@ -162,6 +150,7 @@ const nativeBar = computed(() => preference.nativeBar)
 
 onMounted(() => {
   // 监听内容变动
+  const listen = useListenStore()
   listen.listenFileSave()
 })
 

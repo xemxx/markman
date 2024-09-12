@@ -32,48 +32,51 @@ import {
 } from '@/components/ui/context-menu'
 import { nextTick } from 'process'
 // rename book
-const bookReName = ref('')
-const renameOld = ref('')
-const renames = ref({})
-const renameKey = ref('')
-const bookRenameInputRef = useTemplateRef('bookRenameInputRef')
-const renameBook = (node: TreeNode) => {
+const nodeRename = ref('')
+const nodeNameOrigin = ref('')
+const inRenameMode = ref<boolean>(false)
+const nodeRenameInputRef = useTemplateRef('nodeRenameInputRef')
+
+const renameNode = (node: TreeNode) => {
   let name = ''
   if (node.data.title) {
     name = node.data.title
   } else {
     name = node.data.name
   }
-  renameOld.value = name
-  bookReName.value = name
-  renames.value[node.key] = true
-  renameKey.value = node.key
+  nodeNameOrigin.value = name
+  nodeRename.value = name
+  inRenameMode.value = true
   nextTick(() => {
     // 必须使用setTimeout，否则无法获取焦点，会被contextMenu的事件覆盖
     setTimeout(() => {
-      bookRenameInputRef.value?.focus()
+      nodeRenameInputRef.value?.focus()
     }, 0)
   })
 }
-const doRenameBook = async (node: TreeNode) => {
-  console.log('doRename')
-  if (bookReName.value != '' && bookReName.value != renameOld.value) {
-    await sidebar.updateNotebook({ id: node.data.id, name: bookReName.value })
+
+const doRenameNode = async (node: TreeNode) => {
+  if (nodeRename.value == '' || nodeRename.value == nodeNameOrigin.value) {
+    blurRenameBook()
+    return
   }
-  sidebar.renameTreeNode(props.tree, bookReName.value)
-  blurRenameBook(node)
+  if (node.type == 'folder') {
+    await sidebar.updateFolder({ id: node.data.id, name: nodeRename.value })
+  } else {
+    await sidebar.updateNote({ id: node.data.id, title: nodeRename.value })
+  }
+  sidebar.renameTreeNode(props.tree, nodeRename.value)
+  blurRenameBook()
   // TODO 修复重命名后，再次重命名不会刷新input内的值的问题，需要重新loadNodeTree
   sidebar.loadNodeTree()
 }
-const blurRenameBook = (node: TreeNode) => {
-  renames.value[node.key] = false
-  bookReName.value = ''
-  renameKey.value = ''
-  console.log('blur')
+const blurRenameBook = () => {
+  nodeRename.value = ''
+  inRenameMode.value = false
 }
 // delete folder
 const onDeleteFolder = async (node: TreeNode) => {
-  await sidebar.deleteNotebook(node.data.id)
+  await sidebar.deleteFolder(node.data.id)
   sidebar.deleteTreeNode(node)
 }
 
@@ -91,9 +94,9 @@ const addNode = async (node: TreeNode) => {
 }
 
 // delete note
-const onDeleteNote = (node: TreeNode) => {
+const onDeleteNote = async (node: TreeNode) => {
+  await sidebar.deleteNote(node.data.id)
   sidebar.deleteTreeNode(node)
-  editor.deleteNote(node.data.id)
 }
 
 import {
@@ -151,10 +154,10 @@ const doMove = () => {
       <span v-else class="icon-[ion--document-text-outline] size-5 flex-none" />
       <div class="group flex flex-1 overflow-hidden">
         <input
-          v-if="renameKey == tree.key"
-          ref="bookRenameInputRef"
-          v-model="bookReName"
-          @keyup.enter="doRenameBook(tree)"
+          v-if="inRenameMode"
+          ref="nodeRenameInputRef"
+          v-model="nodeRename"
+          @keyup.enter="doRenameNode(tree)"
           @keydown.stop
           class="focus:border-1 flex-1 rounded-sm border border-input bg-background py-2 pl-1 focus:outline-none"
           @click.stop
@@ -169,7 +172,7 @@ const doMove = () => {
                   </div>
                 </ContextMenuTrigger>
                 <ContextMenuContent v-if="tree.type == 'folder'">
-                  <ContextMenuItem @click.stop="renameBook(tree)"
+                  <ContextMenuItem @click.stop="renameNode(tree)"
                     >重命名</ContextMenuItem
                   >
                   <ContextMenuItem @click.stop="onDeleteFolder(tree)">
@@ -177,6 +180,9 @@ const doMove = () => {
                   </ContextMenuItem>
                 </ContextMenuContent>
                 <ContextMenuContent v-else>
+                  <ContextMenuItem @click.stop="renameNode(tree)"
+                    >重命名</ContextMenuItem
+                  >
                   <DialogTrigger asChild>
                     <ContextMenuItem>
                       <span>移动</span>
@@ -222,7 +228,7 @@ const doMove = () => {
           <div
             class="grid flex-none grid-cols-1 place-content-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             @click.stop
-            v-show="tree.type == 'folder' && renameKey != tree.key"
+            v-show="tree.type == 'folder' && !inRenameMode"
           >
             <span
               class="icon-[lucide--plus] size-5"

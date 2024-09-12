@@ -23,6 +23,11 @@ export class Notebook extends Model {
       [uid],
     )
   }
+  get(id: any): Promise<notebookItem> {
+    return db.get<notebookItem>(`select * from notebook where id=?`, [
+      id,
+    ]) as Promise<notebookItem>
+  }
   add(data: { [x: string]: any }) {
     return super.insert('notebook', data)
   }
