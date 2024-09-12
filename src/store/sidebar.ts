@@ -2,13 +2,7 @@ import { Notebook, notebookItem } from '@/model/notebook.js'
 import { noteItem, NoteModel } from '@/model/note'
 import { v1 as uuid } from 'uuid'
 import { defineStore } from 'pinia'
-import { useUserStore } from './user'
-import { useSyncStore } from './sync'
-
-import pinia from './index'
-import { useEditorStore } from './editor'
-
-const user = useUserStore(pinia)
+import { useUserStore, useEditorStore, useSyncStore } from './index'
 
 const model = new Notebook()
 
@@ -119,6 +113,7 @@ export const useSidebarStore = defineStore('sidebar', {
       this.notes = notes ? notes : this.notes
     },
     async loadNodeTree() {
+      const user = useUserStore()
       try {
         this.notebooks = await model.getAll(user.id)
 
@@ -197,6 +192,7 @@ export const useSidebarStore = defineStore('sidebar', {
       removeNode(this.treeLabels, node)
     },
     async loadNotebooks() {
+      const user = useUserStore()
       try {
         const notebooks = await model.getAll(user.id)
         this.update_notebooks(notebooks)
@@ -206,7 +202,8 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     async addNotebook(name: any) {
-      const sync = useSyncStore(pinia)
+      const user = useUserStore()
+      const sync = useSyncStore()
       const time = Date.parse(Date()) / 1000
       try {
         await model.add({
@@ -228,7 +225,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     async deleteNotebook(id: any) {
-      const sync = useSyncStore(pinia)
+      const sync = useSyncStore()
       let guid = ''
       for (let i = 0; i < this.notebooks.length; i++) {
         if (this.notebooks[i].id == id) {
@@ -245,7 +242,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     updateNotebook({ id, name }) {
-      const sync = useSyncStore(pinia)
+      const sync = useSyncStore()
       let finded = this.notebooks.find(item => id === item.id)
       if (finded == undefined) {
         return
@@ -266,6 +263,7 @@ export const useSidebarStore = defineStore('sidebar', {
 
     //更新state中的list，视图将自动更新
     async loadNotes({ type = '', flagId = '' } = {}) {
+      const user = useUserStore()
       const uid = user.id
       let list: Promise<{}>
       if (type == undefined || type == '') {
@@ -294,7 +292,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     async moveNote({ id, bid }) {
-      const sync = useSyncStore(pinia)
+      const sync = useSyncStore()
       try {
         await nModel.update(id, { bid, modifyState: 2 })
         sync.sync()
@@ -325,6 +323,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     async searchNotes(search: string) {
+      const user = useUserStore()
       let list: noteItem[] = []
       if (this.type == 'note') {
         list = await nModel.searchContentInBook(user.id, this.flagId, search)

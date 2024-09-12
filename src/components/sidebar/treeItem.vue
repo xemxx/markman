@@ -11,11 +11,11 @@ const props = defineProps<{
 const emits = defineEmits(['onDeleteNode'])
 
 import { ref, useTemplateRef } from 'vue'
-import { useSidebarStore } from '@/store/sidebar'
+import { useSidebarStore } from '@/store'
 const sidebar = useSidebarStore()
 
 // load note
-import { useEditorStore } from '@/store/editor'
+import { useEditorStore } from '@/store'
 const editor = useEditorStore()
 const onNodeSelect = (node: any) => {
   if (node.data.title) {

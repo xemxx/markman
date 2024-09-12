@@ -16,7 +16,7 @@ import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import { onMountedOrActivated } from '@/hooks'
 import { getTheme } from './getTheme'
-import { useEditorStore } from '@/store/editor'
+import { useEditorStore } from '@/store'
 
 type Lang = 'zh_CN' | 'en_US' | 'ja_JP' | 'ko_KR' | undefined
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col justify-center flex-1 h-screen min-h-full px-6 py-12 lg:px-8"
+    class="flex h-screen min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
   >
     <Tabs
       default-value="login"
@@ -36,7 +36,7 @@
                 type="submit"
                 >登录
               </Button>
-              <p class="mt-10 text-sm text-center text-gray-500">
+              <p class="mt-10 text-center text-sm text-gray-500">
                 <router-link
                   to="/login-setting"
                   class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
@@ -80,7 +80,7 @@
               >
                 注册
               </Button>
-              <p class="mt-10 text-sm text-center text-gray-500">
+              <p class="mt-10 text-center text-sm text-gray-500">
                 <router-link
                   to="/login-setting"
                   class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
@@ -112,7 +112,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
 import http from '@/plugins/axios'
 import { useRouter } from '@/router'
-import { useUserStore } from '@/store/user'
+import { useUserStore } from '@/store'
 import { ref } from 'vue'
 
 const selected = ref('login')

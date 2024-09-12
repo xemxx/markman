@@ -3,18 +3,9 @@ import { User } from '@/model/user'
 import { NoteModel } from '@/model/note'
 import { Notebook } from '@/model/notebook'
 import { v1 as uuid } from 'uuid'
-import { useUserStore } from './user'
-
-import { useSidebarStore } from './sidebar'
-
-import { useEditorStore } from './editor'
+import { useUserStore, useEditorStore } from './index'
 
 import { defineStore } from 'pinia'
-
-import pinia from './index'
-
-const user = useUserStore(pinia)
-const editor = useEditorStore(pinia)
 
 const notebookModel = new Notebook()
 const userModel = new User()
@@ -32,6 +23,7 @@ export const useSyncStore = defineStore('sync', {
       this.isSyncing = value
     },
     async sync() {
+      const user = useUserStore()
       // 防止用户重复点击
       if (this.isSyncing) return
       this.isSyncing = true
@@ -58,6 +50,8 @@ export const useSyncStore = defineStore('sync', {
     },
 
     async pull({ localSC, serverSC }) {
+      const user = useUserStore()
+
       const uid = user.id
       await this._pullNotebooks(localSC)
       await this._pullNotes(localSC)
@@ -85,6 +79,7 @@ export const useSyncStore = defineStore('sync', {
      * pull细节
      */
     _pullNotebooks(afterSC: any) {
+      const user = useUserStore()
       const server = user.server
       return axios
         .get(`${server}/notebook/getSync?afterSC=${afterSC}&maxCount=10`)
@@ -100,6 +95,7 @@ export const useSyncStore = defineStore('sync', {
     },
 
     _pullNotes(afterSC) {
+      const user = useUserStore()
       const server = user.server
       return axios
         .get(`${server}/note/getSync?afterSC=${afterSC}&maxCount=20`)
@@ -115,6 +111,7 @@ export const useSyncStore = defineStore('sync', {
     },
 
     _updateNotebooksToLocal(serverData) {
+      const user = useUserStore()
       const model = notebookModel
       const uid = user.id
       model.getLocalByServer(uid, serverData).then(data => {
@@ -188,6 +185,8 @@ export const useSyncStore = defineStore('sync', {
     },
 
     _updateNotesToLocal(serverData) {
+      const user = useUserStore()
+      const editor = useEditorStore()
       const model = noteModel
       const uid = user.id
       model.getLocalByServer(uid, serverData).then(data => {
@@ -273,6 +272,7 @@ export const useSyncStore = defineStore('sync', {
      * push细节
      */
     _pushNotebooks() {
+      const user = useUserStore()
       console.log('sync notebooks')
       const uid = user.id
       return notebookModel.getModify(uid).then(data => {
@@ -283,6 +283,7 @@ export const useSyncStore = defineStore('sync', {
     },
 
     _pushNotes() {
+      const user = useUserStore()
       console.log('sync notes')
       const uid = user.id
       return noteModel.getModify(uid).then(data => {
@@ -293,7 +294,7 @@ export const useSyncStore = defineStore('sync', {
     },
 
     _updateNotebooksToServer({ data, count }) {
-      console.log(count, data.length)
+      const user = useUserStore()
       if (count >= data.length) {
         return Promise.resolve()
       }
@@ -353,6 +354,8 @@ export const useSyncStore = defineStore('sync', {
     },
 
     _updateNotesToServer({ data, count }) {
+      const user = useUserStore()
+      const editor = useEditorStore()
       console.log(count, data.length)
       if (count >= data.length) {
         return Promise.resolve()

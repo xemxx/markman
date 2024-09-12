@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useUserStore } from '@/store/user'
+import { useUserStore } from '@/store'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const quit = () => {

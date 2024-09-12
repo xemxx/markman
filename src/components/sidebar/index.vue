@@ -28,7 +28,7 @@
           </span>
         </div>
       </div>
-      <ScrollArea class="flex w-full flex-1">
+      <ScrollArea class="flex w-full flex-1" type="hover" scrollHideDelay="0">
         <div v-show="bookInputShow" class="px-2 py-1">
           <input
             placeholder="未命名"
@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePreferenceStore } from '@/store/preference'
+import { usePreferenceStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import Menu from './menu.vue'
 import Footer from './footer.vue'
@@ -63,10 +63,10 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 const preference = usePreferenceStore()
 const { toggleSidebar } = storeToRefs(preference)
 
-import { useSidebarStore } from '@/store/sidebar'
+import { useSidebarStore } from '@/store'
 import { ref, nextTick, useTemplateRef, computed, watch, onMounted } from 'vue'
 import { Input } from '@/components/ui/input'
-import { useSyncStore } from '@/store/sync'
+import { useSyncStore } from '@/store'
 
 const sidebar = useSidebarStore()
 const trees = computed(() => {

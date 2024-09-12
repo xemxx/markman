@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col justify-center flex-1 h-screen min-h-full px-6 py-12 lg:px-8"
+    class="flex h-screen min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8"
   >
     <Card class="mt-12 sm:mx-auto sm:w-full sm:max-w-sm">
       <CardHeader>
@@ -34,7 +34,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/components/ui/toast'
 import http from '@/plugins/axios'
 import { useRouter } from '@/router'
-import { useUserStore } from '@/store/user'
+import { useUserStore } from '@/store'
 const user = useUserStore()
 
 const formSchema = z.object({

@@ -20,7 +20,7 @@
 import Input from './common/input.vue'
 import Bool from './common/bool.vue'
 
-import { usePreferenceStore } from '@/store/preference'
+import { usePreferenceStore } from '@/store'
 import { storeToRefs } from 'pinia'
 const preference = usePreferenceStore()
 

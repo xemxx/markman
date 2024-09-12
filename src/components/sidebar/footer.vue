@@ -13,11 +13,9 @@
 </template>
 
 <script setup lang="ts">
-import { useSyncStore } from '@/store/sync'
-import { useUserStore } from '@/store/user'
+import { useSyncStore, useUserStore, useSidebarStore } from '@/store'
 import { useRouter } from '@/router'
 import { storeToRefs } from 'pinia'
-import { useSidebarStore } from '@/store/sidebar'
 
 const sync = useSyncStore()
 const { isSyncing } = storeToRefs(sync)

@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
 
-import { useUserStore } from '@/store/user'
-import { useSysStore } from '@/store/sys'
+import { useUserStore } from '@/store'
+import { useSysStore } from '@/store'
 import router from '@/router'
 import { resolve } from 'path'
 

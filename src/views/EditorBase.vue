@@ -49,9 +49,9 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 
-import { usePreferenceStore } from '@/store/preference'
-import { useListenStore } from '@/store/listen'
-import { useEditorStore } from '@/store/editor'
+import { usePreferenceStore } from '@/store'
+import { useListenStore } from '@/store'
+import { useEditorStore } from '@/store'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { emitter } from '@/emitter'
 import { Modal } from 'ant-design-vue'
@@ -59,8 +59,8 @@ import { Modal } from 'ant-design-vue'
 import http from '@/plugins/axios'
 
 import { message } from 'ant-design-vue'
-import { useSysStore } from '@/store/sys'
-import { useUserStore } from '@/store/user'
+import { useSysStore } from '@/store'
+import { useUserStore } from '@/store'
 import { useRouter } from 'vue-router'
 
 const editorS = useEditorStore()

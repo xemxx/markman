@@ -1,12 +1,8 @@
 import { NoteModel } from '@/model/note'
-import { v1 as uuid } from 'uuid'
 
 import { emitter } from '@/emitter'
-import { useUserStore } from './user'
-import { useSidebarStore } from './sidebar'
 import { defineStore } from 'pinia'
-import { useSyncStore } from './sync'
-import { usePreferenceStore } from './preference'
+import { useSyncStore, usePreferenceStore, useSidebarStore } from './index'
 import Vditor from 'vditor'
 
 const nModel = new NoteModel()
