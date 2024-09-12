@@ -31,13 +31,12 @@
         "./src/*"
       ]
     },
-    "noImplicitAny": false,
-    "allowJs": true
+    "noImplicitAny": false
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
+    "src/**/*.vue"
   ],
   "references": [
     {

@@ -137,36 +137,34 @@ const doMove = () => {
     :value="tree"
   >
     <div
-      class="flex items-center rounded h-8 outline-none focus:ring-grass8 focus:ring-2 data-[selected]:bg-grass4 group"
-      :style="{ 'padding-left': `${level - 0.5}rem` }"
-      @click.stop="onNodeSelect(tree)"
+      class="group my-0.5 flex items-center rounded outline-none focus:ring-2 focus:ring-grass8 data-[selected]:bg-grass4"
+      :style="{ 'padding-left': `${level == 0 ? 0.3 : level - 0.3}rem` }"
+      @click="onNodeSelect(tree)"
     >
       <template v-if="tree.type == 'folder'">
         <span
           v-if="!isExpanded"
-          class="size-5 icon-[lucide--folder] flex-none"
+          class="icon-[lucide--folder] size-5 flex-none"
         />
-        <span v-else class="size-5 icon-[lucide--folder-open] flex-none" />
+        <span v-else class="icon-[lucide--folder-open] size-5 flex-none" />
       </template>
-      <span v-else class="size-5 icon-[ion--document-text-outline] flex-none" />
-      <div class="flex flex-1 overflow-hidden group">
-        <div v-if="renameKey == tree.key">
-          <input
-            ref="bookRenameInputRef"
-            v-model="bookReName"
-            @blur="blurRenameBook(tree)"
-            @keyup.enter="doRenameBook(tree)"
-            @keydown.stop
-            class="flex w-full h-8 pl-1 text-sm border rounded-sm bg-background focus:outline-none focus:border-1"
-            @click.stop
-          />
-        </div>
+      <span v-else class="icon-[ion--document-text-outline] size-5 flex-none" />
+      <div class="group flex flex-1 overflow-hidden">
+        <input
+          v-if="renameKey == tree.key"
+          ref="bookRenameInputRef"
+          v-model="bookReName"
+          @keyup.enter="doRenameBook(tree)"
+          @keydown.stop
+          class="focus:border-1 flex-1 rounded-sm border border-input bg-background py-2 pl-1 focus:outline-none"
+          @click.stop
+        />
         <template v-else>
-          <div class="flex-1 pl-1 truncate">
+          <div class="flex-1 truncate pl-1">
             <Dialog>
               <ContextMenu>
                 <ContextMenuTrigger as-child>
-                  <div class="flex w-full">
+                  <div class="flex w-full py-2">
                     <span class="truncate"> {{ tree.label }}</span>
                   </div>
                 </ContextMenuTrigger>
@@ -222,9 +220,9 @@ const doMove = () => {
             </Dialog>
           </div>
           <div
-            class="grid flex-none grid-cols-1 transition-opacity duration-300 opacity-0 place-content-center group-hover:opacity-100"
+            class="grid flex-none grid-cols-1 place-content-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             @click.stop
-            v-if="tree.type == 'folder'"
+            v-show="tree.type == 'folder' && renameKey != tree.key"
           >
             <span
               class="icon-[lucide--plus] size-5"

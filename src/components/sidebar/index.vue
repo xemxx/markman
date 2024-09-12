@@ -1,46 +1,46 @@
 <template>
   <div v-show="toggleSidebar" class="flex flex-col">
-    <div class="flex-none h-10 border-b">
+    <div class="h-10 flex-none border-b">
       <Menu />
     </div>
-    <div class="flex-none w-full p-1">
+    <div class="w-full flex-none p-1">
       <input
         v-model="searchStr"
         placeholder="搜索笔记"
         @keyup.enter="doSearch"
-        class="w-full px-3 py-2 text-sm rounded-md bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+        class="w-full rounded-md bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
       />
     </div>
-    <div class="flex flex-col flex-1 h-full px-0 py-1 overflow-auto">
+    <div class="flex h-full flex-1 flex-col overflow-auto px-0 py-1">
       <div
-        class="flex justify-between px-2 py-1 transition-colors duration-300 hover:bg-gray-100 group"
+        class="group flex justify-between px-2 py-1 transition-colors duration-300 hover:bg-gray-100"
       >
         <h2 class="text-lg font-semibold tracking-tight">笔记管理</h2>
-        <div class="relative grid grid-cols-1 place-content-center group/tip">
+        <div class="group/tip relative grid grid-cols-1 place-content-center">
           <span
-            class="icon-[lucide--folder-plus] size-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            class="icon-[lucide--folder-plus] size-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             @click="showAddBook"
           ></span>
           <span
-            class="absolute px-2 py-1 text-sm text-white transition-opacity duration-300 transform bg-gray-700 rounded opacity-0 group-hover/tip:z-50 delay-0 -translate-x-3/4 top-full w-max group-hover/tip:opacity-80"
+            class="absolute top-full w-max -translate-x-3/4 transform rounded bg-gray-700 px-2 py-1 text-sm text-white opacity-0 transition-opacity delay-0 duration-300 group-hover/tip:z-50 group-hover/tip:opacity-80"
           >
             新建笔记本
           </span>
         </div>
       </div>
-      <ScrollArea class="flex flex-1 w-full">
+      <ScrollArea class="flex w-full flex-1">
         <div v-show="bookInputShow" class="px-2 py-1">
           <input
             placeholder="未命名"
             ref="bookInputRef"
-            class="flex w-full h-8 px-3 py-2 text-sm border rounded-md border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-8 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             v-model="bookName"
             @keyup.enter="doAddBook"
             @blur="blurAddBook"
           />
         </div>
         <TreeRoot
-          class="w-full p-1 text-sm font-medium list-none rounded-lg select-none bg-background text-blackA11"
+          class="w-full select-none list-none rounded-lg bg-background p-1 text-sm font-medium text-black"
           :items="trees"
           :get-key="item => item.key"
         >
