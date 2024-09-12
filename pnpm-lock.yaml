@@ -132,9 +132,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.10)
-      tree-kill:
-        specifier: ^1.2.2
-        version: 1.2.2
       typescript:
         specifier: ^5.6.2
         version: 5.6.2
@@ -3621,10 +3618,6 @@ packages:
   traverse@0.6.9:
     resolution: {integrity: sha512-7bBrcF+/LQzSgFmT0X5YclVqQxtv7TDJ1f8Wj7ibBu/U6BMLeOpUxuZjV7rMc44UtKxlnMFigdhFAIszSX1DMg==}
     engines: {node: '>= 0.4'}
-
-  tree-kill@1.2.2:
-    resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
-    hasBin: true
 
   truncate-utf8-bytes@1.0.2:
     resolution: {integrity: sha512-95Pu1QXQvruGEhv62XCMO3Mm90GscOCClvrIUwCM0PYOXK3kaF3l3sIHxx71ThJfcbM2O5Au6SO3AWCSEfW4mQ==}
@@ -7967,8 +7960,6 @@ snapshots:
       gopd: 1.0.1
       typedarray.prototype.slice: 1.0.3
       which-typed-array: 1.1.15
-
-  tree-kill@1.2.2: {}
 
   truncate-utf8-bytes@1.0.2:
     dependencies:
