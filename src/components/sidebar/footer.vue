@@ -1,14 +1,18 @@
 <template>
   <div class="toolbar flex justify-between border-t">
-    <SyncOutlined v-model:spin="isSyncing" @click.stop="doSync" />
+    <!-- <SyncOutlined v-model:spin="isSyncing" @click.stop="doSync" /> -->
+    <span
+      class="icon-[lucide--refresh-cw] size-5"
+      :class="[isSyncing ? 'animate-spin' : '']"
+      @click.stop="doSync"
+    ></span>
     <p v-if="isSyncing">同步中</p>
     <p v-else>同步完成</p>
-    <LogoutOutlined @click.stop="quit" />
+    <span class="icon-[lucide--log-out] size-5" @click.stop="quit" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { SyncOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { useSyncStore } from '@/store/sync'
 import { useUserStore } from '@/store/user'
 import { useRouter } from '@/router'
