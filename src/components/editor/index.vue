@@ -1,5 +1,5 @@
 <template>
-  <div id="vditor" />
+  <div id="vditor" class="" />
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onDeactivated } from 'vue'
@@ -19,11 +19,8 @@ const editorS = useEditorStore()
 
 onMounted(() => {
   vditor.value = new Vditor('vditor', {
-    mode: 'wysiwyg',
+    mode: 'ir',
     undoDelay: 100,
-    fullscreen: {
-      index: 520,
-    },
     toolbar: [
       'undo',
       'redo',
@@ -57,7 +54,12 @@ onMounted(() => {
       enable: true,
       type: 'markdown',
     },
-    preview: {},
+    preview: {
+      theme: {
+        current: 'ant-design', // todo 配置自己的主题
+      },
+    },
+    theme: 'classic',
     input: v => {
       emit('change', v)
     },
@@ -96,4 +98,11 @@ function destroy() {
 onDeactivated(destroy)
 </script>
 
-<style lang="stylus" scoped></style>
+<!-- <style lang="stylus" scoped>
+ul {
+  list-style: disc inside;
+}
+ol {
+  list-style: decimal inside;
+}
+</style> -->

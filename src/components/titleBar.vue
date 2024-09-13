@@ -17,22 +17,10 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from '@/components/ui/menubar'
-
-const { getCurrentWindow } = window.require('@electron/remote')
-
-const ew = getCurrentWindow()
-
-const minimizeWindow = () => {
-  ew.minimize()
-}
-
-const closeWindow = () => {
-  ew.close()
-}
 </script>
 
 <template>
-  <Menubar class="px-2 border-b border-none rounded-none lg:px-4">
+  <Menubar class="rounded-none border-b border-none px-2 lg:px-4">
     <MenubarMenu>
       <MenubarTrigger class="font-bold"> Music </MenubarTrigger>
       <MenubarContent>
@@ -150,7 +138,7 @@ const closeWindow = () => {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              class="w-4 h-4"
+              class="h-4 w-4"
               viewBox="0 0 24 24"
             >
               <path d="m12 8-9.04 9.06a2.82 2.82 0 1 0 3.98 3.98L16 12" />
@@ -168,7 +156,7 @@ const closeWindow = () => {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              class="w-4 h-4"
+              class="h-4 w-4"
               viewBox="0 0 24 24"
             >
               <circle cx="12" cy="12" r="10" />

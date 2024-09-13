@@ -98,15 +98,3 @@ class EditorWindow extends BaseWindow {
 }
 
 export default EditorWindow
-
-// function shouldOpenExternal(url) {
-//   // 在这里添加你的 URL 筛选逻辑
-//   // 例如，只允许特定域名的 URL
-//   const allowedDomains = ['example.com', 'anotherdomain.com']
-//   try {
-//     const { hostname } = new URL(url)
-//     return allowedDomains.includes(hostname)
-//   } catch (e) {
-//     return false
-//   }
-// }

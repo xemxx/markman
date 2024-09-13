@@ -2,7 +2,6 @@ import path from 'path'
 import { app } from '@electron/remote'
 import Sqlite from './sqlite'
 import sql from './sql'
-import { userItem } from '../../model/user'
 
 let dbPath = path.join(app.getPath('userData'), 'data.db')
 
