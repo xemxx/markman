@@ -73,6 +73,18 @@ onMounted(() => {
       vditor.value!.setValue(props.value)
       editorS.vidtor = vditor.value
     },
+    link: {
+      isOpen: true,
+      click: link => {
+        let url = ''
+        if (vditor.value?.getCurrentMode() === 'ir') {
+          url = link.innerHTML
+        } else {
+          url = link.getAttribute('href') || ''
+        }
+        window.open(url)
+      },
+    },
   })
 })
 
@@ -98,11 +110,8 @@ function destroy() {
 onDeactivated(destroy)
 </script>
 
-<!-- <style lang="stylus" scoped>
-ul {
-  list-style: disc inside;
+<style scoped>
+.vditor {
+  border: none;
 }
-ol {
-  list-style: decimal inside;
-}
-</style> -->
+</style>

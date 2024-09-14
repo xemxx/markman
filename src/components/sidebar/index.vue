@@ -1,6 +1,6 @@
 <template>
   <div v-show="toggleSidebar" class="flex flex-col">
-    <div class="h-10 flex-none border-b">
+    <div class="h-9 flex-none border-b">
       <Menu />
     </div>
     <div class="w-full flex-none p-1">

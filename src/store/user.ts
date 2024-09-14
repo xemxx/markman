@@ -1,6 +1,7 @@
 import { User, userItem } from '@/model/user'
 import { getCookie, setCookie } from '../tools'
 import { defineStore } from 'pinia'
+import { useSidebarStore, useEditorStore } from './index'
 
 const model = new User()
 
@@ -41,6 +42,10 @@ export const useUserStore = defineStore('user', {
       this.update_token('')
       this.update_username('')
       this.update_uuid('')
+      const sidebar = useSidebarStore()
+      sidebar.$reset()
+      const editor = useEditorStore()
+      editor.$reset()
       return model.update(id!, { state: 0 })
     },
 

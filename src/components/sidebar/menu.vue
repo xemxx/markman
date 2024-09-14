@@ -24,7 +24,7 @@ const username = user.username
     <DropdownMenu>
       <DropdownMenuTrigger>
         <div class="flex p-1">
-          <span class="icon-[lucide--square-user-round] size-8"></span>
+          <span class="icon-[lucide--square-user-round] size-7"></span>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent class="w-48">
@@ -35,9 +35,9 @@ const username = user.username
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-    <div class="grid grid-cols-1 place-content-center">
+    <!-- <div class="grid grid-cols-1 place-content-center">
       <span class="icon-[lucide--settings] size-8"></span>
-      <!-- <span class="icon-[lucide--log-out] size-6"></span> -->
-    </div>
+      <span class="icon-[lucide--log-out] size-6"></span>
+    </div> -->
   </div>
 </template>

@@ -2,12 +2,12 @@
   <div class="flex h-screen flex-col">
     <TitleBar v-show="!nativeBar" />
     <ResizablePanelGroup
-      id="sidebar"
+      id="editor-layout"
       direction="horizontal"
       class="flex flex-1 flex-row overflow-auto border-t"
     >
       <ResizablePanel
-        id="demo-panel-1"
+        id="sidebar"
         :default-size="18"
         :min-size="12"
         :max-size="25"
@@ -15,7 +15,7 @@
         <Sidebar class="h-full" />
       </ResizablePanel>
       <ResizableHandle id="handle-1" />
-      <ResizablePanel id="editor" :default-size="85">
+      <ResizablePanel id="editor" :default-size="82">
         <div class="flex h-full flex-1">
           <div
             class="flex flex-1 content-center justify-center"
