@@ -7,7 +7,6 @@ import {
   //  isLinux
 } from '../config'
 import Accessor from '../app/accessor'
-import { enable } from '@electron/remote/main'
 import { format } from 'url'
 
 class EditorWindow extends BaseWindow {
@@ -89,7 +88,6 @@ class EditorWindow extends BaseWindow {
       return { action: 'deny' }
     })
 
-    enable(win.webContents)
     win.loadURL(format(this.url))
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 

@@ -1,7 +1,4 @@
-'use strict'
-
 import { isOsx, isLinux } from '../config'
-
 import { app, ipcMain } from 'electron'
 
 import EditorWindow from '../windows/editor'
@@ -67,9 +64,15 @@ export default class App {
 
   // 创建偏好设置窗口
   _createSettingWindow() {
+    if (
+      this._windowManager.editor?.browserWindow === null ||
+      this._windowManager.editor === undefined
+    ) {
+      return
+    }
     // 通过定义的窗口类创建
     const setting = new SettingWindow(this._accessor)
-    setting.createWindow()
+    setting.createWindow({ parent: this._windowManager.editor?.browserWindow })
     // 添加到窗口管理模块中
     this._windowManager.addSetting(setting)
   }
@@ -92,5 +95,31 @@ export default class App {
     ipcMain.on('app-create-settings-window', () => {
       this._openSettingsWindow()
     })
+
+    ipcMain.handle(
+      'm::app-get-path',
+      (
+        e,
+        name:
+          | 'home'
+          | 'appData'
+          | 'userData'
+          | 'sessionData'
+          | 'temp'
+          | 'exe'
+          | 'module'
+          | 'desktop'
+          | 'documents'
+          | 'downloads'
+          | 'music'
+          | 'pictures'
+          | 'videos'
+          | 'recent'
+          | 'logs'
+          | 'crashDumps',
+      ): string => {
+        return app.getPath(name)
+      },
+    )
   }
 }

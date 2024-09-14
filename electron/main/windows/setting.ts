@@ -9,7 +9,6 @@ import {
   ROOT_PATH,
 } from '../config'
 import Accessor from '../app/accessor'
-import { enable } from '@electron/remote/main'
 
 class SettingWindow extends BaseWindow {
   /**
@@ -26,7 +25,7 @@ class SettingWindow extends BaseWindow {
    *
    * @param {*} [options] BrowserWindow options.
    */
-  createWindow(options: any = {}) {
+  createWindow(options?: Electron.BrowserWindowConstructorOptions) {
     const { menu: appMenu } = this._accessor
     const winOptions = Object.assign({}, preferencesWinOptions, options)
 
@@ -64,7 +63,6 @@ class SettingWindow extends BaseWindow {
     win.on('closed', () => {
       this.emit('window-closed')
     })
-    enable(win.webContents)
     win.loadURL(this.url)
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 

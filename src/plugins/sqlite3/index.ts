@@ -1,9 +1,13 @@
 import path from 'path'
-import { app } from '@electron/remote'
 import Sqlite from './sqlite'
 import sql from './sql'
 
-let dbPath = path.join(app.getPath('userData'), 'data.db')
+import { ipcRenderer } from 'electron'
+
+let dbPath = path.join(
+  await ipcRenderer.invoke('m::app-get-path', 'userData'),
+  'data.db',
+)
 
 export const db = Sqlite.getInstance(dbPath)
 
