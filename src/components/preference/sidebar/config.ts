@@ -8,4 +8,10 @@ export const category = [
     icon: 'pref_general',
     path: '/preference/general',
   },
+  {
+    name: 'Image',
+    label: 'image',
+    icon: 'pref_image',
+    path: '/preference/image',
+  },
 ]

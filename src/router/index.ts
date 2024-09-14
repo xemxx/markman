@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Base from '@/views/EditorBase.vue'
 import Login from '@/views/Login.vue'
 import Preference from '@/views/Preference.vue'
-import General from '@/preferences/general.vue'
+import General from '@/components/preference/general.vue'
 import LoginSetting from '@/views/LoginSetting.vue'
 
 const routes = [
@@ -32,6 +32,11 @@ const routes = [
         path: 'general',
         component: General,
         name: 'general',
+      },
+      {
+        path: 'image',
+        component: () => import('@/components/preference/image.vue'),
+        name: 'image',
       },
     ],
   },
