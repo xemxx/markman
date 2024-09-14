@@ -2,6 +2,7 @@ import { User, userItem } from '@/model/user'
 import { getCookie, setCookie } from '../tools'
 import { defineStore } from 'pinia'
 import { useSidebarStore, useEditorStore } from './index'
+import { ipcRenderer } from 'electron'
 
 const model = new User()
 
@@ -15,8 +16,8 @@ export const useUserStore = defineStore('user', {
     uuid: getCookie('uuid') ? getCookie('uuid') : '',
   }),
   actions: {
-    async loadActiver() {
-      let user: userItem | undefined = await model.getActiver()
+    async loadCurrentUser() {
+      let user: userItem | undefined = await model.getCurrentUser()
       if (user != undefined) {
         // v0.3.0 适配新增uuid的逻辑，后续迭代版本可以考虑删除，因为现在不一定有用户。。。
         if (user.uuid == '' || user.uuid == undefined) {
@@ -27,6 +28,7 @@ export const useUserStore = defineStore('user', {
         this.update_token(user.token)
         this.update_username(user.username)
         this.update_uuid(user.uuid)
+        ipcRenderer.send('m::set-logging-state', true)
       }
     },
 
@@ -35,7 +37,7 @@ export const useUserStore = defineStore('user', {
       this.token = token
     },
 
-    unSetActiver() {
+    unSetCurrentUser() {
       let id = this.id
       this.update_id(0)
       this.update_lastSC(0)
@@ -46,10 +48,11 @@ export const useUserStore = defineStore('user', {
       sidebar.$reset()
       const editor = useEditorStore()
       editor.$reset()
+      ipcRenderer.send('m::set-logging-state', false)
       return model.update(id!, { state: 0 })
     },
 
-    async setActiver({ username, token, uuid }) {
+    async setCurrentUser({ username, token, uuid }) {
       let id = await model.existUser(username, uuid)
       if (id != '') {
         await model.update(id, { state: 1, token, server: this.server })
@@ -74,7 +77,7 @@ export const useUserStore = defineStore('user', {
           })
         }
       }
-      await this.loadActiver()
+      await this.loadCurrentUser()
     },
 
     update_id(value: any) {

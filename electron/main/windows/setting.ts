@@ -1,6 +1,6 @@
 import path from 'path'
 import { BrowserWindow } from 'electron'
-import BaseWindow, { WindowType } from './base'
+import { BaseWindow, WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   preferencesWinOptions,
@@ -10,7 +10,7 @@ import {
 } from '../config'
 import Accessor from '../app/accessor'
 
-class SettingWindow extends BaseWindow {
+export class SettingWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */
@@ -69,5 +69,3 @@ class SettingWindow extends BaseWindow {
     return win
   }
 }
-
-export default SettingWindow

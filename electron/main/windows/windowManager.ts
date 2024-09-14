@@ -1,10 +1,10 @@
-import { BrowserWindow, ipcMain } from 'electron'
+import { ipcMain } from 'electron'
 import EventEmitter from 'events'
 import { isWindows } from '../config'
 import AppMenu from '../menu'
-import BaseWindow from '../windows/base'
+import { BaseWindow } from '../windows/base'
 
-class WindowManager extends EventEmitter {
+export class WindowManager extends EventEmitter {
   private _activeWindowId: any
   private _appMenu: AppMenu
   private _editor: BaseWindow | null
@@ -99,9 +99,5 @@ class WindowManager extends EventEmitter {
       if (this._setting !== null)
         this._setting.browserWindow?.webContents.send('m::user-pref', prefs)
     })
-
-    // ipcMain.on('m::show-activeBar-context-menu', ({ menus }) => {})
   }
 }
-
-export default WindowManager

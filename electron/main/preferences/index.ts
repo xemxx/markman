@@ -22,6 +22,7 @@ class Preference extends EventEmitter {
     nativeBar: unknown
   }>
   staticPath: string
+  isLogging: boolean
   constructor(preferencesPath: string) {
     super()
 

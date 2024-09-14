@@ -20,7 +20,7 @@ export const WindowType = {
   SETTINGS: 'settings',
 }
 
-class BaseWindow extends EventEmitter {
+export class BaseWindow extends EventEmitter {
   protected _accessor: Accessor
   id: number
   browserWindow: BrowserWindow | null
@@ -76,5 +76,3 @@ class BaseWindow extends EventEmitter {
     return process.env.VITE_DEV_SERVER_URL
   }
 }
-
-export default BaseWindow

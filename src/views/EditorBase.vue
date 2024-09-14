@@ -94,7 +94,7 @@ async function init() {
     return
   }
   try {
-    await user.loadActiver()
+    await user.loadCurrentUser()
     // 先自身解析token是否超时
     try {
       const data = JSON.parse(window.atob(user.token!.split('.')[1]))
@@ -135,7 +135,7 @@ async function init() {
 }
 
 const logout = async () => {
-  user.unSetActiver()
+  user.unSetCurrentUser()
   try {
     return await router.push('/login')
   } catch (err) {

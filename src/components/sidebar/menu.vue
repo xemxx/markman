@@ -11,7 +11,7 @@ import { useUserStore } from '@/store'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const quit = () => {
-  user.unSetActiver().then(() => {
+  user.unSetCurrentUser().then(() => {
     router.push('/login').catch(err => console.log(err))
   })
 }

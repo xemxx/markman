@@ -28,7 +28,7 @@ const user = useUserStore()
 const router = useRouter()
 
 const quit = () => {
-  user.unSetActiver().then(() => {
+  user.unSetCurrentUser().then(() => {
     router.push('/login').catch(err => err)
   })
 }

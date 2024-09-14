@@ -146,7 +146,7 @@ function onSubmit(values: Record<string, any>) {
     })
     .then(res => {
       console.log(res)
-      return user.setActiver({
+      return user.setCurrentUser({
         username,
         token: res.token,
         uuid: res.uuid,

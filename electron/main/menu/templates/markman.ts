@@ -24,7 +24,9 @@ export default function (keybindings: Keybindings) {
         },
       },
       {
+        id: 'preferences',
         label: 'Preferences',
+        enabled: false,
         accelerator: keybindings.getAccelerator('file.preferences'),
         click() {
           userSetting()

@@ -1,5 +1,5 @@
 import { BrowserWindow, dialog, shell } from 'electron'
-import BaseWindow, { WindowType } from './base'
+import { BaseWindow, WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   editorWinOptions,
@@ -9,7 +9,7 @@ import {
 import Accessor from '../app/accessor'
 import { format } from 'url'
 
-class EditorWindow extends BaseWindow {
+export class EditorWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */
@@ -94,5 +94,3 @@ class EditorWindow extends BaseWindow {
     return win
   }
 }
-
-export default EditorWindow
