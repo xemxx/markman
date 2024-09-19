@@ -21,22 +21,27 @@ const changeTheme = (theme: any) => {
   switch (theme) {
     case 'light':
       themeClassName = 'light'
+      mode.value = 'light'
       break
     case 'dark':
       themeClassName = 'dark'
+      mode.value = 'dark'
       break
     case 'system':
       // 调用方法监听系统主题变化
       watchSystemThemeChange()
       themeClassName = matchMedia.matches ? 'dark' : 'light'
+      mode.value = 'auto'
       break
   }
   // 修改 html中class
-  const html = document.querySelector('html')
-  if (html) {
-    html.className = themeClassName
-  }
+  // const html = document.querySelector('html')
+  // if (html) {
+  //   html.className = themeClassName
+  // }
 }
+import { useColorMode } from '@vueuse/core'
+const mode = useColorMode()
 // 监听pinia 里面定义的 变量
 export const useTheme = () => {
   const performance = usePreferenceStore()
