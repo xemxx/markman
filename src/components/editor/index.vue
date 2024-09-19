@@ -6,7 +6,7 @@ import { ref, onMounted, onDeactivated } from 'vue'
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 const vditor = ref<Vditor | null>(null)
-import { useEditorStore } from '@/store'
+import { useEditorStore, usePreferenceStore } from '@/store'
 
 const props = defineProps({
   height: { type: String, default: '100%' },
@@ -54,10 +54,13 @@ onMounted(() => {
     },
     preview: {
       theme: {
-        current: 'ant-design', // todo 配置自己的主题
+        current: getPreviewTheme(perfS.themeType), // todo 配置自己的主题
+      },
+      hljs: {
+        style: getCodeTheme(perfS.themeType),
       },
     },
-    theme: 'classic',
+    theme: getTheme(perfS.themeType),
     input: v => {
       emit('change', v)
     },
@@ -70,6 +73,11 @@ onMounted(() => {
       // vditor.value is a instance of Vditor now and thus can be safely used here
       vditor.value!.setValue(props.value)
       editorS.vidtor = vditor.value
+      vditor.value?.setTheme(
+        getTheme(perfS.themeType),
+        getPreviewTheme(perfS.themeType),
+        getCodeTheme(perfS.themeType),
+      )
     },
     link: {
       isOpen: true,
@@ -100,6 +108,27 @@ watch(
     }
   },
 )
+
+const perfS = usePreferenceStore()
+
+watch(
+  () => perfS.themeType,
+  v => {
+    vditor.value?.setTheme(getTheme(v), getPreviewTheme(v), getCodeTheme(v))
+  },
+)
+
+function getTheme(v: string) {
+  return v === 'dark' ? 'dark' : 'classic'
+}
+
+function getCodeTheme(v: string) {
+  return v === 'dark' ? 'monokai' : 'github'
+}
+
+function getPreviewTheme(v: string) {
+  return v === 'dark' ? 'dark' : 'ant-design'
+}
 
 function destroy() {
   vditor.value?.destroy()
