@@ -22,7 +22,7 @@
     </div>
     <div class="flex h-full flex-1 flex-col overflow-auto px-0 py-1">
       <div
-        class="group flex justify-between px-2 py-1 transition-colors duration-300 hover:bg-gray-100"
+        class="group flex justify-between px-2 py-1 transition-colors duration-300 hover:bg-secondary"
       >
         <h2 class="text-lg font-semibold tracking-tight">笔记管理</h2>
         <div class="group/tip relative grid grid-cols-1 place-content-center">
@@ -49,7 +49,7 @@
           />
         </div>
         <TreeRoot
-          class="w-full select-none list-none rounded-lg bg-background p-1 text-sm font-medium text-black"
+          class="w-full select-none list-none rounded-lg bg-background p-1 text-sm font-medium"
           :items="trees"
           :get-key="item => item.key"
         >

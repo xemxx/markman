@@ -1,6 +1,5 @@
 const animate = require('tailwindcss-animate')
 import { addDynamicIconSelectors } from '@iconify/tailwind'
-const { green, grass } = require('@radix-ui/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -53,8 +52,6 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        ...green,
-        ...grass,
       },
       borderRadius: {
         xl: 'calc(var(--radius) + 4px)',

@@ -140,7 +140,7 @@ const doMove = () => {
     :value="tree"
   >
     <div
-      class="group my-0.5 flex items-center rounded outline-none focus:ring-2 focus:ring-grass8 data-[selected]:bg-grass4"
+      class="group my-0.5 flex items-center rounded outline-none focus:ring-2 focus:ring-ring data-[selected]:bg-secondary"
       :style="{ 'padding-left': `${level == 0 ? 0.3 : level - 0.3}rem` }"
       @click="onNodeSelect(tree)"
     >
