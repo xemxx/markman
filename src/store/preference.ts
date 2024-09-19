@@ -8,6 +8,8 @@ const state = {
   // menu status
   toggleSidebar: false,
   nativeBar: true,
+
+  themeType: 'light',
 }
 
 export const usePreferenceStore = defineStore('preference', {
@@ -36,6 +38,17 @@ export const usePreferenceStore = defineStore('preference', {
       })
       const p = await ipcRenderer.invoke('m::get-user-pref')
       this.SET_PREFERENCE(p)
+      this.$subscribe((mutation, state) => {
+        Object.keys(state).forEach(key => {
+          if (
+            typeof state[key] !== 'undefined' &&
+            typeof this[key] !== 'undefined'
+          ) {
+            // 每当状态发生变化时，将整个 state 同步到其他窗口
+            this.setOne({ type: key, value: state[key] })
+          }
+        })
+      })
     },
 
     destroyListen() {

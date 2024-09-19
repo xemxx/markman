@@ -1,54 +1,43 @@
 <template>
-  <div class="pref-general">
-    <h4>General</h4>
-    <bool
-      description="Automatically save document changes."
-      :bool="autoSave"
-      :on-change="value => onSelectChange('autoSave', value)"
-    ></bool>
-    <Input
-      description="The delay in milliseconds between a change being made and saved."
-      :on-change="value => onSelectChange('autoSaveDelay', value)"
-      :val="autoSaveDelay"
-      after="ms"
-    >
-    </Input>
+  <div class="pref-general mt-5">
+    <Bool v-model="autoSave">是否自动保存</Bool>
+    <Input v-model="autoSaveDelay" after="ms"> 自动保存时延，单位毫秒 </Input>
+    <Select v-model="themeType" :items="themeArr"> 主题选择 </Select>
   </div>
 </template>
 
 <script setup lang="ts">
 import Input from './common/input.vue'
 import Bool from './common/bool.vue'
+import Select from './common/select.vue'
 
 import { usePreferenceStore } from '@/store'
 import { storeToRefs } from 'pinia'
 const preference = usePreferenceStore()
 
-const { autoSave, autoSaveDelay } = storeToRefs(preference)
+const { autoSave, autoSaveDelay, themeType } = storeToRefs(preference)
 
-const onSelectChange = (type, value) => {
-  // 当选择项改变后，改变设置项
-  preference.setOne({ type, value })
-}
+// 定义当前主题列表
+const themeArr = [
+  {
+    id: 0,
+    value: 'light',
+    icon: 'theme-light',
+    label: '极简白',
+  },
+  {
+    id: 1,
+    value: 'dark',
+    icon: 'theme-dark',
+    label: '极夜黑',
+  },
+  {
+    id: 2,
+    value: 'system',
+    icon: 'theme-system',
+    label: '跟随系统',
+  },
+]
 </script>
 
-<style lang="stylus" scoped>
-.pref-general
-  & h4
-    text-transform uppercase
-    margin 0
-    font-weight 400
-
-  & .startup-action-ctrl
-    font-size 14px
-    user-select none
-    margin 20px 0
-    color var(--editorColor)
-
-    & .a-button--small
-      margin-left 25px
-
-    & label
-      display block
-      margin 20px 0
-</style>
+<style lang="stylus" scoped></style>

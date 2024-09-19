@@ -1,15 +1,24 @@
 <template>
-  <div v-show="toggleSidebar" class="flex flex-col">
+  <div
+    v-show="toggleSidebar"
+    class="flex flex-col bg-background text-foreground"
+  >
     <div class="h-9 flex-none border-b">
       <Menu />
     </div>
-    <div class="w-full flex-none p-1">
-      <input
+
+    <div class="relative w-full max-w-sm flex-none items-center p-1">
+      <Input
         v-model="searchStr"
         placeholder="搜索笔记"
         @keyup.enter="doSearch"
-        class="w-full rounded-md bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
+        class="pl-10"
       />
+      <span
+        class="absolute inset-y-0 start-0 flex items-center justify-center px-2"
+      >
+        <span class="icon-[lucide--search] size-6 text-muted-foreground" />
+      </span>
     </div>
     <div class="flex h-full flex-1 flex-col overflow-auto px-0 py-1">
       <div
@@ -53,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePreferenceStore } from '@/store'
+import { useSidebarStore, useSyncStore, usePreferenceStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import Menu from './menu.vue'
 import Footer from './footer.vue'
@@ -63,10 +72,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 const preference = usePreferenceStore()
 const { toggleSidebar } = storeToRefs(preference)
 
-import { useSidebarStore } from '@/store'
 import { ref, nextTick, useTemplateRef, computed, watch, onMounted } from 'vue'
 import { Input } from '@/components/ui/input'
-import { useSyncStore } from '@/store'
 
 const sidebar = useSidebarStore()
 const trees = computed(() => {

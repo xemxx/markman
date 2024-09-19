@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
+import { watch, nextTick, useTemplateRef } from 'vue'
 import { useVModel } from '@vueuse/core'
 import { cn } from '@/lib/utils'
 
@@ -7,6 +8,7 @@ const props = defineProps<{
   defaultValue?: string | number
   modelValue?: string | number
   class?: HTMLAttributes['class']
+  focus?: boolean | undefined
 }>()
 
 const emits = defineEmits<{
@@ -17,10 +19,24 @@ const modelValue = useVModel(props, 'modelValue', emits, {
   passive: true,
   defaultValue: props.defaultValue,
 })
+
+const elRef = useTemplateRef('inputRef')
+
+watch(
+  () => props.focus,
+  focus => {
+    if (focus) {
+      nextTick(() => {
+        elRef.value?.focus()
+      })
+    }
+  },
+)
 </script>
 
 <template>
   <input
+    ref="inputRef"
     v-model="modelValue"
     :class="
       cn(

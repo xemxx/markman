@@ -23,4 +23,11 @@ export const schema = {
     description: 'View Menu--Native menu bar status.',
     default: true,
   },
+
+  themeType: {
+    type: JSONSchemaType.String,
+    description: 'Theme--The type of theme.',
+    enum: ['light', 'dark', 'system'],
+    default: 'light',
+  },
 }

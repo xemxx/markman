@@ -20,6 +20,8 @@ class Preference extends EventEmitter {
     autoSaveDelay: unknown
     toggleSidebar: unknown
     nativeBar: unknown
+
+    themeType: any
   }>
   staticPath: string
   isLogging: boolean
@@ -85,7 +87,6 @@ class Preference extends EventEmitter {
   }
 
   setItem(key: string, value: string | boolean) {
-    Debug('Event: broadcast-pref-changed' + ' key: ' + key + ' value: ' + value)
     ipcMain.emit('broadcast-pref-changed', { [key]: value })
     return this.store.set(key, value)
   }
@@ -108,6 +109,9 @@ class Preference extends EventEmitter {
     }
 
     Object.keys(settings).map(key => {
+      if (this.getItem(key) === settings[key]) {
+        return
+      }
       this.setItem(key, settings[key])
     })
   }

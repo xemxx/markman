@@ -1,5 +1,7 @@
 <template>
-  <div class="h-full select-none space-y-4 px-3 py-4">
+  <div
+    class="h-full select-none space-y-4 bg-background px-3 py-4 text-foreground"
+  >
     <h2 class="mb-2 px-4 text-center text-lg font-semibold tracking-tight">
       Preferences
     </h2>

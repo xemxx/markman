@@ -46,8 +46,6 @@ onMounted(() => {
       'table',
       '|',
       'edit-mode',
-      'code-theme',
-      'preview',
       'outline',
     ],
     counter: {

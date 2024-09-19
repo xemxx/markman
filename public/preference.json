@@ -3,5 +3,6 @@
   "autoSaveDelay": 5000,
   "toggleSidebar": true,
   "togglePreview": true,
-  "nativeBar": true
+  "nativeBar": true,
+  "themeType": "light"
 }
