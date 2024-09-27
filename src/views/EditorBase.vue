@@ -46,9 +46,6 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 
-import { usePreferenceStore } from '@/store'
-import { useListenStore } from '@/store'
-import { useEditorStore } from '@/store'
 import { computed, onMounted, onUnmounted } from 'vue'
 import { emitter } from '@/emitter'
 import { Modal } from 'ant-design-vue'
@@ -56,8 +53,13 @@ import { Modal } from 'ant-design-vue'
 import http from '@/plugins/axios'
 
 import { message } from 'ant-design-vue'
-import { useSysStore } from '@/store'
-import { useUserStore } from '@/store'
+import {
+  useSyncStore,
+  useUserStore,
+  useListenStore,
+  useEditorStore,
+  usePreferenceStore,
+} from '@/store'
 import { useRouter } from 'vue-router'
 
 const editorS = useEditorStore()
@@ -84,13 +86,18 @@ const showCloseQuery = (id: any) => {
 
 const user = useUserStore()
 const router = useRouter()
-const store = useSysStore()
+const sync = useSyncStore()
 const preference = usePreferenceStore()
 
 // 初始化editor窗口逻辑
 async function init() {
   if (user.server === '') {
     router.push('/login-setting').catch(err => err)
+    return
+  }
+  const online = await sync.checkServerOnline()
+  if (!online) {
+    // 不解析任何东西，直接进入离线模式
     return
   }
   try {
@@ -101,7 +108,7 @@ async function init() {
       if (data.exp > Date.parse(Date()) / 1000) {
         if (data.exp - Date.parse(Date()) / 1000 < 60 * 60 * 24 * 30) {
           // 代表在60天的后30天，需要刷新token
-          if (store.online) {
+          if (sync.online) {
             // 先判断网络状态，如果断网，则可使用最多30天，在30天内必须刷新token，否则将失效
             try {
               const response = await http.post(user.server + '/user/flashToken')
@@ -113,21 +120,23 @@ async function init() {
                 console.error(res.data.msg)
               }
               // 切换到离线模式
-              store.update_online(false)
+              sync.update_online(false)
             }
           }
         }
       } else {
-        // 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
+        //正常连接服务端， 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
         message.warning('token expired', 3)
         await logout()
         return
       }
     } catch (err) {
+      //加载本地token失败，直接进入登录页面
       await logout()
       return
     }
   } catch (err: any) {
+    //加载用户信息失败，直接进入登录页面
     message.warning(err, 3)
     logout()
     return

@@ -6,8 +6,13 @@
       :class="[isSyncing ? 'animate-spin' : '']"
       @click.stop="doSync"
     ></span>
-    <p v-if="isSyncing">同步中</p>
-    <p v-else>同步完成</p>
+    <template v-if="sync.online">
+      <p v-if="isSyncing">同步中</p>
+      <p v-else>同步完成</p>
+    </template>
+    <template v-else>
+      <p>离线</p>
+    </template>
     <span class="icon-[lucide--log-out] size-5" @click.stop="quit" />
   </div>
 </template>
