@@ -47,7 +47,7 @@ export const useSyncStore = defineStore('sync', {
       }
       try {
         await http.get<{ message: string }, any>(server + '/ping', {
-          fetchOptions: { showToast: false },
+          fetchOptions: { disableToast: true },
         })
         this.update_online(true)
         return true

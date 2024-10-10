@@ -37,7 +37,7 @@ http.interceptors.response.use(
   // 请求成功
   async res => {
     const config = res.config
-    const showToast = config.fetchOptions?.showToast
+    const disableToast = config.fetchOptions?.disableToast
     const user = useUserStore()
     const code = res.data.code
     const msg = res.data.msg
@@ -50,14 +50,14 @@ http.interceptors.response.use(
       case errCode.ErrorAuthToken:
       case errCode.ErrorAuthCheckTokenFail:
       case errCode.ErrorAuthCheckTokenTimeout:
-        if (showToast) {
+        if (!disableToast) {
           message.error('登录失效，请重新登录,ERROR：' + msg)
         }
         user.update_token('')
         router.push('/login').catch(err => err)
         return Promise.resolve(res)
       default:
-        if (showToast) {
+        if (!disableToast) {
           message.error('ERROR：' + msg)
         }
         return Promise.reject(res)
@@ -66,7 +66,7 @@ http.interceptors.response.use(
   // 请求失败，非200自动进入
   err => {
     const config = err.config
-    const showToast = config.fetchOptions?.showToast
+    const disableToast = config.fetchOptions?.disableToast
     if (err.response) {
       //接收到响应，认为服务器错误，或者用户输入服务器地址错误导致请求成功，但是接口失败
       message.error('服务器错误,' + err)
@@ -78,12 +78,12 @@ http.interceptors.response.use(
       if (!navigator.onLine) {
         const store = useSyncStore()
         store.update_online(false)
-        if (showToast) {
+        if (!disableToast) {
           message.error('检测到网络离线，请检查网络状况')
         }
         return Promise.reject('检测到网络离线，请检查网络状况')
       } else {
-        if (showToast) {
+        if (!disableToast) {
           message.error('网络错误,请检查服务器地址配置或者网络状况')
         }
         return Promise.reject('网络错误,请检查服务器地址配置或者网络状况')
