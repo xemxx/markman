@@ -20,6 +20,12 @@ export class NoteModel extends Model {
       id,
     ]) as Promise<noteItem>
   }
+
+  getByGuid(id: any): Promise<noteItem> {
+    return db.get<noteItem>(`select * from note where guid=?`, [
+      id,
+    ]) as Promise<noteItem>
+  }
   getAllByBook(uid, bid) {
     return db.all<noteItem>(
       `select * from note where uid=? and bid=? and modifyState<3 order by modifyDate desc`,

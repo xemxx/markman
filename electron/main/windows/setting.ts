@@ -1,6 +1,6 @@
 import path from 'path'
 import { BrowserWindow } from 'electron'
-import BaseWindow, { WindowType } from './base'
+import { BaseWindow, WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   preferencesWinOptions,
@@ -9,16 +9,15 @@ import {
   ROOT_PATH,
 } from '../config'
 import Accessor from '../app/accessor'
-import { enable } from '@electron/remote/main'
 
-class SettingWindow extends BaseWindow {
+export class SettingWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.SETTINGS
-    this.url = this._buildUrlString() + '#/preference'
+    this.url = this._buildUrlString() + '#/preference/'
   }
 
   /**
@@ -26,7 +25,7 @@ class SettingWindow extends BaseWindow {
    *
    * @param {*} [options] BrowserWindow options.
    */
-  createWindow(options: any = {}) {
+  createWindow(options?: Electron.BrowserWindowConstructorOptions) {
     const { menu: appMenu } = this._accessor
     const winOptions = Object.assign({}, preferencesWinOptions, options)
 
@@ -64,12 +63,9 @@ class SettingWindow extends BaseWindow {
     win.on('closed', () => {
       this.emit('window-closed')
     })
-    enable(win.webContents)
     win.loadURL(this.url)
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win
   }
 }
-
-export default SettingWindow

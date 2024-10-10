@@ -1,21 +1,14 @@
-'use strict'
-
 import { isOsx, isLinux } from '../config'
-
 import { app, ipcMain } from 'electron'
 
-import EditorWindow from '../windows/editor'
-import SettingWindow from '../windows/setting'
+import { EditorWindow, SettingWindow } from '../windows'
 import Accessor from './accessor'
-import WindowManager from './windowManager'
 
 export default class App {
   private _accessor: Accessor
-  private _windowManager: WindowManager
 
   constructor(accessor: Accessor) {
     this._accessor = accessor
-    this._windowManager = accessor.windowManager
     this._listenForIpcMain()
   }
   ready = () => {
@@ -23,9 +16,9 @@ export default class App {
   }
   init() {
     app.on('second-instance', () => {
-      const { _windowManager } = this
+      const { windowManager } = this._accessor
       // 当运行第二个实例时,activeWindow
-      const activeWindow = _windowManager.editor
+      const activeWindow = windowManager.editor
       if (activeWindow != null && activeWindow != undefined) {
         activeWindow.bringToFront()
       }
@@ -37,11 +30,11 @@ export default class App {
       // macOS only
       // On OS X it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (this._windowManager.editor === null) {
+      if (this._accessor.windowManager.editor === null) {
         this.ready()
       } else {
-        const { _windowManager } = this
-        const activeWindow = _windowManager.editor
+        const { windowManager } = this._accessor
+        const activeWindow = windowManager.editor
         if (activeWindow) {
           activeWindow.bringToFront()
         }
@@ -61,22 +54,30 @@ export default class App {
     const editor = new EditorWindow(this._accessor)
     editor.createWindow(options)
     // 添加到窗口管理模块中
-    this._windowManager.addEditor(editor)
+    this._accessor.windowManager.addEditor(editor)
     return editor
   }
 
   // 创建偏好设置窗口
   _createSettingWindow() {
+    if (
+      this._accessor.windowManager.editor?.browserWindow === null ||
+      this._accessor.windowManager.editor === undefined
+    ) {
+      return
+    }
     // 通过定义的窗口类创建
     const setting = new SettingWindow(this._accessor)
-    setting.createWindow()
+    setting.createWindow({
+      parent: this._accessor.windowManager.editor?.browserWindow,
+    })
     // 添加到窗口管理模块中
-    this._windowManager.addSetting(setting)
+    this._accessor.windowManager.addSetting(setting)
   }
 
   // 打开偏好设置窗口
   _openSettingsWindow() {
-    const settingWins = this._windowManager.setting
+    const settingWins = this._accessor.windowManager.setting
     if (settingWins !== null) {
       // 如果已经存在
       const browserSettingWindow = settingWins.browserWindow
@@ -90,7 +91,48 @@ export default class App {
 
   _listenForIpcMain() {
     ipcMain.on('app-create-settings-window', () => {
-      this._openSettingsWindow()
+      if (this._accessor.preference.isLogging == true) {
+        this._openSettingsWindow()
+      }
     })
+
+    ipcMain.on('m::set-logging-state', (e, state: boolean) => {
+      console.log('m::set-logging-state', state)
+      this._accessor.preference.isLogging = state
+      if (state == false) {
+        const settingWins = this._accessor.windowManager.setting
+        if (settingWins !== null) {
+          settingWins.browserWindow?.close()
+          settingWins.destroy()
+        }
+      }
+      this._accessor.menu.updatePreferenceEnabled(state)
+    })
+
+    ipcMain.handle(
+      'm::app-get-path',
+      (
+        e,
+        name:
+          | 'home'
+          | 'appData'
+          | 'userData'
+          | 'sessionData'
+          | 'temp'
+          | 'exe'
+          | 'module'
+          | 'desktop'
+          | 'documents'
+          | 'downloads'
+          | 'music'
+          | 'pictures'
+          | 'videos'
+          | 'recent'
+          | 'logs'
+          | 'crashDumps',
+      ): string => {
+        return app.getPath(name)
+      },
+    )
   }
 }

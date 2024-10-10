@@ -1,42 +1,25 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import App from '@/views/App.vue'
 import Base from '@/views/EditorBase.vue'
-import Sign from '@/views/Sign.vue'
+import Login from '@/views/Login.vue'
 import Preference from '@/views/Preference.vue'
-import SignUp from '@/components/sign/signUp.vue'
-import SignIn from '@/components/sign/signIn.vue'
-import General from '@/preferences/general.vue'
+import General from '@/components/preference/general.vue'
+import LoginSetting from '@/views/LoginSetting.vue'
 
 const routes = [
   {
-    path: '/',
-    component: App,
-    children: [
-      {
-        path: '/editorBase',
-        name: 'editorBase',
-        component: Base,
-        meta: { auth: true },
-      },
-      {
-        path: '/sign',
-        component: Sign,
-        children: [
-          {
-            path: 'in',
-            name: 'signin',
-            component: SignIn,
-          },
-          {
-            path: 'up',
-            name: 'signup',
-            component: SignUp,
-          },
-        ],
-      },
-    ],
+    path: '/editorBase',
+    name: 'editorBase',
+    component: Base,
+    meta: { auth: true },
   },
-
+  {
+    path: '/login-setting',
+    component: LoginSetting,
+  },
+  {
+    path: '/login',
+    component: Login,
+  },
   {
     path: '/preference',
     component: Preference,
@@ -49,6 +32,11 @@ const routes = [
         path: 'general',
         component: General,
         name: 'general',
+      },
+      {
+        path: 'image',
+        component: () => import('@/components/preference/image.vue'),
+        name: 'image',
       },
     ],
   },

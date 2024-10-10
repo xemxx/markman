@@ -1,4 +1,4 @@
-export function getCookie(key) {
+export function getCookie(key: string) {
   return localStorage.getItem(key)
 }
 

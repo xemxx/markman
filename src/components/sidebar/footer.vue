@@ -1,29 +1,40 @@
 <template>
-  <a-flex class="toolbar" justify="space-between">
-    <SyncOutlined v-model:spin="isSyncing" @click.stop="doSync" />
-    <p v-if="isSyncing">同步中</p>
-    <p v-else>同步完成</p>
-    <LogoutOutlined @click.stop="quit" />
-  </a-flex>
+  <div class="toolbar flex justify-between border-t">
+    <!-- <SyncOutlined v-model:spin="isSyncing" @click.stop="doSync" /> -->
+    <span
+      class="icon-[lucide--refresh-cw] size-5"
+      :class="[isSyncing ? 'animate-spin' : '']"
+      @click.stop="doSync"
+    ></span>
+    <template v-if="sync.online">
+      <p v-if="isSyncing">同步中</p>
+      <p v-else>同步完成</p>
+    </template>
+    <template v-else>
+      <p>离线</p>
+    </template>
+    <span class="icon-[lucide--log-out] size-5" @click.stop="quit" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { SyncOutlined, LogoutOutlined } from '@ant-design/icons-vue'
-import { useSyncStore } from '@/store/sync'
-import { useUserStore } from '@/store/user'
+import { useSyncStore, useUserStore, useSidebarStore } from '@/store'
 import { useRouter } from '@/router'
 import { storeToRefs } from 'pinia'
 
 const sync = useSyncStore()
 const { isSyncing } = storeToRefs(sync)
-console.debug(isSyncing)
-const doSync = sync.sync
+const sidebar = useSidebarStore()
+const doSync = async () => {
+  await sync.sync()
+  sidebar.loadNodeTree()
+}
 const user = useUserStore()
 const router = useRouter()
 
 const quit = () => {
-  user.unSetActiver().then(() => {
-    router.push('/sign/in').catch(err => err)
+  user.unSetCurrentUser().then(() => {
+    router.push('/login').catch(err => err)
   })
 }
 </script>
@@ -31,9 +42,7 @@ const quit = () => {
 <style lang="stylus" scoped>
 .toolbar
   height 36px
-  color var(--sideBarColor)
   align-items center
-  border-top 1px solid black
   padding 2px 5px
   p
     text-align center

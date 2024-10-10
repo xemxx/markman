@@ -13,7 +13,7 @@ export default function (keybindings: Keybindings, preference: any) {
         label: 'Save',
         accelerator: keybindings.getAccelerator('file.save'),
         click(menuItem, browserWindow) {
-          actions.save(browserWindow)
+          actions.save(browserWindow as Electron.BrowserWindow)
         },
       },
       {
@@ -45,33 +45,34 @@ export default function (keybindings: Keybindings, preference: any) {
           },
         ],
       },
-      {
-        type: 'separator',
-        visible: !isOsx,
-      },
-      {
-        label: 'Preferences',
-        accelerator: keybindings.getAccelerator('file.preferences'),
-        visible: !isOsx,
-        click() {
-          userSetting()
-        },
-      },
-      {
-        label: 'Quit',
-        accelerator: keybindings.getAccelerator('file.quit'),
-        visible: !isOsx,
-        click: app.quit,
-      },
-      ...(isOsx
+
+      ...(!isOsx
         ? [
+            {
+              type: 'separator',
+            },
+            {
+              id: 'preferences',
+              label: 'Preferences',
+              enabled: false,
+              accelerator: keybindings.getAccelerator('file.preferences'),
+              click() {
+                userSetting()
+              },
+            },
+            {
+              label: 'Quit',
+              accelerator: keybindings.getAccelerator('file.quit'),
+              click: app.quit,
+            },
+          ]
+        : [
             {
               label: 'Close Window',
               accelerator: keybindings.getAccelerator('file.close-window'),
               role: 'hide',
             },
-          ]
-        : []),
+          ]),
     ],
   }
   return fileMenu

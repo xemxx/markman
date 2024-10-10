@@ -58,7 +58,7 @@ export const URL_REG =
 
 export const ROOT_PATH = {
   // /dist
-  dist: join(__dirname, '../..'),
+  dist: join(__dirname, app.isPackaged ? '../..' : '../../..'),
   // /dist or /public
   public: join(__dirname, app.isPackaged ? '../..' : '../../../public'),
 }

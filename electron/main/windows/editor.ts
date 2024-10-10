@@ -1,5 +1,5 @@
-import { BrowserWindow, dialog } from 'electron'
-import BaseWindow, { WindowType } from './base'
+import { BrowserWindow, dialog, shell } from 'electron'
+import { BaseWindow, WindowType } from './base'
 import {
   TITLE_BAR_HEIGHT,
   editorWinOptions,
@@ -7,16 +7,16 @@ import {
   //  isLinux
 } from '../config'
 import Accessor from '../app/accessor'
-import { enable } from '@electron/remote/main'
+import { format } from 'url'
 
-class EditorWindow extends BaseWindow {
+export class EditorWindow extends BaseWindow {
   /**
    * @param {Accessor} accessor The application accessor for application instances.
    */
   constructor(accessor: Accessor) {
     super(accessor)
     this.type = WindowType.EDITOR
-    this.url = this._buildUrlString() || ''
+    this.url = this._buildUrlString() + '#/editorBase'
   }
 
   /**
@@ -32,12 +32,6 @@ class EditorWindow extends BaseWindow {
 
       options,
     )
-    // if (isWindows) {
-    //   options.frame = false
-    // }
-    // if (isLinux) {
-    //   winOptions.icon = path.join(ROOT_PATH.public, 'icons/png/128x128.png')
-    // }
 
     let win = (this.browserWindow = new BrowserWindow(winOptions))
     this.id = win.id
@@ -89,13 +83,14 @@ class EditorWindow extends BaseWindow {
       win.webContents.send('m::resize-editor')
     })
 
-    enable(win.webContents)
-    win.loadURL(this.url)
+    win.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url)
+      return { action: 'deny' }
+    })
 
+    win.loadURL(format(this.url))
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     return win
   }
 }
-
-export default EditorWindow

@@ -1,12 +1,8 @@
 import { NoteModel } from '@/model/note'
-import { v1 as uuid } from 'uuid'
 
 import { emitter } from '@/emitter'
-import { useUserStore } from './user'
-import { useSidebarStore } from './sidebar'
 import { defineStore } from 'pinia'
-import { useSyncStore } from './sync'
-import { usePreferenceStore } from './preference'
+import { useSyncStore, usePreferenceStore, useSidebarStore } from './index'
 import Vditor from 'vditor'
 
 const nModel = new NoteModel()
@@ -41,13 +37,15 @@ export const useEditorStore = defineStore('editor', {
       SC: 0,
       isSave: true,
     },
+    editContent: '',
     modify: false,
     isSaving: false,
     vidtor: <Vditor | null>null,
+    isLoadNewNote: false,
   }),
   actions: {
-    set_current_note(currentNote: DNote) {
-      this.currentNote = currentNote
+    resetDefaultNote() {
+      this.currentNote = defaultNote
     },
     // flash note
     flashNote(title: string, content: string, SC: number) {
@@ -55,6 +53,7 @@ export const useEditorStore = defineStore('editor', {
       this.currentNote.content = content
       this.currentNote.markdown = content
       this.currentNote.SC = SC
+      this.editContent = content
     },
 
     // click note to load note from sqlite
@@ -80,8 +79,8 @@ export const useEditorStore = defineStore('editor', {
         // load new note
         const data = await nModel.get(id)
         if (data == undefined) return
-
-        let current: DNote = {
+        this.isLoadNewNote = true
+        this.currentNote = {
           id: data.id,
           markdown: data.content,
           title: data.title,
@@ -89,35 +88,9 @@ export const useEditorStore = defineStore('editor', {
           isSave: true,
           content: data.content,
         }
-        this.set_current_note(current)
         this.isEdit = true
       } catch (err) {
         console.log(err)
-      }
-    },
-
-    async addNote(bid: any) {
-      const user = useUserStore()
-      const sidebar = useSidebarStore()
-
-      const time = Date.parse(Date()) / 1000
-      const note = {
-        uid: user.id,
-        guid: uuid(),
-        bid,
-        title: '未命名',
-        content: '',
-        modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
-        SC: 0, //新建时该值无用
-        addDate: time,
-        modifyDate: time,
-      }
-      try {
-        const id = await nModel.add(note)
-        await sidebar.loadNotes()
-        await this.loadNote(id)
-      } catch (err) {
-        return console.log(err)
       }
     },
 
@@ -126,6 +99,10 @@ export const useEditorStore = defineStore('editor', {
       if (this.vidtor == null) {
         throw new Error('not init vditor')
       }
+      if (this.isSaving) {
+        return
+      }
+      this.isSaving = true
       let {
         markdown = '',
         id = 0,
@@ -134,79 +111,51 @@ export const useEditorStore = defineStore('editor', {
         isSave = false,
       } = this.currentNote
       if (id == undefined || id == 0) {
+        this.isSaving = false
         return
       }
       const newContent = this.vidtor?.getValue()
       this.currentNote.markdown = newContent
       markdown = newContent
       if (isSave && newContent == this.currentNote.content) {
-        console.debug(markdown, title, SC)
         console.debug('no need save')
+        this.isSaving = false
         return
       }
-      const origin = await nModel.get(id)
-      if (origin.content == markdown && origin.title == title) {
-        return
-      }
-      // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
-      if (origin.SC > SC) {
-        console.debug('need fix conflict')
-        console.debug(origin.SC)
-        console.debug(SC)
-        return this.__fixConflict
-      }
-      // update sqlite
-      const { modifyState } = origin
-      const time = Date.parse(Date()) / 1000
-      const data = {
-        content: markdown,
-        title,
-        modifyState: modifyState == 0 ? 2 : modifyState,
-        modifyDate: time,
-      }
-      await nModel.update(id, data)
-      this.currentNote.isSave = true
-      const sidebar = useSidebarStore()
-      await sidebar.loadNotes()
-    },
-
-    async deleteNote(id: number) {
-      const sidebar = useSidebarStore()
       try {
-        const { modifyState } = await nModel.get(id)
-        if (modifyState == 1) {
-          await nModel.delete(id)
-        } else {
-          const time = Date.parse(Date()) / 1000
-          const data = {
-            modifyState: 3,
-            modifyDate: time,
-          }
-          await nModel.update(id, data)
+        const origin = await nModel.get(id)
+        if (origin.content == markdown && origin.title == title) {
+          this.isSaving = false
+          return
         }
-        sidebar.loadNotes().then(() => {
-          if (id == this.currentNote.id) {
-            this.set_current_note(defaultNote)
-            this.isEdit = false
-          }
-        })
-        const sync = useSyncStore()
-        sync.sync()
+        // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
+        if (origin.SC > SC) {
+          console.debug('need fix conflict')
+          console.debug(origin.SC)
+          console.debug(SC)
+          await this.__fixConflict()
+          this.isSaving = false
+          return
+        }
+        // update sqlite
+        const { modifyState } = origin
+        const time = Date.parse(Date()) / 1000
+        const data = {
+          content: markdown,
+          title,
+          modifyState: modifyState == 0 ? 2 : modifyState,
+          modifyDate: time,
+        }
+        await nModel.update(id, data)
+        this.currentNote.isSave = true
+        this.isSaving = false
       } catch (err) {
+        this.isSaving = false
         console.log(err)
       }
     },
 
-    updateTitle(title: string) {
-      if (title != this.currentNote.title) {
-        this.currentNote.title = title
-        this.currentNote.isSave = false
-        this.handleAutoSave()
-      }
-    },
-
     updateContent(content: string) {
-      console.debug('update content', content)
       if (content != this.currentNote.content) {
         this.currentNote.markdown = content
         this.currentNote.isSave = false
@@ -253,9 +202,7 @@ export const useEditorStore = defineStore('editor', {
         local.markdown = newContent
         local.SC = server.SC
         local.isSave = true
-        this.set_current_note(local)
-
-        sidebar.loadNotes()
+        this.currentNote = local
       } catch (err) {
         console.log(err)
       }

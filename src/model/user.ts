@@ -11,7 +11,7 @@ export interface userItem {
 }
 
 export class User extends Model {
-  getActiver() {
+  getCurrentUser() {
     return db.get<userItem>(`select * from user where state= ?`, [1])
   }
 

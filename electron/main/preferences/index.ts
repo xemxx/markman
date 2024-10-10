@@ -3,8 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import EventEmitter from 'events'
 import Store from 'electron-store'
-import { BrowserWindow, ipcMain } from 'electron'
-import log from 'electron-log'
+import { ipcMain } from 'electron'
 import { hasSameKeys } from '../utils'
 import { Debug } from '../log'
 import { ROOT_PATH } from '../config'
@@ -20,8 +19,12 @@ class Preference extends EventEmitter {
     autoSave: unknown
     autoSaveDelay: unknown
     toggleSidebar: unknown
+    nativeBar: unknown
+
+    themeType: any
   }>
   staticPath: string
+  isLogging: boolean
   constructor(preferencesPath: string) {
     super()
 
@@ -43,7 +46,7 @@ class Preference extends EventEmitter {
     try {
       defaultSettings = fse.readJsonSync(this.staticPath)
     } catch (err) {
-      log.error(err)
+      console.error(err)
     }
 
     if (!defaultSettings) {
@@ -84,7 +87,6 @@ class Preference extends EventEmitter {
   }
 
   setItem(key: string, value: string | boolean) {
-    Debug('Event: broadcast-pref-changed' + ' key: ' + key + ' value: ' + value)
     ipcMain.emit('broadcast-pref-changed', { [key]: value })
     return this.store.set(key, value)
   }
@@ -100,21 +102,26 @@ class Preference extends EventEmitter {
    */
   setItems(settings: Electron.IpcMainEvent) {
     if (!settings) {
-      log.error(
+      console.error(
         'Cannot change settings without entires: object is undefined or null.',
       )
       return
     }
 
     Object.keys(settings).map(key => {
+      if (this.getItem(key) === settings[key]) {
+        return
+      }
       this.setItem(key, settings[key])
     })
   }
 
   _listenForIpcMain() {
-    ipcMain.on('m::get-user-pref', e => {
-      const win = BrowserWindow.fromWebContents(e.sender)
-      win?.webContents.send('m::user-pref', this.getAll())
+    ipcMain.handle('m::get-user-pref', e => {
+      return this.getAll()
+    })
+    ipcMain.handle('m::get-user-pref-one', (event, key: string) => {
+      return this.store.get(key)
     })
     ipcMain.on('m::set-user-pref', (e, settings) => {
       Debug(settings)

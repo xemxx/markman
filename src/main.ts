@@ -2,11 +2,11 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from '@/router'
 import { initDB } from '@/plugins/sqlite3/index'
-import 'ant-design-vue/dist/reset.css'
-import '@/assets/css/index.styl'
 import 'virtual:svg-icons-register'
 import pinia from '@/store'
-import { useUserStore } from '@/store/user'
+import { useUserStore, usePreferenceStore } from '@/store'
+
+import './assets/index.css'
 
 initDB()
 
@@ -15,20 +15,35 @@ const app = createApp(App)
 app
   .use(router)
   .use(pinia)
+  .directive('focus', {
+    mounted(el) {
+      el.focus()
+    },
+  })
   .mount('#app')
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*')
   })
 
-router.beforeEach((to, _, next) => {
-  const user = useUserStore()
+const user = useUserStore()
+
+router.beforeEach((to, from, next) => {
   if (to.matched.some(m => m.meta.auth)) {
     if (user.token === '') {
+      if (user.server === '') {
+        next({
+          path: '/login-setting',
+        })
+        return
+      }
       next({
-        path: '/sign/in',
+        path: '/login',
       })
       return
     }
   }
   next()
 })
+
+const preference = usePreferenceStore()
+preference.initListen()
