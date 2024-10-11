@@ -41,6 +41,7 @@ export const useEditorStore = defineStore('editor', {
     modify: false,
     isSaving: false,
     vidtor: <Vditor | null>null,
+    editor: <any>null,
     isLoadNewNote: false,
   }),
   actions: {

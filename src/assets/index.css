@@ -89,10 +89,15 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.milkdown {
+  @apply size-full flex-1 overflow-auto p-5 px-2 pb-10;
+}
+
+.editor {
+  @apply mx-auto;
 }

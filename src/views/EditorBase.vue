@@ -24,8 +24,16 @@
             <h1>Welcome</h1>
           </div>
           <div class="flex flex-1 flex-col" v-show="editorS.isEdit">
-            <Editor
-              :value="editorS.currentNote.content"
+            <!-- <MilkdownProvider>
+              <ProsemirrorAdapterProvider>
+                <MilkdownEditor
+                  v-model="editorS.currentNote.content!"
+                  @change="handleChange"
+                />
+              </ProsemirrorAdapterProvider>
+            </MilkdownProvider> -->
+            <CrepeEditor
+              v-model="editorS.currentNote.content!"
               @change="handleChange"
             />
             <!-- <div class="tags">tags</div> -->
@@ -38,7 +46,10 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-import Editor from '@/components/editor/index.vue'
+import MilkdownEditor from '@/components/milkdown/MilkdownEditor.vue'
+import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
+import { MilkdownProvider } from '@milkdown/vue'
+import CrepeEditor from '@/components/milkdown/CrepeEditor.vue'
 import TitleBar from '@/components/titleBar.vue'
 import {
   ResizableHandle,
