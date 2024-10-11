@@ -52,9 +52,8 @@ watch(
 
 <template>
   <div
-    id="editorRoot"
     ref="editorRoot"
-    class="m-0 flex min-w-full flex-1 overflow-x-hidden border-none"
+    class="m-0 size-full min-w-full max-w-full border-none"
   />
 </template>
 

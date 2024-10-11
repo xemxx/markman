@@ -16,14 +16,14 @@
       </ResizablePanel>
       <ResizableHandle id="handle-1" />
       <ResizablePanel id="editor" :default-size="82">
-        <div class="flex h-full flex-1">
+        <div class="size-full">
           <div
             class="flex flex-1 content-center justify-center"
             v-show="!editorS.isEdit"
           >
             <h1>Welcome</h1>
           </div>
-          <div class="flex flex-1 flex-col" v-show="editorS.isEdit">
+          <div class="flex size-full flex-1 flex-col" v-show="editorS.isEdit">
             <!-- <MilkdownProvider>
               <ProsemirrorAdapterProvider>
                 <MilkdownEditor
