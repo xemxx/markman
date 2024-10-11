@@ -34,6 +34,7 @@ onMounted(() => {
   crepe.create().then(() => {
     console.log('Editor created')
   })
+  editorS.editor = crepe
 })
 
 import { onMounted, watch } from 'vue'

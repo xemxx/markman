@@ -25,6 +25,7 @@ const defaultNote: DNote = {
   SC: 0,
   isSave: true,
 }
+import { Crepe } from '@milkdown/crepe'
 
 export const useEditorStore = defineStore('editor', {
   state: () => ({
@@ -41,7 +42,7 @@ export const useEditorStore = defineStore('editor', {
     modify: false,
     isSaving: false,
     vidtor: <Vditor | null>null,
-    editor: <any>null,
+    editor: <Crepe | null>null,
     isLoadNewNote: false,
   }),
   actions: {
@@ -97,7 +98,7 @@ export const useEditorStore = defineStore('editor', {
 
     // save note to sqlite
     async saveNote() {
-      if (this.vidtor == null) {
+      if (this.editor == null) {
         throw new Error('not init vditor')
       }
       if (this.isSaving) {
@@ -115,7 +116,7 @@ export const useEditorStore = defineStore('editor', {
         this.isSaving = false
         return
       }
-      const newContent = this.vidtor?.getValue()
+      const newContent = this.editor.getMarkdown()
       this.currentNote.markdown = newContent
       markdown = newContent
       if (isSave && newContent == this.currentNote.content) {
@@ -176,9 +177,67 @@ export const useEditorStore = defineStore('editor', {
       const timeFunc = setTimeout(async () => {
         autoSaveTimers.delete(this.currentNote.id)
         console.debug('do auto save')
-        await this.saveNote()
+        if (this.editor != null) {
+          await this.autoSaveNote(this.editor.getMarkdown())
+        }
       }, autoSaveDelay)
       autoSaveTimers.set(this.currentNote.id, timeFunc)
+    },
+
+    async autoSaveNote(newContent: string) {
+      if (this.isSaving) {
+        return
+      }
+      this.isSaving = true
+      let {
+        markdown = '',
+        id = 0,
+        title = '',
+        SC = 0,
+        isSave = false,
+      } = this.currentNote
+      if (id == undefined || id == 0) {
+        this.isSaving = false
+        return
+      }
+      this.currentNote.markdown = newContent
+      markdown = newContent
+      if (isSave && newContent == this.currentNote.content) {
+        console.debug('no need save')
+        this.isSaving = false
+        return
+      }
+      try {
+        const origin = await nModel.get(id)
+        if (origin.content == markdown && origin.title == title) {
+          this.isSaving = false
+          return
+        }
+        // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
+        if (origin.SC > SC) {
+          console.debug('need fix conflict')
+          console.debug(origin.SC)
+          console.debug(SC)
+          await this.__fixConflict()
+          this.isSaving = false
+          return
+        }
+        // update sqlite
+        const { modifyState } = origin
+        const time = Date.parse(Date()) / 1000
+        const data = {
+          content: markdown,
+          title,
+          modifyState: modifyState == 0 ? 2 : modifyState,
+          modifyDate: time,
+        }
+        await nModel.update(id, data)
+        this.currentNote.isSave = true
+        this.isSaving = false
+      } catch (err) {
+        this.isSaving = false
+        console.log(err)
+      }
     },
 
     //no feel to conflict
