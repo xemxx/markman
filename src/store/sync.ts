@@ -30,7 +30,7 @@ export const useSyncStore = defineStore('sync', {
   actions: {
     update_online(value: boolean) {
       this.online = value
-      if (value == false) {
+      if (!value) {
         setTimeout(() => this.checkServerOnline(), 10000)
       }
     },

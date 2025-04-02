@@ -10,36 +10,36 @@ class Sqlite {
   }
   // 连接数据库
   connect(path: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db = new sqlite.Database(path, err => {
-        if (err === null) {
-          resolve(err)
-        } else {
+        if (err) {
           reject(err)
+        } else {
+          resolve()
         }
       })
     })
   }
   // 运行sql
   run(sql: string, params: any) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db.run(sql, params, err => {
-        if (err === null) {
-          resolve(err)
-        } else {
+        if (err) {
           reject(err)
+        } else {
+          resolve()
         }
       })
     })
   }
   // 运行多条sql
   exec(sql: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db.exec(sql, err => {
-        if (err === null) {
-          resolve(err)
-        } else {
+        if (err) {
           reject(err)
+        } else {
+          resolve()
         }
       })
     })
@@ -49,7 +49,6 @@ class Sqlite {
     return new Promise<T>((resolve, reject) => {
       this.db.get(sql, params, (err, data: T) => {
         if (err) {
-          console.log('run:' + err)
           reject(err)
         } else {
           resolve(data)
@@ -76,7 +75,9 @@ class Sqlite {
 
   // 单例
   static getInstance(dbPath: string) {
-    this.instance = this.instance ? this.instance : new Sqlite(dbPath)
+    if (!this.instance) {
+      this.instance = new Sqlite(dbPath)
+    }
     return this.instance
   }
 }
