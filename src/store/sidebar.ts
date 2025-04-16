@@ -1,12 +1,9 @@
-import { Notebook, notebookItem } from '@/model/notebook.js'
-import { noteItem, NoteModel } from '@/model/note'
+import { NodeModel, NodeItem } from '@/model/node'
 import { v1 as uuid } from 'uuid'
 import { defineStore } from 'pinia'
 import { useUserStore, useEditorStore, useSyncStore } from './index'
 
-const model = new Notebook()
-
-const nModel = new NoteModel()
+const nodeModel = new NodeModel()
 
 export interface TreeNode {
   icon: string
@@ -33,16 +30,13 @@ export interface DragNodeData {
 }
 
 interface State {
-  notebooks: notebookItem[]
+  nodes: NodeItem[]
   type: string
   flagId: string
   tid: string
   treeLabels: TreeNode[]
   selectedKeys: string[]
-  rootNotes: noteItem[] // 根目录下的笔记
-  rootNoteBookNames: {
-    [key: string]: string
-  }
+  rootNodes: NodeItem[] // 根目录下的节点
   inSearch: boolean
   searchResult: TreeNode[]
   currentDragNode: DragNodeData | null // 当前拖拽中的节点
@@ -125,14 +119,13 @@ const insertNode = (
 
 export const useSidebarStore = defineStore('sidebar', {
   state: (): State => ({
-    notebooks: [],
+    nodes: [],
     type: 'all',
     flagId: '',
     tid: '',
     treeLabels: [],
     selectedKeys: [],
-    rootNotes: [],
-    rootNoteBookNames: {},
+    rootNodes: [],
     inSearch: false,
     searchResult: [],
     currentDragNode: null, // 初始化为null
@@ -141,26 +134,29 @@ export const useSidebarStore = defineStore('sidebar', {
     async loadNodeTree() {
       const user = useUserStore()
       try {
-        // 加载根目录笔记
-        this.rootNotes = await nModel.getAllByBook(user.id, 'root')
+        if (user.id === null) {
+          console.error('User ID is null')
+          return
+        }
+        // 加载所有节点
+        this.nodes = await nodeModel.getAll(user.id)
 
-        // 加载所有笔记本
-        this.notebooks = await model.getAll(user.id)
-
-        // 获取所有笔记，用于构建多级嵌套
-        const allNotes = await nModel.getAll(user.id)
+        // 加载根目录节点
+        this.rootNodes = await nodeModel.getChildren(user.id, 'root')
 
         // 创建节点映射，用于快速查找
         const nodeMap = new Map<string, TreeNode>()
 
-        // 构建根目录笔记节点
-        const rootNoteNodes = this.rootNotes.map(note => {
-          const node: TreeNode = {
-            label: note.title,
-            icon: 'icon-[ion--document-text-outline]',
-            data: note,
-            key: note.guid,
-            type: 'file' as const,
+        // 构建根目录节点
+        const rootTreeNodes = this.rootNodes.map(node => {
+          const treeNode: TreeNode = {
+            label: node.title,
+            icon: node.type === 'folder'
+              ? 'icon-[lucide--folder]'
+              : 'icon-[ion--document-text-outline]',
+            data: node,
+            key: node.guid,
+            type: node.type === 'folder' ? 'folder' : 'file',
             selected: false,
             parentId: 'root',
             level: 0,
@@ -168,51 +164,29 @@ export const useSidebarStore = defineStore('sidebar', {
             canContainChildren: true,
             children: [],
           }
-          nodeMap.set(note.guid, node)
-          return node
+          nodeMap.set(node.guid, treeNode)
+          return treeNode
         })
 
-        // 构建笔记本节点
-        const notebookNodes = await Promise.all(
-          this.notebooks.map(async notebook => {
-            const node: TreeNode = {
-              label: notebook.name,
-              icon: 'icon-[lucide--folder]',
-              data: notebook,
-              key: notebook.guid,
-              type: 'folder',
-              selected: false,
-              parentId: 'root',
-              level: 0,
-              isExpanded: false,
-              canContainChildren: true,
-              children: [],
-            }
-            nodeMap.set(notebook.guid, node)
-            return node
-          }),
-        )
+        // 处理所有非根节点，构建多级嵌套关系
+        this.nodes.forEach(node => {
+          // 跳过根目录节点，因为已经处理过
+          if (node.parentId === 'root' || !node.parentId) return
 
-        // 临时存储所有根节点（直接子节点的父ID是'root'）
-        const rootNodes = [...rootNoteNodes, ...notebookNodes]
+          // 检查这个节点是否已经被处理过
+          if (nodeMap.has(node.guid)) return
 
-        // 处理所有非根节点的笔记，构建多级嵌套关系
-        allNotes.forEach(note => {
-          // 跳过根目录笔记，因为已经处理过
-          if (note.bid === 'root' || !note.bid) return
-
-          // 检查这个笔记是否已经被处理过
-          if (nodeMap.has(note.guid)) return
-
-          // 创建笔记节点
-          const noteNode: TreeNode = {
-            label: note.title,
-            icon: 'icon-[ion--document-text-outline]',
-            data: note,
-            key: note.guid,
-            type: 'file',
+          // 创建树节点
+          const treeNode: TreeNode = {
+            label: node.title,
+            icon: node.type === 'folder'
+              ? 'icon-[lucide--folder]'
+              : 'icon-[ion--document-text-outline]',
+            data: node,
+            key: node.guid,
+            type: node.type === 'folder' ? 'folder' : 'file',
             selected: false,
-            parentId: note.bid,
+            parentId: node.parentId,
             level: 0, // 临时值，后面会重新计算
             isExpanded: false,
             canContainChildren: true,
@@ -220,11 +194,11 @@ export const useSidebarStore = defineStore('sidebar', {
           }
 
           // 将节点添加到映射
-          nodeMap.set(note.guid, noteNode)
+          nodeMap.set(node.guid, treeNode)
         })
 
         // 构建节点层级关系
-        for (const [key, node] of nodeMap.entries()) {
+        for (const [, node] of nodeMap.entries()) {
           // 跳过无父节点ID或父节点ID为root的节点
           if (!node.parentId || node.parentId === 'root') continue
 
@@ -241,7 +215,7 @@ export const useSidebarStore = defineStore('sidebar', {
           } else {
             // 如果没有找到父节点，将其作为根节点
             node.parentId = 'root'
-            rootNodes.push(node)
+            rootTreeNodes.push(node)
           }
         }
 
@@ -256,14 +230,15 @@ export const useSidebarStore = defineStore('sidebar', {
         }
 
         // 调整所有根节点的层级
-        adjustLevel(rootNodes, 0)
+        adjustLevel(rootTreeNodes, 0)
 
         // 设置最终的树结构
-        this.treeLabels = rootNodes
+        this.treeLabels = rootTreeNodes
       } catch (err) {
         console.error('加载节点树时出错:', err)
       }
     },
+
     // 判断节点是否可以包含子节点
     canAddChildren(node: TreeNode): boolean {
       // 如果明确设置为不能包含子节点，则返回false
@@ -275,23 +250,31 @@ export const useSidebarStore = defineStore('sidebar', {
       // 默认所有节点都可以包含子节点
       return true
     },
+
     // 在给定节点下创建新笔记
     async addNoteInFolder(parentId: string): Promise<string | undefined> {
       const user = useUserStore()
+      if (user.id === null) {
+        console.error('User ID is null')
+        return
+      }
       const time = Date.parse(Date()) / 1000
       const note = {
         uid: user.id,
         guid: uuid(),
-        bid: parentId, // parentId 可以是文件夹或文件的 guid
+        parentId: parentId, // 父节点的guid
         title: '未命名',
         content: '',
+        type: 'note' as 'note',
+        sort: 0,
+        sortType: 0,
         modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
         SC: 0, //新建时该值无用
         addDate: time,
         modifyDate: time,
       }
       try {
-        const id = await nModel.add(note)
+        const id = await nodeModel.add(note)
         const editor = useEditorStore()
         editor.checkoutNote(id)
         return note.guid
@@ -299,51 +282,61 @@ export const useSidebarStore = defineStore('sidebar', {
         console.error(err)
       }
     },
+
+    // 添加新的根目录笔记
+    async addRootNote() {
+      return this.addNoteInFolder('root')
+    },
+
+    // 添加树节点
     async addTreeNode(node: TreeNode, guid: string) {
-      const note = await nModel.getByGuid(guid)
+      const nodeData = await nodeModel.getByGuid(guid)
       const newNode: TreeNode = {
-        label: note.title,
-        icon: 'icon-[ion--document-text-outline]',
-        data: note,
+        label: nodeData.title,
+        icon: nodeData.type === 'folder'
+          ? 'icon-[lucide--folder]'
+          : 'icon-[ion--document-text-outline]',
+        data: nodeData,
         key: guid,
-        type: 'file',
+        type: nodeData.type === 'folder' ? 'folder' : 'file',
         selected: true,
         parentId: node.key,
         level: node.level + 1,
         isExpanded: false,
         isNew: true,
-        // 默认新创建的笔记节点可以包含子节点
+        // 默认新创建的节点可以包含子节点
         canContainChildren: true,
       }
       insertNode(this.treeLabels, node, newNode)
       return newNode
     },
+
+    // 删除树节点
     async deleteTreeNode(node: TreeNode) {
       removeNode(this.treeLabels, node)
     },
-    async loadNotebooks() {
-      const user = useUserStore()
-      try {
-        const notebooks = await model.getAll(user.id)
-        this.notebooks = notebooks
-      } catch (err) {
-        console.log(err)
-      }
-    },
 
-    async addFolder(name: any) {
+    // 添加文件夹
+    async addFolder(name: string) {
       const user = useUserStore()
+      if (user.id === null) {
+        console.error('User ID is null')
+        return
+      }
       const sync = useSyncStore()
       const time = Date.parse(Date()) / 1000
       try {
-        await model.add({
+        await nodeModel.add({
           uid: user.id,
-          name: name,
           guid: uuid(),
+          parentId: 'root',
+          title: name,
+          content: '',
+          type: 'folder' as 'folder',
+          sort: 1,
+          sortType: 1,
           modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
           SC: 0, //暂时不用
-          sort: 1, //暂时不用
-          sortType: 1, //暂时不用
           addDate: time,
           modifyDate: time,
         })
@@ -354,16 +347,12 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
+    // 删除文件夹
     async deleteFolder(id: any) {
       const sync = useSyncStore()
-      let guid = ''
-      for (let i = 0; i < this.notebooks.length; i++) {
-        if (this.notebooks[i].id == id) {
-          guid = this.notebooks[i].guid
-        }
-      }
       try {
-        await model.deleteLocal(id, guid)
+        const node = await nodeModel.get(id)
+        await nodeModel.deleteLocal(id, node.guid)
         //同步服务器
         sync.sync()
       } catch (err) {
@@ -371,31 +360,33 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    async updateFolder({ id, name }) {
+    // 更新文件夹
+    async updateFolder({ id, name }: { id: number, name: string }) {
       const sync = useSyncStore()
-      const folder = await model.get(id)
-      if (folder.name == name) {
+      const folder = await nodeModel.get(id)
+      if (folder.title === name) {
         return
       }
       const { modifyState } = folder
-      if (name != '') {
-        await model.update(id, {
-          name,
+      if (name !== '') {
+        await nodeModel.update(id, {
+          title: name,
           modifyState: modifyState === 0 ? 2 : modifyState,
         })
         sync.sync()
       }
     },
 
-    async updateNote({ id, title }) {
+    // 更新笔记
+    async updateNote({ id, title }: { id: number, title: string }) {
       const sync = useSyncStore()
-      const note = await nModel.get(id)
-      if (note.title == title) {
+      const note = await nodeModel.get(id)
+      if (note.title === title) {
         return
       }
       const { modifyState } = note
-      if (title != '') {
-        await nModel.update(id, {
+      if (title !== '') {
+        await nodeModel.update(id, {
           title,
           modifyState: modifyState === 0 ? 2 : modifyState,
         })
@@ -403,31 +394,31 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    async moveNote({ id, bid }) {
-      const sync = useSyncStore()
+    // 移动笔记
+    async moveNote({ id, parentId }: { id: number, parentId: string }) {
       try {
-        await nModel.update(id, { bid, modifyState: 2 })
-        sync.sync()
+        await nodeModel.update(id, { parentId, modifyState: 2 })
       } catch (err) {
         return console.log(err)
       }
     },
 
+    // 删除笔记
     async deleteNote(id: number) {
       const editor = useEditorStore()
       try {
-        const { modifyState } = await nModel.get(id)
-        if (modifyState == 1) {
-          await nModel.delete(id)
+        const { modifyState } = await nodeModel.get(id)
+        if (modifyState === 1) {
+          await nodeModel.delete(id)
         } else {
           const time = Date.parse(Date()) / 1000
           const data = {
             modifyState: 3,
             modifyDate: time,
           }
-          await nModel.update(id, data)
+          await nodeModel.update(id, data)
         }
-        if (id == editor.currentNote.id) {
+        if (id === editor.currentNote.id) {
           editor.resetDefaultNote()
           editor.isEdit = false
         }
@@ -438,10 +429,12 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
+    // 重命名树节点
     renameTreeNode(node: TreeNode, newName: string) {
       return renameNode(this.treeLabels, node, newName)
     },
 
+    // 移动树节点
     moveTreeNode(node: TreeNode, targetNodeKey: string) {
       // 不能将节点移动到自己下面
       if (node.key === targetNodeKey) return false
@@ -449,7 +442,7 @@ export const useSidebarStore = defineStore('sidebar', {
       // 不能将节点移动到其子节点下（防止循环引用）
       if (
         targetNodeKey !== 'root' &&
-        this.isDescendantOf(node.key, targetNodeKey)
+        this.isDescendantOf(targetNodeKey,node.key)
       ) {
         console.error('无法将节点移动到其子节点下')
         return false
@@ -466,6 +459,66 @@ export const useSidebarStore = defineStore('sidebar', {
       return false
     },
 
+    // 检查是否是子节点
+    isDescendantOf(nodeKey: string, potentialAncestorKey: string): boolean {
+      // 如果节点键相同，返回 false（不是子节点关系）
+      if (nodeKey === potentialAncestorKey) {
+        return false
+      }
+
+      // 递归检查节点及其子节点
+      const isDescendant = (nodes: TreeNode[], targetKey: string): boolean => {
+        for (const node of nodes) {
+          // 如果当前节点就是要检查的节点，返回 true
+          if (node.key === targetKey) {
+            return true
+          }
+          // 如果有子节点，递归检查
+          if (node.children && node.children.length > 0) {
+            if (isDescendant(node.children, targetKey)) {
+              return true
+            }
+          }
+        }
+        return false
+      }
+
+      // 在树中查找指定节点
+      const findNode = (nodes: TreeNode[], key: string): TreeNode | null => {
+        for (const node of nodes) {
+          if (node.key === key) {
+            return node
+          }
+          if (node.children) {
+            const found = findNode(node.children, key)
+            if (found) {
+              return found
+            }
+          }
+        }
+        return null
+      }
+
+      // 找到潜在的祖先节点
+      const ancestorNode = findNode(this.treeLabels, potentialAncestorKey)
+      if (!ancestorNode) {
+        return false
+      }
+
+      // 如果要检查的节点就是祖先节点本身，返回 false
+      if (ancestorNode.key === nodeKey) {
+        return false
+      }
+
+      // 检查节点是否在祖先节点的子节点中
+      if (ancestorNode.children && ancestorNode.children.length > 0) {
+        return isDescendant(ancestorNode.children, nodeKey)
+      }
+
+      return false
+    },
+
+    // 搜索树节点
     searchTreeNodes(searchStr: string) {
       if (searchStr === '') {
         return
@@ -496,131 +549,89 @@ export const useSidebarStore = defineStore('sidebar', {
       }
       this.searchResult = searchNodes(this.treeLabels, searchStr)
     },
+
+    // 退出搜索
     exitSearch() {
       this.inSearch = false
     },
-    // 直接在根目录添加笔记
-    async addRootNote(): Promise<TreeNode | undefined> {
-      const noteGuid = await this.addNoteInFolder('root')
-      if (noteGuid) {
-        const note = await nModel.getByGuid(noteGuid)
-        // 创建新节点
-        const newNode: TreeNode = {
-          label: note.title,
-          icon: 'icon-[ion--document-text-outline]',
-          data: note,
-          key: noteGuid,
-          type: 'file',
-          selected: true,
-          parentId: 'root',
-          level: 0,
-          isExpanded: false,
-          isNew: true,
-        }
-        // 直接添加到顶层
-        this.treeLabels.unshift(newNode)
-        return newNode
-      }
-      return undefined
-    },
-    // 移动文件夹的方法
-    async moveFolder(folderId: string, targetFolderId: string) {
-      // 如果拖拽到根目录，targetFolderId 为 'root'
-      // 此处需要根据实际数据库结构实现
-      // 这里只实现树结构的变更
-      const sync = useSyncStore()
-      try {
-        // 不能将文件夹移动到自身或其子节点中（防止循环引用）
-        if (folderId === targetFolderId) return
 
-        // 检查目标文件夹是否是当前文件夹的子节点（防止循环引用）
-        if (targetFolderId !== 'root') {
-          const isChildFolder = this.isDescendantOf(folderId, targetFolderId)
-          if (isChildFolder) {
-            console.error('无法将文件夹移动到其子文件夹中')
-            return
-          }
-        }
-
-        // 这里应该添加实际的数据库操作来移动文件夹
-        // 目前的实现仅更新内存中的树结构
-
-        // 找到要移动的文件夹节点
-        const folderToMove = this.treeLabels.find(node => node.key === folderId)
-        if (folderToMove && folderToMove.type === 'folder') {
-          // 更新其父节点ID
-          folderToMove.parentId = targetFolderId
-
-          // 如果文件夹已经在树中的顶层，需要先移除它
-          const index = this.treeLabels.findIndex(node => node.key === folderId)
-          if (index !== -1) {
-            this.treeLabels.splice(index, 1)
-          }
-
-          // 将文件夹添加到目标节点的子节点中
-          if (targetFolderId === 'root') {
-            // 移动到根目录，直接添加到顶层
-            this.treeLabels.push(folderToMove)
-          } else {
-            // 移动到另一个文件夹内
-            const targetFolder = this.treeLabels.find(
-              node => node.key === targetFolderId,
-            )
-            if (targetFolder) {
-              if (!targetFolder.children) {
-                targetFolder.children = []
-              }
-              targetFolder.children.push(folderToMove)
-            }
-          }
-
-          // 同步到服务器
-          sync.sync()
-        }
-      } catch (err) {
-        console.error('移动文件夹失败:', err)
-      }
-    },
-    // 检查nodeId是否是potentialAncestorId的后代节点
-    isDescendantOf(potentialAncestorId: string, targetId: string): boolean {
-      // 查找潜在祖先节点
-      const findNode = (nodes: TreeNode[], id: string): TreeNode | null => {
-        for (const node of nodes) {
-          if (node.key === id) return node
-          if (node.children) {
-            const found = findNode(node.children, id)
-            if (found) return found
-          }
-        }
-        return null
-      }
-
-      // 检查目标节点是否在节点的子树中
-      const isInSubtree = (node: TreeNode, id: string): boolean => {
-        if (!node.children) return false
-
-        for (const child of node.children) {
-          if (child.key === id) return true
-          if (isInSubtree(child, id)) return true
-        }
-        return false
-      }
-
-      // 先找到潜在的祖先节点
-      const ancestorNode = findNode(this.treeLabels, potentialAncestorId)
-      if (!ancestorNode) return false
-
-      // 检查目标节点是否在祖先节点的子树中
-      return isInSubtree(ancestorNode, targetId)
-    },
-    // 设置当前拖拽的节点
-    setDragNode(node: DragNodeData) {
+    // 设置拖拽节点
+    setDragNode(node: DragNodeData | null) {
       this.currentDragNode = node
     },
 
-    // 清除当前拖拽的节点
+    // 清除拖拽节点
     clearDragNode() {
       this.currentDragNode = null
     },
+
+    // 移动文件夹
+    async moveFolder(id: string, targetId: string) {
+      const node = await nodeModel.getByGuid(id)
+      if (!node) return false
+
+      const sync = useSyncStore()
+      try {
+        await nodeModel.update(node.id, {
+          parentId: targetId,
+          modifyState: node.modifyState === 0 ? 2 : node.modifyState
+        })
+        sync.sync()
+        return true
+      } catch (err) {
+        console.error(err)
+        return false
+      }
+    },
+
+    // 处理拖拽到根目录
+    async handleDropToRoot() {
+      if (!this.currentDragNode) return false
+
+      const { key } = this.currentDragNode
+      const node = await nodeModel.getByGuid(key)
+
+      if (!node) return false
+
+      // 更新节点的父ID为root
+      await nodeModel.update(node.id, {
+        parentId: 'root',
+        modifyState: node.modifyState === 0 ? 2 : node.modifyState,
+      })
+
+      // 刷新树
+      await this.loadNodeTree()
+
+      // 同步到服务器
+      const sync = useSyncStore()
+      sync.sync()
+
+      return true
+    },
+
+    // 处理节点拖拽
+    async handleNodeDrop(sourceKey: string, targetKey: string) {
+      if (sourceKey === targetKey) return false
+
+      const sourceNode = await nodeModel.getByGuid(sourceKey)
+      const targetNode = await nodeModel.getByGuid(targetKey)
+
+      if (!sourceNode || !targetNode) return false
+
+      // 更新节点的父ID
+      await nodeModel.update(sourceNode.id, {
+        parentId: targetNode.guid,
+        modifyState: sourceNode.modifyState === 0 ? 2 : sourceNode.modifyState,
+      })
+
+      // 刷新树
+      await this.loadNodeTree()
+
+      // 同步到服务器
+      const sync = useSyncStore()
+      sync.sync()
+
+      return true
+    }
   },
 })

@@ -255,7 +255,7 @@ const onDrop = async (event: DragEvent) => {
       // 移动文件到根目录
       await sidebar.moveNote({
         id: draggedNode.data.id,
-        bid: 'root',
+        parentId: 'root',
       })
     } else if (draggedNode.type === 'folder') {
       // 移动文件夹到根目录

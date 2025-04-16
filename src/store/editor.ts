@@ -1,11 +1,11 @@
-import { NoteModel } from '@/model/note'
+import { NodeModel } from '@/model/node'
 
 import { emitter } from '@/lib/emitter.ts'
 import { defineStore } from 'pinia'
 import { useSyncStore, usePreferenceStore, useSidebarStore } from './index'
 import Vditor from 'vditor'
 
-const nModel = new NoteModel()
+const nodeModel = new NodeModel()
 
 const autoSaveTimers = new Map()
 
@@ -79,7 +79,7 @@ export const useEditorStore = defineStore('editor', {
     async loadNote(id: number) {
       try {
         // load new note
-        const data = await nModel.get(id)
+        const data = await nodeModel.get(id)
         if (data == undefined) return
         this.isLoadNewNote = true
         this.currentNote = {
@@ -125,7 +125,7 @@ export const useEditorStore = defineStore('editor', {
         return
       }
       try {
-        const origin = await nModel.get(id)
+        const origin = await nodeModel.get(id)
         if (origin.content == markdown && origin.title == title) {
           this.isSaving = false
           return
@@ -148,7 +148,7 @@ export const useEditorStore = defineStore('editor', {
           modifyState: modifyState == 0 ? 2 : modifyState,
           modifyDate: time,
         }
-        await nModel.update(id, data)
+        await nodeModel.update(id, data)
         this.currentNote.isSave = true
         this.isSaving = false
       } catch (err) {
@@ -208,7 +208,7 @@ export const useEditorStore = defineStore('editor', {
         return
       }
       try {
-        const origin = await nModel.get(id)
+        const origin = await nodeModel.get(id)
         if (origin.content == markdown && origin.title == title) {
           this.isSaving = false
           return
@@ -231,7 +231,7 @@ export const useEditorStore = defineStore('editor', {
           modifyState: modifyState == 0 ? 2 : modifyState,
           modifyDate: time,
         }
-        await nModel.update(id, data)
+        await nodeModel.update(id, data)
         this.currentNote.isSave = true
         this.isSaving = false
       } catch (err) {
@@ -246,11 +246,11 @@ export const useEditorStore = defineStore('editor', {
 
       try {
         let local = this.currentNote
-        let server = await nModel.get(local.id)
+        let server = await nodeModel.get(local.id)
         let newTitle = `local:${local.title} [---] server:${server.title}`
         let newContent = `local>>>>>>>>>>>>>>\n${local.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${server.content}`
         let newModifyDate = Date.parse(Date()) / 1000
-        await nModel.update(local.id, {
+        await nodeModel.update(local.id, {
           title: newTitle,
           content: newContent,
           modifyDate: newModifyDate,

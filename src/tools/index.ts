@@ -2,11 +2,11 @@ export function getCookie(key: string) {
   return localStorage.getItem(key)
 }
 
-export function setCookie(key, val) {
+export function setCookie(key: string, val: string) {
   return localStorage.setItem(key, val)
 }
 
-export function deleteCookie(key) {
+export function deleteCookie(key: string) {
   return localStorage.removeItem(key)
 }
 

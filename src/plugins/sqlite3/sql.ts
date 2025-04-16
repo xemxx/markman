@@ -10,6 +10,23 @@ export default [
   "lastST" INTEGER,
   "uuid" TEXT
 )`,
+  // 统一的node表，替代note和notebook
+  `CREATE TABLE IF NOT EXISTS node (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid INTEGER,
+  guid TEXT,
+  parentId TEXT, -- 父节点的guid，根节点为'root' --
+  title TEXT, -- 对应note的title和notebook的name --
+  content TEXT, -- 笔记内容，笔记本为空 --
+  type TEXT, -- 节点类型：'note'或'folder' --
+  sort INTEGER, -- 排序 --
+  sortType INTEGER, -- 排序类型 --
+  modifyState INTEGER, -- 0：不需要同步，1：新的东西，2：修改过的东西 3：本地删除但是未同步的数据 --
+  SC INTEGER,
+  addDate INTEGER,
+  modifyDate INTEGER
+)`,
+  // 保留旧表以便迁移
   // notebook
   `CREATE TABLE IF NOT EXISTS notebook (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

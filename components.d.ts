@@ -114,6 +114,7 @@ declare module 'vue' {
     MenubarSubContent: typeof import('./src/components/ui/menubar/MenubarSubContent.vue')['default']
     MenubarSubTrigger: typeof import('./src/components/ui/menubar/MenubarSubTrigger.vue')['default']
     MenubarTrigger: typeof import('./src/components/ui/menubar/MenubarTrigger.vue')['default']
+    MigrationTool: typeof import('./src/components/MigrationTool.vue')['default']
     MilkdownEditor: typeof import('./src/components/milkdown/MilkdownEditor.vue')['default']
     Popover: typeof import('./src/components/ui/popover/Popover.vue')['default']
     PopoverContent: typeof import('./src/components/ui/popover/PopoverContent.vue')['default']
