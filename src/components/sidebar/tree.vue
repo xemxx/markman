@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TreeItem from './treeItem.vue'
 
-import { TreeNode } from './types'
+import type { TreeNode } from '@/store/sidebar'
 
 withDefaults(
   defineProps<{

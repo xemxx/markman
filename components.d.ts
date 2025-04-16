@@ -159,5 +159,6 @@ declare module 'vue' {
     Tooltips: typeof import('./src/components/milkdown/Tooltips.vue')['default']
     Tree: typeof import('./src/components/sidebar/tree.vue')['default']
     TreeItem: typeof import('./src/components/sidebar/treeItem.vue')['default']
+    TreeNode: typeof import('./src/components/tree/TreeNode.vue')['default']
   }
 }
