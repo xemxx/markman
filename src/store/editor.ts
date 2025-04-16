@@ -1,6 +1,6 @@
 import { NoteModel } from '@/model/note'
 
-import { emitter } from '@/emitter'
+import { emitter } from '@/lib/emitter.ts'
 import { defineStore } from 'pinia'
 import { useSyncStore, usePreferenceStore, useSidebarStore } from './index'
 import Vditor from 'vditor'

@@ -58,7 +58,7 @@ import {
 } from '@/components/ui/resizable'
 
 import { computed, onMounted, onUnmounted } from 'vue'
-import { emitter } from '@/emitter'
+import { emitter } from '@/lib/emitter.ts'
 import { Modal } from 'ant-design-vue'
 
 import http from '@/plugins/axios'
