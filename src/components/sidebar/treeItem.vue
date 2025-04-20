@@ -105,7 +105,7 @@ const onDeleteFolder = async (node: TreeNode) => {
   sidebar.deleteTreeNode(node)
 }
 
-const treeItemRef = useTemplateRef('treeItemRef')
+const treeItemRef = useTemplateRef<HTMLElement>('treeItemRef')
 // add note
 const addNode = async (node: TreeNode) => {
   // 验证节点是否可以添加子节点
@@ -385,7 +385,7 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
           class="icon-[ion--document-text-outline] size-5 flex-none text-muted-foreground"
         />
       </template>
-      <div class="flex items-center flex-1 overflow-hidden group">
+      <div class="group flex flex-1 items-center overflow-hidden">
         <input
           v-if="inRenameMode"
           ref="nodeRenameInputRef"
@@ -393,16 +393,16 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
           @keyup.enter="doRenameNode(tree)"
           @blur="blurRenameBook"
           @keydown.stop
-          class="flex-1 px-2 py-1 text-sm border rounded-sm border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+          class="flex-1 rounded-sm border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           @click.stop
         />
         <template v-else>
-          <div class="flex-1 pl-2 truncate">
+          <div class="flex-1 truncate pl-2">
             <Dialog>
               <ContextMenu>
                 <ContextMenuTrigger as-child>
-                  <div class="flex items-center w-full">
-                    <span class="text-sm truncate">{{ tree.label }}</span>
+                  <div class="flex w-full items-center">
+                    <span class="truncate text-sm">{{ tree.label }}</span>
                   </div>
                 </ContextMenuTrigger>
                 <ContextMenuContent v-if="tree.type === 'folder'">
@@ -467,14 +467,14 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
             </Dialog>
           </div>
           <div
-            class="grid flex-none grid-cols-1 transition-opacity duration-300 opacity-0 place-content-center group-hover:opacity-100"
+            class="grid flex-none grid-cols-1 place-content-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             @click.stop
             v-show="!inRenameMode"
           >
             <Button
               variant="ghost"
               size="icon"
-              class="w-6 h-6"
+              class="h-6 w-6"
               @click="addNode(tree)"
             >
               <span class="icon-[lucide--plus] size-4" />

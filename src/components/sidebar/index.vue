@@ -154,7 +154,6 @@ onBeforeUnmount(() => {
 // 添加笔记本
 const bookInputShow = ref(false)
 const bookName = ref('')
-const bookInputRef = useTemplateRef('bookInputRef')
 
 const showAddBook = () => {
   bookInputShow.value = true

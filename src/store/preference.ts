@@ -8,8 +8,11 @@ const state = {
   // menu status
   toggleSidebar: false,
   nativeBar: true,
-
+  // theme
   themeType: 'light',
+  // sync
+  autoSync: true,
+  syncInterval: 60000, // 默认同步间隔：1分钟
 }
 
 export const usePreferenceStore = defineStore('preference', {

@@ -1,5 +1,5 @@
-export function getCookie(key: string) {
-  return localStorage.getItem(key)
+export function getCookie(key: string):string {
+  return localStorage.getItem(key) || ''
 }
 
 export function setCookie(key: string, val: string) {

@@ -8,12 +8,12 @@ const model = new User()
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    id: getCookie('uid') ? getCookie('uid') : '',
-    token: getCookie('token') ? getCookie('token') : '',
-    username: getCookie('username') ? getCookie('username') : '',
-    server: getCookie('server') ? getCookie('server') : '',
-    lastSC: getCookie('lastSC') ? getCookie('lastSC') : '',
-    uuid: getCookie('uuid') ? getCookie('uuid') : '',
+    id: getCookie('uid'),
+    token: getCookie('token'),
+    username: getCookie('username'),
+    server: getCookie('server'),
+    lastSC: getCookie('lastSC'),
+    uuid: getCookie('uuid'),
   }),
   actions: {
     async loadCurrentUser() {

@@ -34,6 +34,11 @@ const routes = [
         name: 'general',
       },
       {
+        path: 'sync',
+        component: () => import('@/components/preference/sync.vue'),
+        name: 'sync',
+      },
+      {
         path: 'image',
         component: () => import('@/components/preference/image.vue'),
         name: 'image',

@@ -9,6 +9,12 @@ export const category = [
     path: '/preference/general',
   },
   {
+    name: 'Sync',
+    label: 'sync',
+    icon: 'pref_sync',
+    path: '/preference/sync',
+  },
+  {
     name: 'Image',
     label: 'image',
     icon: 'pref_image',
