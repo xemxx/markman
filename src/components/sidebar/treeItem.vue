@@ -17,8 +17,8 @@ const sidebar = useSidebarStore()
 // load note
 import { useEditorStore } from '@/store'
 const editor = useEditorStore()
-const onNodeSelect = (node: any) => {
-  if (node.data.title) {
+const onNodeSelect = (node: TreeNode) => {
+  if (node.type == 'file') {
     editor.checkoutNote(node.data.id)
   }
 }

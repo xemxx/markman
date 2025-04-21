@@ -4,6 +4,7 @@ import { emitter } from '@/lib/emitter.ts'
 import { defineStore } from 'pinia'
 import { useSyncStore, usePreferenceStore, useSidebarStore } from './index'
 import Vditor from 'vditor'
+import { replaceAll } from '@milkdown/kit/utils'
 
 const nodeModel = new NodeModel()
 
@@ -13,7 +14,7 @@ interface DNote {
   id: number
   markdown: string
   title: string
-  content?: string
+  content: string //数据库内容
   SC: number
   isSave: boolean
 }
@@ -81,7 +82,6 @@ export const useEditorStore = defineStore('editor', {
         // load new note
         const data = await nodeModel.get(id)
         if (data == undefined) return
-        this.isLoadNewNote = true
         this.currentNote = {
           id: data.id,
           markdown: data.content,
@@ -90,6 +90,7 @@ export const useEditorStore = defineStore('editor', {
           isSave: true,
           content: data.content,
         }
+        this.isLoadNewNote = true
         this.isEdit = true
       } catch (err) {
         console.log(err)

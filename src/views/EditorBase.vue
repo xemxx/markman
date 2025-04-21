@@ -24,18 +24,9 @@
             <h1>Welcome</h1>
           </div>
           <div class="flex size-full flex-1 flex-col" v-show="editorS.isEdit">
-            <!-- <MilkdownProvider>
-              <ProsemirrorAdapterProvider>
-                <MilkdownEditor
-                  v-model="editorS.currentNote.content!"
-                  @change="handleChange"
-                />
-              </ProsemirrorAdapterProvider>
-            </MilkdownProvider> -->
-            <CrepeEditor
-              v-model="editorS.currentNote.content!"
-              @change="handleChange"
-            />
+            <MilkdownProvider>
+              <CrepeEditor />
+            </MilkdownProvider>
             <!-- <div class="tags">tags</div> -->
           </div>
         </div>
@@ -46,10 +37,8 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-import MilkdownEditor from '@/components/milkdown/MilkdownEditor.vue'
-import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
-import { MilkdownProvider } from '@milkdown/vue'
 import CrepeEditor from '@/components/milkdown/CrepeEditor.vue'
+import { MilkdownProvider } from '@milkdown/vue'
 import TitleBar from '@/components/titleBar.vue'
 import {
   ResizableHandle,
@@ -75,9 +64,7 @@ import { useRouter } from 'vue-router'
 
 const editorS = useEditorStore()
 
-const handleChange = (value: string) => {
-  editorS.updateContent(value)
-}
+// 不再需要 handleChange 函数，因为 MilkdownEditor 直接更新 store
 const showCloseQuery = (id: any) => {
   Modal.confirm({
     content: '当前笔记改动是否保存？',

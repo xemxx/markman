@@ -145,7 +145,18 @@ export const useSyncStore = defineStore('sync', {
         for (const server of serverData) {
           const local = localData.get(server.guid)
           //获取要更新的值
-          let { guid, title, content, SC, addDate, modifyDate, parentId, type, sort, sortType } = server
+          let {
+            guid,
+            title,
+            content,
+            SC,
+            addDate,
+            modifyDate,
+            parentId,
+            type,
+            sort,
+            sortType,
+          } = server
           addDate = Date.parse(addDate) / 1000
           modifyDate = Date.parse(modifyDate) / 1000
 
@@ -182,7 +193,10 @@ export const useSyncStore = defineStore('sync', {
                   // 代表本地数据被修改，且服务端SC更高，需要进行冲突处理
                   if (type === 'folder') {
                     // 文件夹的处理方案很简单，一般来说只存在文件夹名称的修改，所以只需要看修改时间覆盖掉就好
-                    if (Date.parse(local.modifyDate) < Date.parse(server.modifyDate)) {
+                    if (
+                      Date.parse(local.modifyDate) <
+                      Date.parse(server.modifyDate)
+                    ) {
                       nodeModel.update(local.id, {
                         title,
                         SC,
@@ -195,7 +209,8 @@ export const useSyncStore = defineStore('sync', {
                     let newTitle = `local:${local.title} [---] server:${server.title}`
                     let newContent = `local>>>>>>>>>>>>>>\n${local.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${server.content}`
                     let newModifyDate =
-                      Date.parse(local.modifyDate) < Date.parse(server.modifyDate)
+                      Date.parse(local.modifyDate) <
+                      Date.parse(server.modifyDate)
                         ? Date.parse(server.modifyDate) / 1000
                         : Date.parse(local.modifyDate) / 1000
                     nodeModel.update(local.id, {
