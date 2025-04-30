@@ -1,5 +1,5 @@
 <template>
-  <div id="vditor" class="" />
+  <div id="vditor" class="editor-container" />
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onDeactivated } from 'vue'
@@ -137,8 +137,61 @@ function destroy() {
 onDeactivated(destroy)
 </script>
 
-<style scoped>
+<style>
+/* 移除 scoped 属性，使样式可以全局生效 */
 .vditor {
   border: none;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.vditor-reset {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+.vditor-ir {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+.vditor-ir pre.vditor-reset {
+  white-space: pre-wrap !important;
+  overflow-x: auto !important;
+}
+
+.vditor-reset pre {
+  white-space: pre-wrap !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+.vditor-reset code {
+  word-break: break-all !important;
+  white-space: pre-wrap !important;
+}
+
+.vditor-reset table {
+  table-layout: fixed !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  overflow-x: auto !important;
+}
+
+/* 图片最大宽度限制 */
+.vditor-reset img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* 长链接文本换行 */
+.vditor-reset a {
+  word-break: break-all !important;
+  overflow-wrap: break-word !important;
 }
 </style>
