@@ -17,8 +17,6 @@ export interface TreeNode {
   level: number // 层级深度
   isExpanded?: boolean
   isNew?: boolean
-  // 所有节点默认都可以包含子节点
-  canContainChildren?: boolean // 默认为 true，所有节点都可以包含子节点
 }
 
 // 拖拽节点数据结构
@@ -243,9 +241,6 @@ export const useSidebarStore = defineStore('sidebar', {
 
     // 判断节点是否可以包含子节点
     canAddChildren(node: TreeNode): boolean {
-      // 如果明确设置为不能包含子节点，则返回false
-      if (node.canContainChildren === false) return false
-
       // 文件夹类型可以包含子节点
       if (node.type === 'folder') return true
 
@@ -572,14 +567,17 @@ export const useSidebarStore = defineStore('sidebar', {
     async moveFolder(id: string, targetId: string) {
       const node = await nodeModel.getByGuid(id)
       if (!node) return false
-
+      console.log('执行')
       const sync = useSyncStore()
       try {
-        await nodeModel.update(node.id, {
-          parentId: targetId,
-          modifyState: node.modifyState === 0 ? 2 : node.modifyState,
-        })
-        sync.sync()
+        console.log(id, targetId)
+        console.log(
+          await nodeModel.update(node.id, {
+            parentId: targetId,
+            modifyState: node.modifyState === 0 ? 2 : node.modifyState,
+          }),
+        )
+        // sync.sync()
         return true
       } catch (err) {
         console.error(err)

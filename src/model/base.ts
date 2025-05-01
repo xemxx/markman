@@ -34,11 +34,10 @@ export class Model {
     }
     sql = sql.substring(0, sql.length - 1) + ` where id=?`
     arr.push(id)
-
     try {
       await db.run(sql, arr)
     } catch (err) {
-      console.log('update:' + err)
+      console.error('update:' + err)
     }
   }
 

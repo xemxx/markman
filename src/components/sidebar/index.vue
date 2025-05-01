@@ -1,10 +1,10 @@
 <template>
   <div
     v-show="toggleSidebar"
-    class="flex h-full flex-col bg-background text-foreground"
+    class="flex flex-col h-full bg-background text-foreground"
   >
     <!-- 顶部用户菜单 -->
-    <div class="flex h-12 items-center justify-between border-b px-4">
+    <div class="flex items-center justify-between h-12 px-4 border-b">
       <Menu />
     </div>
 
@@ -17,14 +17,14 @@
         class="pl-10"
       />
       <span
-        class="absolute inset-y-0 start-0 flex items-center justify-center px-2"
+        class="absolute inset-y-0 flex items-center justify-center px-2 start-0"
       >
         <span class="icon-[lucide--search] size-5 text-muted-foreground" />
       </span>
     </div>
 
     <!-- 笔记管理区域 -->
-    <div class="flex flex-1 flex-col overflow-hidden">
+    <div class="flex flex-col flex-1 overflow-hidden">
       <div
         class="flex items-center justify-between px-4 py-2"
         @dragover="onDragOver"
@@ -37,32 +37,32 @@
       >
         <h2 class="text-lg font-semibold">笔记管理</h2>
         <div class="flex gap-2">
-          <div class="group relative">
+          <div class="relative group">
             <Button
               variant="ghost"
               size="icon"
-              class="h-8 w-8"
+              class="w-8 h-8"
               @click="showAddBook"
             >
               <span class="icon-[lucide--folder-plus] size-5" />
             </Button>
             <div
-              class="absolute right-0 top-full mt-1 hidden rounded bg-popover px-2 py-1 text-sm text-popover-foreground shadow-md group-hover:block"
+              class="absolute right-0 hidden px-2 py-1 mt-1 text-sm rounded shadow-md top-full bg-popover text-popover-foreground group-hover:block"
             >
               新建笔记本
             </div>
           </div>
-          <div class="group relative">
+          <div class="relative group">
             <Button
               variant="ghost"
               size="icon"
-              class="h-8 w-8"
+              class="w-8 h-8"
               @click="showAddNote"
             >
               <span class="icon-[lucide--file-plus] size-5" />
             </Button>
             <div
-              class="absolute right-0 top-full mt-1 hidden rounded bg-popover px-2 py-1 text-sm text-popover-foreground shadow-md group-hover:block"
+              class="absolute right-0 hidden px-2 py-1 mt-1 text-sm rounded shadow-md top-full bg-popover text-popover-foreground group-hover:block"
             >
               新建笔记
             </div>
@@ -83,7 +83,7 @@
           />
         </div>
         <TreeRoot
-          class="w-full select-none rounded-lg bg-background p-1 text-sm"
+          class="w-full p-1 text-sm rounded-lg select-none bg-background"
           :items="trees"
           :get-key="item => item.key"
         >
@@ -200,6 +200,8 @@ const onDragEnter = (event: DragEvent) => {
   // 检查是否有拖拽中的节点
   if (!sidebar.currentDragNode) return
 
+  if (sidebar.currentDragNode.parentId === 'root') return
+
   // 根区域总是允许拖放
   event.preventDefault()
   isDragOver.value = true
@@ -210,6 +212,8 @@ const onDragOver = (event: DragEvent) => {
 
   // 检查是否有拖拽中的节点
   if (!sidebar.currentDragNode) return
+
+  if (sidebar.currentDragNode.parentId === 'root') return
 
   // 根区域总是允许拖放
   event.preventDefault()
