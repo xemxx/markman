@@ -230,6 +230,7 @@ const onDrop = async (event: DragEvent) => {
 
   if (!event.dataTransfer) return
   if (!sidebar.currentDragNode) return
+  if (sidebar.currentDragNode.parentId == 'root') return
 
   try {
     // 使用全局状态中的拖拽节点数据

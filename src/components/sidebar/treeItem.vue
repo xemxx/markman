@@ -299,6 +299,8 @@ const onDrop = async (event: DragEvent, targetNode: TreeNode) => {
     // 不允许拖拽到自己上
     if (dragData.key === targetNode.key) return
 
+    if (dragData.parentId == targetNode.key) return
+
     // 不允许拖拽到自己的子节点上（防止循环引用）
     // 使用sidebar中的isDescendantOf方法来精确检测循环引用
     if (sidebar.isDescendantOf(targetNode.key, dragData.key)) {
