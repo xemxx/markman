@@ -1,5 +1,5 @@
 <template>
-  <Milkdown class="m-0 size-full min-w-full max-w-full border-none" />
+  <Milkdown class="m-0 border-none size-full" />
 </template>
 
 <script setup lang="ts">
@@ -33,7 +33,7 @@ useEditor(root => {
       }
     })
   })
-  // TODO:: 修复某些文档加载后无法正常编辑的问题
+  // 修复某些文档加载后无法正常编辑的问题，解决办法：固定版本到7.6.2
   watch(
     () => editorS.currentNote,
     v => {

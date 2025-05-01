@@ -29,7 +29,7 @@ import { Crepe } from '@milkdown/crepe'
 export const useEditorStore = defineStore('editor', {
   state: () => ({
     isEdit: false,
-    currentNote: {} as DNote,
+    currentNote: defaultNote,
     editContent: '',
     modify: false,
     isSaving: false,

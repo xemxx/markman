@@ -1,10 +1,10 @@
 <template>
-  <div class="flex h-screen flex-col">
+  <div class="flex flex-col h-screen">
     <TitleBar v-show="!nativeBar" />
     <ResizablePanelGroup
       id="editor-layout"
       direction="horizontal"
-      class="flex flex-1 flex-row overflow-auto border-t"
+      class="flex flex-row flex-1 overflow-auto border-t"
     >
       <ResizablePanel
         id="sidebar"
@@ -18,14 +18,14 @@
       <ResizablePanel id="editor" :default-size="82">
         <div class="size-full">
           <div
-            class="flex flex-1 content-center justify-center"
+            class="flex content-center justify-center flex-1"
             v-show="!editorS.isEdit"
           >
             <h1>Welcome</h1>
           </div>
-          <div class="flex size-full flex-1 flex-col" v-show="editorS.isEdit">
+          <div class="flex flex-col flex-1 size-full" v-show="editorS.isEdit">
             <MilkdownProvider>
-              <CrepeEditor />
+              <Milkdown />
             </MilkdownProvider>
             <!-- <div class="tags">tags</div> -->
           </div>
@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-import CrepeEditor from '@/components/milkdown/CrepeEditor.vue'
+import Milkdown from '@/components/milkdown/CrepeEditor.vue'
 import { MilkdownProvider } from '@milkdown/vue'
 import TitleBar from '@/components/titleBar.vue'
 import {
