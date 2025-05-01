@@ -132,7 +132,6 @@ const trees = computed(() => {
 onMounted(async () => {
   const sync = useSyncStore()
   await sync.sync()
-  sidebar.loadNodeTree()
   document.addEventListener('dragover', handleDragScroll, { passive: true })
   document.addEventListener('dragend', clearScrollInterval)
   document.addEventListener('drop', clearScrollInterval)

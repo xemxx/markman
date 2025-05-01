@@ -99,8 +99,8 @@ export class NodeModel extends Model {
   }
 
   // 获取需要同步的节点
-  getModify(uid: string | number | null) {
-    if (uid === null) {
+  getModify(uid: number | undefined) {
+    if (uid == undefined) {
       throw new Error('uid cannot be null')
     }
     return db.all<NodeItem>(
@@ -110,8 +110,8 @@ export class NodeModel extends Model {
   }
 
   // 根据服务器数据获取本地节点
-  getLocalByServer(uid: string | number | null, serverData: any[]) {
-    if (uid === null) {
+  getLocalByServer(uid: number | undefined, serverData: any[]) {
+    if (uid == undefined) {
       throw new Error('uid cannot be null')
     }
     let sql = ``

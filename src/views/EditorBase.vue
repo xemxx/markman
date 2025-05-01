@@ -48,110 +48,53 @@ import {
 
 import { computed, onMounted, onUnmounted } from 'vue'
 import { emitter } from '@/lib/emitter.ts'
-import { Modal } from 'ant-design-vue'
+import { Modal, message } from 'ant-design-vue'
 
-import http from '@/plugins/axios'
-
-import { message } from 'ant-design-vue'
-import {
-  useSyncStore,
-  useUserStore,
-  useListenStore,
-  useEditorStore,
-  usePreferenceStore,
-} from '@/store'
-import { useRouter } from 'vue-router'
+import { useListenStore, useEditorStore, usePreferenceStore } from '@/store'
 
 const editorS = useEditorStore()
 
-// 不再需要 handleChange 函数，因为 MilkdownEditor 直接更新 store
-const showCloseQuery = (id: any) => {
-  Modal.confirm({
-    content: '当前笔记改动是否保存？',
-    title: '提示',
-    okText: '是',
-    cancelText: '否',
-    onOk: async () => {
-      await editorS.saveNote()
-      return await editorS.loadNote(id)
-    },
-    onCancel: () => {
-      editorS.currentNote.isSave = true
-      return editorS.loadNote(id)
-    },
+// 检查笔记是否有未保存的修改
+const hasUnsavedChanges = () => {
+  return editorS.modify && !editorS.currentNote.isSave
+}
+
+// 处理笔记切换
+const showCloseQuery = async (id: any) => {
+  if (!hasUnsavedChanges()) {
+    // 如果没有未保存的修改，直接切换
+    return await editorS.loadNote(id)
+  }
+
+  // 有未保存的修改，显示确认对话框
+  return new Promise(resolve => {
+    Modal.confirm({
+      content: '当前笔记有未保存的改动，是否保存？',
+      title: '保存提示',
+      okText: '保存',
+      cancelText: '不保存',
+      onOk: async () => {
+        try {
+          await editorS.saveNote()
+          resolve(await editorS.loadNote(id))
+        } catch (error) {
+          console.error('保存笔记失败:', error)
+          message.error('保存笔记失败，请重试')
+        }
+      },
+      onCancel: async () => {
+        // 放弃修改，重置状态
+        editorS.setNoteModified(false)
+        resolve(await editorS.loadNote(id))
+      },
+    })
   })
 }
 
-const user = useUserStore()
-const router = useRouter()
-const sync = useSyncStore()
 const preference = usePreferenceStore()
 
-// 初始化editor窗口逻辑
-async function init() {
-  if (user.server === '') {
-    router.push('/login-setting').catch(err => err)
-    return
-  }
-  const online = await sync.checkServerOnline()
-  if (!online) {
-    // 不解析任何东西，直接进入离线模式
-    return
-  }
-  try {
-    await user.loadCurrentUser()
-    // 先自身解析token是否超时
-    try {
-      const data = JSON.parse(window.atob(user.token!.split('.')[1]))
-      if (data.exp > Date.parse(Date()) / 1000) {
-        if (data.exp - Date.parse(Date()) / 1000 < 60 * 60 * 24 * 30) {
-          // 代表在60天的后30天，需要刷新token
-          if (sync.online) {
-            // 先判断网络状态，如果断网，则可使用最多30天，在30天内必须刷新token，否则将失效
-            try {
-              const response = await http.post(user.server + '/user/flashToken')
-              // 刷新成功，直接进入
-              user.flashToken(response.data.token)
-            } catch (res: any) {
-              // 刷新token失败，任何问题都有可能，但是允许用户继续使用
-              if (res.status == 200 && res.data.code != 200) {
-                console.error(res.data.msg)
-              }
-              // 切换到离线模式
-              sync.update_online(false)
-            }
-          }
-        }
-      } else {
-        //正常连接服务端， 代表已经超过60天，并且在后30天没有刷新过token，需要重新登录
-        message.warning('token expired', 3)
-        await logout()
-        return
-      }
-    } catch (err) {
-      //加载本地token失败，直接进入登录页面
-      await logout()
-      return
-    }
-  } catch (err: any) {
-    //加载用户信息失败，直接进入登录页面
-    message.warning(err, 3)
-    logout()
-    return
-  }
-}
-
-const logout = async () => {
-  user.unSetCurrentUser()
-  try {
-    return await router.push('/login')
-  } catch (err) {
-    console.log(err)
-  }
-}
+// 监听笔记关闭事件
 emitter.on('query-close-note', showCloseQuery)
-// 调用主函数
-init()
 
 const nativeBar = computed(() => preference.nativeBar)
 
@@ -166,8 +109,6 @@ onUnmounted(() => {
 })
 </script>
 <style lang="stylus" scoped>
-
-
 
 .editor-title
   width 100%

@@ -2,11 +2,11 @@ import { db } from '../plugins/sqlite3/index'
 import { Model } from './base'
 
 export interface userItem {
-  id: any
-  token: any
-  server: any
-  username: any
-  lastSC: any
+  id: number
+  token: string
+  server: string
+  username: string
+  lastSC: number
   uuid: string
 }
 
@@ -23,7 +23,7 @@ export class User extends Model {
     if (data != undefined) {
       return data.id
     } else {
-      return ''
+      return 0
     }
   }
 
@@ -39,7 +39,7 @@ export class User extends Model {
     return super.insert('user', data)
   }
 
-  update(id: string, data: { [x: string]: any }) {
+  update(id: number, data: { [x: string]: any }) {
     return super.update(id, 'user', data)
   }
 

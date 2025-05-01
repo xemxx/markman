@@ -20,7 +20,7 @@ const http = axios.create({
 http.interceptors.request.use(
   config => {
     const user = useUserStore()
-    const token = user.token
+    const token = user.dbUser?.token
     if (config.headers) {
       config.headers['Authorization'] = token ? token : ''
     }
@@ -53,7 +53,7 @@ http.interceptors.response.use(
         if (!disableToast) {
           message.error('登录失效，请重新登录,ERROR：' + msg)
         }
-        user.update_token('')
+        user.unSetCurrentUser()
         router.push('/login').catch(err => err)
         return Promise.resolve(res)
       default:

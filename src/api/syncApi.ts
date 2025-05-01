@@ -6,6 +6,7 @@ import http from '@/plugins/axios'
 import { NodeItem } from '@/model/node'
 import {
   ServerStatusResponse,
+  ServerVersionResponse,
   SyncCountResponse,
   SyncNodeResponse,
   SyncResponse,
@@ -23,6 +24,20 @@ export const syncApi = {
   checkServerStatus: (server: string) => {
     return http.get<ServerStatusResponse, ServerStatusResponse>(
       server + '/ping',
+      {
+        fetchOptions: { disableToast: true },
+      },
+    )
+  },
+
+  /**
+   * 获取服务器版本信息
+   * @param server 服务器地址
+   * @returns 服务器版本信息
+   */
+  getServerVersion: (server: string) => {
+    return http.get<ServerVersionResponse, ServerVersionResponse>(
+      server + '/version',
       {
         fetchOptions: { disableToast: true },
       },

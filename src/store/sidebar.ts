@@ -134,15 +134,15 @@ export const useSidebarStore = defineStore('sidebar', {
     async loadNodeTree() {
       const user = useUserStore()
       try {
-        if (user.id === null) {
-          console.error('User ID is null')
+        if (!user.isLogin) {
+          console.error('User isNotLogin')
           return
         }
         // 加载所有节点
-        this.nodes = await nodeModel.getAll(user.id)
+        this.nodes = await nodeModel.getAll(user.dbUser?.id!)
 
         // 加载根目录节点
-        this.rootNodes = await nodeModel.getChildren(user.id, 'root')
+        this.rootNodes = await nodeModel.getChildren(user.dbUser?.id!, 'root')
 
         // 创建节点映射，用于快速查找
         const nodeMap = new Map<string, TreeNode>()
@@ -151,9 +151,10 @@ export const useSidebarStore = defineStore('sidebar', {
         const rootTreeNodes = this.rootNodes.map(node => {
           const treeNode: TreeNode = {
             label: node.title,
-            icon: node.type === 'folder'
-              ? 'icon-[lucide--folder]'
-              : 'icon-[ion--document-text-outline]',
+            icon:
+              node.type === 'folder'
+                ? 'icon-[lucide--folder]'
+                : 'icon-[ion--document-text-outline]',
             data: node,
             key: node.guid,
             type: node.type === 'folder' ? 'folder' : 'file',
@@ -179,9 +180,10 @@ export const useSidebarStore = defineStore('sidebar', {
           // 创建树节点
           const treeNode: TreeNode = {
             label: node.title,
-            icon: node.type === 'folder'
-              ? 'icon-[lucide--folder]'
-              : 'icon-[ion--document-text-outline]',
+            icon:
+              node.type === 'folder'
+                ? 'icon-[lucide--folder]'
+                : 'icon-[ion--document-text-outline]',
             data: node,
             key: node.guid,
             type: node.type === 'folder' ? 'folder' : 'file',
@@ -254,13 +256,13 @@ export const useSidebarStore = defineStore('sidebar', {
     // 在给定节点下创建新笔记
     async addNoteInFolder(parentId: string): Promise<string | undefined> {
       const user = useUserStore()
-      if (user.id === null) {
+      if (user.dbUser?.id! === null) {
         console.error('User ID is null')
         return
       }
       const time = Date.parse(Date()) / 1000
       const note = {
-        uid: user.id,
+        uid: user.dbUser?.id!,
         guid: uuid(),
         parentId: parentId, // 父节点的guid
         title: '未命名',
@@ -293,9 +295,10 @@ export const useSidebarStore = defineStore('sidebar', {
       const nodeData = await nodeModel.getByGuid(guid)
       const newNode: TreeNode = {
         label: nodeData.title,
-        icon: nodeData.type === 'folder'
-          ? 'icon-[lucide--folder]'
-          : 'icon-[ion--document-text-outline]',
+        icon:
+          nodeData.type === 'folder'
+            ? 'icon-[lucide--folder]'
+            : 'icon-[ion--document-text-outline]',
         data: nodeData,
         key: guid,
         type: nodeData.type === 'folder' ? 'folder' : 'file',
@@ -319,7 +322,7 @@ export const useSidebarStore = defineStore('sidebar', {
     // 添加文件夹
     async addFolder(name: string) {
       const user = useUserStore()
-      if (user.id === null) {
+      if (user.dbUser?.id! === null) {
         console.error('User ID is null')
         return
       }
@@ -327,7 +330,7 @@ export const useSidebarStore = defineStore('sidebar', {
       const time = Date.parse(Date()) / 1000
       try {
         await nodeModel.add({
-          uid: user.id,
+          uid: user.dbUser?.id!,
           guid: uuid(),
           parentId: 'root',
           title: name,
@@ -361,7 +364,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     // 更新文件夹
-    async updateFolder({ id, name }: { id: number, name: string }) {
+    async updateFolder({ id, name }: { id: number; name: string }) {
       const sync = useSyncStore()
       const folder = await nodeModel.get(id)
       if (folder.title === name) {
@@ -378,7 +381,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     // 更新笔记
-    async updateNote({ id, title }: { id: number, title: string }) {
+    async updateNote({ id, title }: { id: number; title: string }) {
       const sync = useSyncStore()
       const note = await nodeModel.get(id)
       if (note.title === title) {
@@ -395,7 +398,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     // 移动笔记
-    async moveNote({ id, parentId }: { id: number, parentId: string }) {
+    async moveNote({ id, parentId }: { id: number; parentId: string }) {
       try {
         await nodeModel.update(id, { parentId, modifyState: 2 })
       } catch (err) {
@@ -442,7 +445,7 @@ export const useSidebarStore = defineStore('sidebar', {
       // 不能将节点移动到其子节点下（防止循环引用）
       if (
         targetNodeKey !== 'root' &&
-        this.isDescendantOf(targetNodeKey,node.key)
+        this.isDescendantOf(targetNodeKey, node.key)
       ) {
         console.error('无法将节点移动到其子节点下')
         return false
@@ -574,7 +577,7 @@ export const useSidebarStore = defineStore('sidebar', {
       try {
         await nodeModel.update(node.id, {
           parentId: targetId,
-          modifyState: node.modifyState === 0 ? 2 : node.modifyState
+          modifyState: node.modifyState === 0 ? 2 : node.modifyState,
         })
         sync.sync()
         return true
@@ -632,6 +635,6 @@ export const useSidebarStore = defineStore('sidebar', {
       sync.sync()
 
       return true
-    }
+    },
   },
 })

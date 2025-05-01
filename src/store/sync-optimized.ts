@@ -32,6 +32,7 @@ interface SyncState {
   syncTimer: number | null
   lastSyncTime: number
   syncInterval: number
+  isLogin: boolean
 }
 
 const state: SyncState = {
@@ -41,6 +42,7 @@ const state: SyncState = {
   syncTimer: null,
   lastSyncTime: 0,
   syncInterval: DEFAULT_SYNC_INTERVAL,
+  isLogin: false,
 }
 
 /**
@@ -128,7 +130,9 @@ export const useSyncStore = defineStore('sync', {
       }
 
       this.online = value
-
+      if (!this.isLogin) {
+        return
+      }
       if (value) {
         // 如果从离线变为在线，执行一次同步
         this.sync(false, true) // 静默同步
@@ -192,15 +196,20 @@ export const useSyncStore = defineStore('sync', {
       }
 
       const user = useUserStore()
-      const uid = user.id
+      const uid = user.dbUser?.id
       const server = user.server
 
       try {
         // 获取本地上次更新版本号
-        const { lastSC: localSC = '' } = await userModel.getLastSC(uid)
+        const user = await userModel.getLastSC(uid)
+        if (user == null) {
+          // 当前用户不存在，可能是数据bug，需要重新登录
+          throw new Error('用户不存在')
+        }
+        const localSC = user.lastSC
 
         // 获取服务端版本号
-        const { SC: serverSC = '' } = await syncApi.getLastSyncCount(server)
+        const { SC: serverSC = 0 } = await syncApi.getLastSyncCount(server)
 
         // 如果需要更新则拉取
         if (serverSC > localSC) {
@@ -229,10 +238,8 @@ export const useSyncStore = defineStore('sync', {
      */
     async pull(params: SyncParams): Promise<void> {
       const user = useUserStore()
-      const uid = user.id
 
       await this._pullNodes(params.localSC)
-      await userModel.update(uid!, { lastSC: params.serverSC })
       user.update_lastSC(params.serverSC)
     },
 
@@ -287,7 +294,7 @@ export const useSyncStore = defineStore('sync', {
     async _updateNodesToLocal(serverData: ServerNodeData[]): Promise<void> {
       const user = useUserStore()
       const editor = useEditorStore()
-      const uid = user.id
+      const uid = user.dbUser?.id!
 
       if (uid === null) {
         console.error('用户ID为空')
@@ -436,7 +443,7 @@ export const useSyncStore = defineStore('sync', {
      */
     async _pushNodes(): Promise<void> {
       const user = useUserStore()
-      const uid = user.id
+      const uid = user.dbUser?.id
 
       if (uid === null) {
         console.error('用户ID为空')
@@ -472,7 +479,7 @@ export const useSyncStore = defineStore('sync', {
       const user = useUserStore()
       const editor = useEditorStore()
       const server = user.server
-      const uid = user.id
+      const uid = user.dbUser?.id
       const localNode = data[index]
 
       let result: SyncResponse
@@ -515,7 +522,7 @@ export const useSyncStore = defineStore('sync', {
             data,
             index,
           })
-        } else if (SC == user.lastSC! + 1) {
+        } else if (SC == user.dbUser?.lastSC! + 1) {
           // 同步成功，更新本地状态
           if (localNode.modifyState === 3) {
             // 删除操作，删除本地数据

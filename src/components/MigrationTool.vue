@@ -1,149 +1,116 @@
 <template>
   <div v-if="showMigration" class="migration-overlay">
     <div class="migration-dialog">
-      <h2>数据结构升级</h2>
-      <p>正在将笔记和笔记本合并为统一的数据结构，请稍候...</p>
-      <div class="progress-container">
+      <h2>{{ title }}</h2>
+      <p>{{ description }}</p>
+      <div v-if="showProgress" class="progress-container">
         <div class="progress-bar" :style="{ width: `${progress}%` }"></div>
       </div>
       <p>{{ statusMessage }}</p>
+      <div v-if="showButtons" class="button-container">
+        <button v-if="showCancelButton" @click="onCancel" class="cancel-button">
+          取消
+        </button>
+        <button
+          v-if="showConfirmButton"
+          @click="onConfirm"
+          class="confirm-button"
+        >
+          {{ confirmButtonText }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { db } from '@/plugins/sqlite3/index'
+import { emitter } from '@/lib/emitter'
+import { MIGRATION_EVENTS } from '@/services/migrationService'
+import { useSidebarStore } from '@/store'
 
+// UI状态
 const showMigration = ref(false)
 const progress = ref(0)
 const statusMessage = ref('准备迁移...')
+const title = ref('数据结构升级')
+const description = ref('正在将笔记和笔记本合并为统一的数据结构，请稍候...')
+const showProgress = ref(true)
+const showButtons = ref(false)
+const showCancelButton = ref(false)
+const showConfirmButton = ref(false)
+const confirmButtonText = ref('确定')
+const sidebarS = useSidebarStore()
 
-// 检查是否需要迁移
-async function checkMigrationNeeded() {
-  try {
-    // 检查node表是否存在
-    const nodeTableExists = await tableExists('node')
-    if (!nodeTableExists) {
-      return false // 表不存在，不需要迁移
-    }
-    
-    // 检查node表是否有数据
-    const nodeHasData = await tableHasData('node')
-    if (nodeHasData) {
-      return false // 表已有数据，不需要迁移
-    }
-    
-    // 检查旧表是否有数据
-    const notebookHasData = await tableHasData('notebook')
-    const noteHasData = await tableHasData('note')
-    
-    return notebookHasData || noteHasData // 如果旧表有数据，需要迁移
-  } catch (error) {
-    console.error('检查迁移状态时出错:', error)
-    return false
+// 回调函数
+let onConfirmCallback: (() => void) | null = null
+let onCancelCallback: (() => void) | null = null
+
+// 按钮事件处理
+function onConfirm() {
+  if (onConfirmCallback) {
+    onConfirmCallback()
   }
 }
 
-// 检查表是否存在
-async function tableExists(tableName: string): Promise<boolean> {
-  const result = await db.get<{ count: number }>(
-    `SELECT count(*) as count FROM sqlite_master WHERE type='table' AND name=?`,
-    [tableName]
-  )
-  return result?.count > 0
+function onCancel() {
+  if (onCancelCallback) {
+    onCancelCallback()
+  }
 }
 
-// 检查表中是否有数据
-async function tableHasData(tableName: string): Promise<boolean> {
-  const result = await db.get<{ count: number }>(
-    `SELECT count(*) as count FROM ${tableName}`,
-    []
-  )
-  return result?.count > 0
-}
+// 监听事件
+onMounted(() => {
+  // 显示迁移进度
+  emitter.on(MIGRATION_EVENTS.SHOW_MIGRATION, (options: any = {}) => {
+    const {
+      show = true,
+      title: newTitle,
+      description: newDescription,
+      progress: newProgress,
+      statusMessage: newStatusMessage,
+      showProgress: newShowProgress,
+    } = options
 
-// 执行迁移
-async function performMigration() {
-  try {
-    showMigration.value = true
-    progress.value = 10
-    statusMessage.value = '正在准备迁移...'
-    
-    // 获取笔记本和笔记的数量
-    const notebookCount = await getTableCount('notebook')
-    const noteCount = await getTableCount('note')
-    const totalCount = notebookCount + noteCount
-    
-    if (totalCount === 0) {
+    showMigration.value = show
+
+    if (newTitle) title.value = newTitle
+    if (newDescription) description.value = newDescription
+    if (newProgress !== undefined) progress.value = newProgress
+    if (newStatusMessage) statusMessage.value = newStatusMessage
+    if (newShowProgress !== undefined) showProgress.value = newShowProgress
+
+    // 默认不显示按钮
+    showButtons.value = false
+    showCancelButton.value = false
+    showConfirmButton.value = false
+  })
+
+  // 更新迁移进度
+  emitter.on(
+    MIGRATION_EVENTS.UPDATE_PROGRESS,
+    ({ percent, message }: { percent: number; message: string }) => {
+      progress.value = percent
+      statusMessage.value = message
+    },
+  )
+
+  // 完成迁移
+  emitter.on(
+    MIGRATION_EVENTS.COMPLETE_MIGRATION,
+    ({ success, message }: { success: boolean; message?: string }) => {
       progress.value = 100
-      statusMessage.value = '没有数据需要迁移'
-      setTimeout(() => {
-        showMigration.value = false
-      }, 1500)
-      return
-    }
-    
-    // 迁移笔记本
-    progress.value = 20
-    statusMessage.value = `正在迁移笔记本 (0/${notebookCount})...`
-    
-    await db.exec(`
-      INSERT INTO node (uid, guid, parentId, title, content, type, sort, sortType, modifyState, SC, addDate, modifyDate)
-      SELECT uid, guid, 'root', name, '', 'folder', sort, sortType, modifyState, SC, addDate, modifyDate
-      FROM notebook
-      WHERE modifyState < 3
-    `)
-    
-    progress.value = 50
-    statusMessage.value = `正在迁移笔记 (0/${noteCount})...`
-    
-    // 迁移笔记
-    await db.exec(`
-      INSERT INTO node (uid, guid, parentId, title, content, type, sort, sortType, modifyState, SC, addDate, modifyDate)
-      SELECT uid, guid, bid, title, content, 'note', 0, 0, modifyState, SC, addDate, modifyDate
-      FROM note
-      WHERE modifyState < 3
-    `)
-    
-    progress.value = 90
-    statusMessage.value = '验证迁移结果...'
-    
-    // 验证迁移结果
-    const nodeCount = await getTableCount('node')
-    if (nodeCount > 0) {
-      progress.value = 100
-      statusMessage.value = `迁移完成，共迁移 ${nodeCount} 条数据`
-      
+      statusMessage.value =
+        message || (success ? '迁移完成' : '迁移失败，请联系开发者')
+
       // 3秒后关闭迁移对话框
       setTimeout(() => {
         showMigration.value = false
       }, 3000)
-    } else {
-      progress.value = 100
-      statusMessage.value = '迁移失败，请联系开发者'
-    }
-  } catch (error) {
-    console.error('迁移过程中出错:', error)
-    progress.value = 100
-    statusMessage.value = '迁移过程中出错，请联系开发者'
-  }
-}
 
-// 获取表中的记录数
-async function getTableCount(tableName: string): Promise<number> {
-  const result = await db.get<{ count: number }>(
-    `SELECT count(*) as count FROM ${tableName}`,
-    []
+      sidebarS.loadNodeTree()
+    },
   )
-  return result?.count || 0
-}
-
-onMounted(async () => {
-  const needMigration = await checkMigrationNeeded()
-  if (needMigration) {
-    await performMigration()
-  }
 })
 </script>
 
@@ -182,6 +149,40 @@ onMounted(async () => {
   height: 100%;
   background-color: #4caf50;
   transition: width 0.3s ease;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.confirm-button {
+  background-color: #1890ff;
+  color: white;
+}
+
+.confirm-button:hover {
+  background-color: #40a9ff;
 }
 
 h2 {

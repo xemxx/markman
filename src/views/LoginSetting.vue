@@ -165,7 +165,7 @@ async function onSubmit() {
 
     if (res) {
       // 保存服务器地址
-      user.update_server(serverInput.value)
+      user.updateServerAddr(serverInput.value)
 
       // 添加到历史记录
       addServerToHistory(serverInput.value)

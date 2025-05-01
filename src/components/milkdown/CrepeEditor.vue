@@ -25,7 +25,12 @@ useEditor(root => {
     },
   }).on(listener => {
     listener.markdownUpdated((ctx, markdown, prevMarkdown) => {
-      editorS.updateContent(markdown)
+      if (markdown !== prevMarkdown) {
+        editorS.updateContent(markdown)
+        if (markdown !== editorS.currentNote.content) {
+          editorS.setNoteModified(true)
+        }
+      }
     })
   })
   // TODO:: 修复某些文档加载后无法正常编辑的问题
@@ -35,6 +40,7 @@ useEditor(root => {
       if (editorS.isLoadNewNote && crepe.editor != undefined) {
         crepe.editor.action(replaceAll(v.content, false))
         editorS.isLoadNewNote = false
+        editorS.setNoteModified(false)
       }
     },
   )

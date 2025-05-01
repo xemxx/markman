@@ -2,9 +2,7 @@ import { NodeModel } from '@/model/node'
 
 import { emitter } from '@/lib/emitter.ts'
 import { defineStore } from 'pinia'
-import { useSyncStore, usePreferenceStore, useSidebarStore } from './index'
-import Vditor from 'vditor'
-import { replaceAll } from '@milkdown/kit/utils'
+import { usePreferenceStore, useSidebarStore } from './index'
 
 const nodeModel = new NodeModel()
 
@@ -31,19 +29,11 @@ import { Crepe } from '@milkdown/crepe'
 export const useEditorStore = defineStore('editor', {
   state: () => ({
     isEdit: false,
-    currentNote: <DNote>{
-      id: 0,
-      markdown: '',
-      content: '',
-      title: '',
-      SC: 0,
-      isSave: true,
-    },
+    currentNote: {} as DNote,
     editContent: '',
     modify: false,
     isSaving: false,
-    vidtor: <Vditor | null>null,
-    editor: <Crepe | null>null,
+    editor: null as Crepe | null,
     isLoadNewNote: false,
   }),
   actions: {
@@ -158,12 +148,16 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
+    // 设置笔记修改状态
+    setNoteModified(modified: boolean) {
+      this.modify = modified
+      this.currentNote.isSave = !modified
+    },
+
+    // 更新编辑器内容
     updateContent(content: string) {
-      if (content != this.currentNote.content) {
-        this.currentNote.markdown = content
-        this.currentNote.isSave = false
-        this.handleAutoSave()
-      }
+      this.editContent = content
+      this.currentNote.content = content
     },
 
     handleAutoSave() {

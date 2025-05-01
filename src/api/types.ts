@@ -9,7 +9,7 @@ import { NodeItem } from '@/model/node'
  */
 export interface SyncResponse {
   isErr: boolean
-  SC: string
+  SC: number
   isRepeat: boolean
 }
 
@@ -46,18 +46,26 @@ export interface ServerStatusResponse {
 }
 
 /**
+ * 服务器版本响应接口
+ */
+export interface ServerVersionResponse {
+  version: string
+  minClientVersion?: string
+}
+
+/**
  * 服务器同步计数响应接口
  */
 export interface SyncCountResponse {
-  SC: string
+  SC: number
 }
 
 /**
  * 同步参数接口
  */
 export interface SyncParams {
-  localSC: string
-  serverSC: string
+  localSC: number
+  serverSC: number
 }
 
 /**

@@ -145,7 +145,6 @@ function onSubmit(values: Record<string, any>) {
       password,
     })
     .then(res => {
-      console.log(res)
       return user.setCurrentUser({
         username,
         token: res.token,

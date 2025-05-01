@@ -11,10 +11,39 @@
         :disabled="isSyncing"
       >
         <span v-if="isSyncing" class="mr-2 h-4 w-4 animate-spin">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-loader-2"
+          >
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          </svg>
         </span>
         <span v-else class="mr-2 h-4 w-4">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-refresh-cw"
+          >
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M3 21v-5h5" />
+          </svg>
         </span>
         立即同步
       </button>
@@ -44,7 +73,7 @@ const isSyncing = computed(() => syncStore.isSyncing)
 const lastSyncTime = computed(() => syncStore.lastSyncTime)
 
 // 监听自动同步设置变化
-watch(autoSync, (newValue) => {
+watch(autoSync, newValue => {
   if (newValue) {
     syncStore.initAutoSync()
   } else {
@@ -65,10 +94,10 @@ function syncNow() {
 // 格式化上次同步时间
 function formatLastSyncTime(timestamp: number): string {
   if (!timestamp) return '从未同步'
-  
+
   const now = Date.now()
   const diff = now - timestamp
-  
+
   if (diff < 1000) {
     return '刚刚'
   } else if (diff < 60000) {
