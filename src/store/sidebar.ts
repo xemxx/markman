@@ -17,6 +17,7 @@ export interface TreeNode {
   level: number // 层级深度
   isExpanded?: boolean
   isNew?: boolean
+  canContainChildren?: boolean // 是否可以包含子节点
 }
 
 // 拖拽节点数据结构
@@ -280,9 +281,49 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
+    // 通过GUID获取节点
+    async getNodeByGuid(guid: string) {
+      try {
+        return await nodeModel.getByGuid(guid)
+      } catch (err) {
+        console.error('获取节点失败:', err)
+        return null
+      }
+    },
+
     // 添加新的根目录笔记
     async addRootNote() {
-      return this.addNoteInFolder('root')
+      const guid = await this.addNoteInFolder('root')
+      if (guid) {
+        // 创建一个虚拟的根节点，用于添加新笔记
+        const rootNode: TreeNode = {
+          key: 'root',
+          label: 'Root',
+          icon: '',
+          type: 'folder',
+          selected: false,
+          level: -1,
+          data: { guid: 'root' },
+        }
+
+        // 添加新节点到树中，并标记为需要重命名
+        const newNode = await this.addTreeNode(rootNode, guid)
+
+        // 确保新节点被添加到树的根级别
+        if (newNode) {
+          // 从虚拟根节点的子节点中移除
+          this.treeLabels.push({
+            ...newNode,
+            parentId: 'root',
+            level: 0,
+            isNew: true,
+          })
+
+          // 重新加载树结构以确保正确显示
+          await this.loadNodeTree()
+        }
+      }
+      return guid
     },
 
     // 添加树节点

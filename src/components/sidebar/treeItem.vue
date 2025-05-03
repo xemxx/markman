@@ -10,7 +10,7 @@ const props = defineProps<{
 
 const emits = defineEmits(['onDeleteNode'])
 
-import { ref, useTemplateRef, nextTick, onMounted } from 'vue'
+import { ref, useTemplateRef, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useSidebarStore } from '@/store'
 const sidebar = useSidebarStore()
 
@@ -24,12 +24,8 @@ const onNodeSelect = (node: TreeNode) => {
 }
 
 // right click
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu'
+import CustomContextMenu from './CustomContextMenu.vue'
+import CustomContextMenuItem from './CustomContextMenuItem.vue'
 // rename book
 const nodeRename = ref('')
 const nodeNameOrigin = ref('')
@@ -105,7 +101,8 @@ const onDeleteFolder = async (node: TreeNode) => {
   sidebar.deleteTreeNode(node)
 }
 
-const treeItemRef = useTemplateRef<HTMLElement>('treeItemRef')
+// 改为使用 any 类型来避免类型检查错误，实际上这是 TreeItem 组件
+const treeItemRef = useTemplateRef<any>('treeItemRef')
 // add note
 const addNode = async (node: TreeNode) => {
   // 验证节点是否可以添加子节点
@@ -130,53 +127,6 @@ const addNode = async (node: TreeNode) => {
 const onDeleteNote = async (node: TreeNode) => {
   await sidebar.deleteNote(node.data.id)
   sidebar.deleteTreeNode(node)
-}
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { storeToRefs } from 'pinia'
-
-const moveCheck = ref(props.tree.data.parentId || 'root')
-
-const { rootNodes: notebooks } = storeToRefs(sidebar)
-
-const doMove = async () => {
-  // 移动文件
-  await sidebar.moveNote({
-    id: props.tree.data.id,
-    parentId: moveCheck.value,
-  })
-
-  // 更新节点的父节点ID
-  props.tree.parentId = moveCheck.value
-
-  // 如果移动到根目录，需要重新加载树结构
-  if (moveCheck.value === 'root') {
-    // 从当前位置移除节点
-    sidebar.deleteTreeNode(props.tree)
-
-    // 重新加载树结构
-    await sidebar.loadNodeTree()
-  } else {
-    // 非根目录移动使用常规移动方法
-    sidebar.moveTreeNode(props.tree, moveCheck.value)
-  }
 }
 
 // 拖拽相关的状态
@@ -351,6 +301,146 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
 
   return null
 }
+
+// 添加创建相关状态变量
+const isCreatingChild = ref(false)
+const creatingType = ref<'note' | 'folder'>('note')
+const creatingName = ref('')
+const creatingInputRef = useTemplateRef('creatingInputRef')
+const creatingParentNode = ref<TreeNode | null>(null)
+// 添加用于处理点击外部的状态
+let creatingClickOutsideHandler: ((event: MouseEvent) => void) | null = null
+
+// 显示创建输入框
+const showCreateChildInput = (
+  parentNode: TreeNode,
+  type: 'note' | 'folder',
+) => {
+  // 移除之前可能存在的处理器
+  if (creatingClickOutsideHandler) {
+    document.removeEventListener('mousedown', creatingClickOutsideHandler)
+    creatingClickOutsideHandler = null
+  }
+
+  // 延迟设置状态，确保右键菜单已完全关闭
+  setTimeout(() => {
+    creatingParentNode.value = parentNode
+    creatingType.value = type
+    creatingName.value = ''
+    isCreatingChild.value = true
+
+    // 确保文件夹是展开的
+    if (parentNode.type === 'folder' && !treeItemRef.value?.isExpanded) {
+      treeItemRef.value?.handleToggle()
+    }
+
+    nextTick(() => {
+      // 设置焦点
+      setTimeout(() => {
+        if (creatingInputRef.value) {
+          creatingInputRef.value.focus()
+
+          // 设置点击外部区域关闭输入框的事件监听器
+          creatingClickOutsideHandler = (event: MouseEvent) => {
+            const inputElement = creatingInputRef.value
+            // 如果点击的不是输入框，则关闭输入框
+            if (inputElement && !inputElement.contains(event.target as Node)) {
+              cancelCreateChild()
+            }
+          }
+
+          // 延迟添加事件监听器，避免当前点击被捕获
+          setTimeout(() => {
+            if (creatingClickOutsideHandler) {
+              document.addEventListener(
+                'mousedown',
+                creatingClickOutsideHandler,
+              )
+            }
+          }, 0)
+        }
+      }, 0)
+    })
+  }, 50) // 延迟50ms，确保菜单已关闭
+}
+
+// 取消创建
+const cancelCreateChild = () => {
+  isCreatingChild.value = false
+  creatingName.value = ''
+  creatingParentNode.value = null
+
+  // 移除点击外部区域的事件监听器
+  if (creatingClickOutsideHandler) {
+    document.removeEventListener('mousedown', creatingClickOutsideHandler)
+    creatingClickOutsideHandler = null
+  }
+}
+
+// 完成创建
+const finishCreateChild = async () => {
+  if (!creatingName.value.trim() || !creatingParentNode.value) {
+    cancelCreateChild()
+    return
+  }
+
+  try {
+    if (creatingType.value === 'folder') {
+      // 创建笔记本
+      await sidebar.addFolder(creatingName.value.trim())
+    } else {
+      // 创建笔记
+      // 根据父节点类型确定添加位置
+      let parentId = 'root'
+      if (creatingParentNode.value.type === 'folder') {
+        parentId = creatingParentNode.value.data.guid
+      } else if (creatingParentNode.value.parentId) {
+        parentId = creatingParentNode.value.parentId
+      }
+
+      const guid = await sidebar.addNoteInFolder(parentId)
+      if (guid) {
+        const note = await sidebar.getNodeByGuid(guid)
+        if (note) {
+          await sidebar.updateNote({
+            id: note.id,
+            title: creatingName.value.trim(),
+          })
+        }
+      }
+    }
+
+    // 重新加载树结构
+    await sidebar.loadNodeTree()
+
+    // 重置状态
+    cancelCreateChild()
+  } catch (error) {
+    console.error('创建失败:', error)
+    cancelCreateChild()
+  }
+}
+
+// 修改添加笔记本函数
+const addFolder = async (parentNode: TreeNode) => {
+  showCreateChildInput(parentNode, 'folder')
+}
+
+// 修改添加笔记函数
+const addNoteInParent = async (parentNode: TreeNode) => {
+  showCreateChildInput(parentNode, 'note')
+}
+
+// 在组件卸载时移除事件监听器
+onBeforeUnmount(() => {
+  // 已有的清理代码...
+
+  // 添加清理创建输入框的点击外部事件监听器
+  if (creatingClickOutsideHandler) {
+    document.removeEventListener('mousedown', creatingClickOutsideHandler)
+    creatingClickOutsideHandler = null
+  }
+})
 </script>
 
 <template>
@@ -394,7 +484,7 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
         />
       </template>
       <div
-        class="flex items-center flex-1 overflow-hidden group"
+        class="group flex flex-1 items-center overflow-hidden"
         :class="{ 'user-select-text': inRenameMode }"
       >
         <input
@@ -404,7 +494,7 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
           @keyup.enter="doRenameNode(tree)"
           @blur="blurRenameBook"
           @keydown.stop
-          class="flex-1 px-2 py-1 text-sm border rounded-sm border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+          class="flex-1 rounded-sm border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           @click.stop
           style="
             user-select: text;
@@ -413,84 +503,48 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
           "
         />
         <template v-else>
-          <div class="flex-1 pl-2 truncate">
-            <Dialog>
-              <ContextMenu>
-                <ContextMenuTrigger as-child>
-                  <div class="flex items-center w-full">
-                    <span class="text-sm truncate">{{ tree.label }}</span>
-                  </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent v-if="tree.type === 'folder'">
-                  <ContextMenuItem @click.stop="renameNode(tree)">
-                    <span class="icon-[lucide--pencil] mr-2 size-4" />
-                    重命名
-                  </ContextMenuItem>
-                  <ContextMenuItem @click.stop="onDeleteFolder(tree)">
-                    <span class="icon-[lucide--trash-2] mr-2 size-4" />
-                    删除
-                  </ContextMenuItem>
-                </ContextMenuContent>
-                <ContextMenuContent v-else>
-                  <ContextMenuItem @click.stop="renameNode(tree)">
-                    <span class="icon-[lucide--pencil] mr-2 size-4" />
-                    重命名
-                  </ContextMenuItem>
-                  <DialogTrigger asChild>
-                    <ContextMenuItem>
-                      <span class="icon-[lucide--folder-input] mr-2 size-4" />
-                      移动
-                    </ContextMenuItem>
-                  </DialogTrigger>
-                  <ContextMenuItem @click.stop="onDeleteNote(tree)">
-                    <span class="icon-[lucide--trash-2] mr-2 size-4" />
-                    删除
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>移动笔记</DialogTitle>
-                  <DialogDescription>
-                    <Select v-model="moveCheck">
-                      <SelectTrigger>
-                        <SelectValue placeholder="选择一个文件夹" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="root">根目录</SelectItem>
-                          <SelectItem
-                            v-for="item in notebooks"
-                            :key="item.guid"
-                            :value="item.guid"
-                          >
-                            {{ item.title }}
-                          </SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button key="submit" type="primary" @click="doMove">
-                    确 定
-                  </Button>
-                  <DialogClose as-child>
-                    <Button key="back">取 消</Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+          <div class="flex-1 truncate pl-2">
+            <CustomContextMenu>
+              <div class="flex w-full items-center">
+                <span class="truncate text-sm">{{ tree.label }}</span>
+              </div>
+              <template #content>
+                <!-- 共有菜单项 -->
+                <CustomContextMenuItem @click="addNoteInParent(tree)">
+                  <span class="icon-[lucide--file-plus] mr-2 size-4" />
+                  新建笔记
+                </CustomContextMenuItem>
+                <CustomContextMenuItem @click="addFolder(tree)">
+                  <span class="icon-[lucide--folder-plus] mr-2 size-4" />
+                  新建笔记本
+                </CustomContextMenuItem>
+                <CustomContextMenuItem @click="renameNode(tree)">
+                  <span class="icon-[lucide--pencil] mr-2 size-4" />
+                  重命名
+                </CustomContextMenuItem>
+                <!-- 根据节点类型使用不同的删除操作 -->
+                <CustomContextMenuItem
+                  @click="
+                    tree.type === 'folder'
+                      ? onDeleteFolder(tree)
+                      : onDeleteNote(tree)
+                  "
+                >
+                  <span class="icon-[lucide--trash-2] mr-2 size-4" />
+                  删除
+                </CustomContextMenuItem>
+              </template>
+            </CustomContextMenu>
           </div>
           <div
-            class="grid flex-none grid-cols-1 transition-opacity duration-300 opacity-0 place-content-center group-hover:opacity-100"
+            class="grid flex-none grid-cols-1 place-content-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             @click.stop
             v-show="!inRenameMode"
           >
             <Button
               variant="ghost"
               size="icon"
-              class="w-6 h-6"
+              class="h-6 w-6"
               @click="addNode(tree)"
             >
               <span class="icon-[lucide--plus] size-4" />
@@ -499,6 +553,32 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
         </template>
       </div>
     </div>
+
+    <!-- 创建子项输入框 - 在节点下显示 -->
+    <div
+      v-if="
+        isCreatingChild &&
+        creatingParentNode &&
+        creatingParentNode.key === tree.key
+      "
+      class="my-1 px-2"
+      :style="{ 'padding-left': `${(level + 1) * 1.5 + 0.5}rem` }"
+      @click.stop
+    >
+      <input
+        ref="creatingInputRef"
+        v-model="creatingName"
+        :placeholder="
+          creatingType === 'note' ? '输入笔记名称' : '输入笔记本名称'
+        "
+        class="w-full flex-1 rounded-sm border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        @keyup.enter="finishCreateChild"
+        @keyup.esc="cancelCreateChild"
+        @click.stop
+        @keydown.stop
+      />
+    </div>
+
     <ul v-if="isExpanded && tree.children">
       <Tree :tree-items="tree.children" :level="level + 1" />
     </ul>

@@ -1,10 +1,10 @@
 <template>
   <div
     v-show="toggleSidebar"
-    class="flex flex-col h-full bg-background text-foreground"
+    class="flex h-full flex-col bg-background text-foreground"
   >
     <!-- 顶部用户菜单 -->
-    <div class="flex items-center justify-between h-12 px-4 border-b">
+    <div class="flex h-12 items-center justify-between border-b px-4">
       <Menu />
     </div>
 
@@ -17,14 +17,14 @@
         class="pl-10"
       />
       <span
-        class="absolute inset-y-0 flex items-center justify-center px-2 start-0"
+        class="absolute inset-y-0 start-0 flex items-center justify-center px-2"
       >
         <span class="icon-[lucide--search] size-5 text-muted-foreground" />
       </span>
     </div>
 
     <!-- 笔记管理区域 -->
-    <div class="flex flex-col flex-1 overflow-hidden">
+    <div class="flex flex-1 flex-col overflow-hidden">
       <div
         class="flex items-center justify-between px-4 py-2"
         @dragover="onDragOver"
@@ -37,55 +37,63 @@
       >
         <h2 class="text-lg font-semibold">笔记管理</h2>
         <div class="flex gap-2">
-          <div class="relative group">
+          <div class="relative" ref="menuRef">
             <Button
               variant="ghost"
               size="icon"
-              class="w-8 h-8"
-              @click="showAddBook"
+              class="h-8 w-8"
+              @click="toggleMenu"
             >
-              <span class="icon-[lucide--folder-plus] size-5" />
+              <span class="icon-[lucide--plus] size-5" />
             </Button>
             <div
-              class="absolute right-0 hidden px-2 py-1 mt-1 text-sm rounded shadow-md top-full bg-popover text-popover-foreground group-hover:block"
+              v-if="menuOpen"
+              class="absolute right-0 z-10 mt-2 min-w-[8rem] rounded-md border bg-popover shadow-lg"
+              @mousedown.stop
             >
-              新建笔记本
-            </div>
-          </div>
-          <div class="relative group">
-            <Button
-              variant="ghost"
-              size="icon"
-              class="w-8 h-8"
-              @click="showAddNote"
-            >
-              <span class="icon-[lucide--file-plus] size-5" />
-            </Button>
-            <div
-              class="absolute right-0 hidden px-2 py-1 mt-1 text-sm rounded shadow-md top-full bg-popover text-popover-foreground group-hover:block"
-            >
-              新建笔记
+              <div
+                class="flex cursor-pointer items-center px-3 py-2 hover:bg-accent"
+                @click="onMenuItemClick('note')"
+              >
+                <span class="icon-[lucide--file-plus] mr-2 size-4" />
+                新建笔记
+              </div>
+              <div
+                class="flex cursor-pointer items-center px-3 py-2 hover:bg-accent"
+                @click="onMenuItemClick('folder')"
+              >
+                <span class="icon-[lucide--folder-plus] mr-2 size-4" />
+                新建笔记本
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- 创建输入框 - 移到 ScrollArea 外部 -->
+      <div v-if="createInputShow" class="mb-2 px-2">
+        <input
+          ref="createInputRef"
+          v-model="createName"
+          :placeholder="
+            createType === 'note' ? '输入笔记名称' : '输入笔记本名称'
+          "
+          class="w-full flex-1 rounded-sm border border-input bg-background px-2 py-1 text-sm"
+          @keyup.enter="doCreateItem"
+          @keyup.esc="hideCreateInput"
+          @keydown.stop
+          @click.stop
+          @blur="onInputBlur"
+        />
+      </div>
+
       <!-- 笔记本树 -->
       <ScrollArea ref="scrollAreaRef" class="flex-1 px-2">
-        <div v-show="bookInputShow" class="mb-2">
-          <Input
-            ref="bookInputRef"
-            v-model="bookName"
-            placeholder="输入笔记本名称"
-            class="w-full"
-            @keyup.enter="doAddBook"
-            @blur="blurAddBook"
-          />
-        </div>
         <TreeRoot
-          class="w-full p-1 text-sm rounded-lg select-none bg-background"
+          class="w-full select-none rounded-lg bg-background p-1 text-sm"
           :items="trees"
           :get-key="item => item.key"
+          :typeahead-search="false"
         >
           <Tree :tree-items="trees" />
         </TreeRoot>
@@ -108,15 +116,7 @@ import type { TreeNode } from '@/store/sidebar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  ref,
-  nextTick,
-  useTemplateRef,
-  computed,
-  watch,
-  onMounted,
-  onBeforeUnmount,
-} from 'vue'
+import { ref, nextTick, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 
 const preference = usePreferenceStore()
 const { toggleSidebar } = storeToRefs(preference)
@@ -148,30 +148,98 @@ onBeforeUnmount(() => {
   document.removeEventListener('drop', clearScrollInterval)
   clearScrollInterval()
   cachedScrollElement = null
+
+  // 移除点击外部区域的事件监听器
+  if (clickOutsideHandler) {
+    document.removeEventListener('mousedown', clickOutsideHandler)
+    clickOutsideHandler = null
+  }
 })
 
-// 添加笔记本
-const bookInputShow = ref(false)
-const bookName = ref('')
+// 统一的创建输入框
+const createInputShow = ref(false)
+const createName = ref('')
+const createType = ref<'note' | 'folder'>('note')
+const createInputRef = ref<HTMLInputElement | null>(null)
 
-const showAddBook = () => {
-  bookInputShow.value = true
+// 显示创建输入框
+const showCreateInput = (type: 'note' | 'folder') => {
+  // 移除之前的点击外部区域事件监听器
+  if (clickOutsideHandler) {
+    document.removeEventListener('mousedown', clickOutsideHandler)
+    clickOutsideHandler = null
+  }
+
+  // 关键：延迟显示输入框，确保 DropdownMenu 关闭后再显示
+  setTimeout(() => {
+    createType.value = type
+    createName.value = ''
+    createInputShow.value = true
+
+    nextTick(() => {
+      if (createInputRef.value) {
+        createInputRef.value.focus()
+      }
+      // 用 setTimeout 延迟注册监听器，避免本次点击被捕获
+      setTimeout(() => {
+        clickOutsideHandler = (event: MouseEvent) => {
+          const inputElement = createInputRef.value
+          if (inputElement && !inputElement.contains(event.target as Node)) {
+            hideCreateInput()
+          }
+        }
+        document.addEventListener('mousedown', clickOutsideHandler)
+      }, 0)
+    })
+  }, 0)
 }
 
-const blurAddBook = () => {
-  bookInputShow.value = false
-  bookName.value = ''
+// 隐藏创建输入框
+const hideCreateInput = () => {
+  createInputShow.value = false
+  createName.value = ''
+
+  // 移除点击外部区域的事件监听器
+  if (clickOutsideHandler) {
+    document.removeEventListener('mousedown', clickOutsideHandler)
+    clickOutsideHandler = null
+  }
 }
 
-const doAddBook = async () => {
-  const name = bookName.value.trim()
+// 点击外部区域关闭输入框
+let clickOutsideHandler: ((event: MouseEvent) => void) | null = null
+
+// 创建项目
+const doCreateItem = async () => {
+  const name = createName.value.trim()
   if (!name) {
-    blurAddBook()
+    hideCreateInput()
     return
   }
-  await sidebar.addFolder(name)
-  await sidebar.loadNodeTree()
-  blurAddBook()
+
+  if (createType.value === 'folder') {
+    // 创建笔记本
+    await sidebar.addFolder(name)
+  } else {
+    // 创建笔记
+    const guid = await sidebar.addNoteInFolder('root')
+    if (guid) {
+      // 获取新创建的笔记
+      const note = await sidebar.getNodeByGuid(guid)
+      if (note) {
+        // 更新笔记标题
+        await sidebar.updateNote({ id: note.id, title: name })
+      }
+    }
+  }
+
+  // 先隐藏输入框
+  hideCreateInput()
+
+  // 延迟刷新树结构，避免干扰输入框的隐藏
+  setTimeout(async () => {
+    await sidebar.loadNodeTree()
+  }, 100)
 }
 
 // 搜索功能
@@ -185,11 +253,6 @@ watch(searchStr, newVal => {
     sidebar.exitSearch()
   }
 })
-
-// 添加笔记
-const showAddNote = async () => {
-  await sidebar.addRootNote()
-}
 
 // 拖拽相关
 const isDragOver = ref(false)
@@ -350,7 +413,6 @@ const findScrollableElement = (): HTMLElement | null => {
   if (!scrollAreaRef.value) return null
 
   // 尝试获取组件的 $el 属性（Vue 组件实例）
-  const element = scrollAreaRef.value.$el || scrollAreaRef.value
 
   // 尝试直接在 DOM 中查找滚动视口元素
   try {
@@ -385,6 +447,35 @@ const findScrollableElement = (): HTMLElement | null => {
 
   return null
 }
+
+const onInputBlur = e => {
+  console.log('输入框失焦', e, new Error().stack)
+}
+
+const menuOpen = ref(false)
+const menuRef = ref<HTMLElement | null>(null)
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value
+}
+const onMenuItemClick = (type: 'note' | 'folder') => {
+  menuOpen.value = false
+  showCreateInput(type)
+}
+const handleClickOutside = (e: MouseEvent) => {
+  if (
+    menuOpen.value &&
+    menuRef.value &&
+    !menuRef.value.contains(e.target as Node)
+  ) {
+    menuOpen.value = false
+  }
+}
+onMounted(() => {
+  document.addEventListener('mousedown', handleClickOutside)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', handleClickOutside)
+})
 </script>
 
 <style scoped>
