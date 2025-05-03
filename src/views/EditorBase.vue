@@ -12,7 +12,7 @@
         :min-size="12"
         :max-size="25"
       >
-        <Sidebar class="h-full min-w-[200px]" />
+        <Sidebar class="h-full" />
       </ResizablePanel>
       <ResizableHandle id="handle-1" />
       <ResizablePanel id="editor" :default-size="82">

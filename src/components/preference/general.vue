@@ -13,8 +13,8 @@ import Select from './common/select.vue'
 
 import { usePreferenceStore } from '@/store'
 import { storeToRefs } from 'pinia'
-const preference = usePreferenceStore()
 
+const preference = usePreferenceStore()
 const { autoSave, autoSaveDelay, themeType } = storeToRefs(preference)
 
 // 定义当前主题列表

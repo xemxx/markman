@@ -10,7 +10,7 @@ import { computed } from 'vue'
 const props = defineProps({
   prefix: {
     type: String,
-    default: 'icon',
+    default: 'sprite',
   },
   name: {
     type: String,
@@ -22,7 +22,7 @@ const props = defineProps({
   },
 })
 
-const symbolId = computed(() => `#${props.prefix}-${props.name}`)
+const symbolId = computed(() => `/__spritemap#${props.prefix}-${props.name}`)
 </script>
 
 <style lang="stylus" scoped>

@@ -5,9 +5,9 @@ import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron/simple'
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import pkg from './package.json'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import VitePluginSvgSpritemap from '@spiriit/vite-plugin-svg-spritemap'
 
 import tailwind from 'tailwindcss'
 import autoprefixer from 'autoprefixer'
@@ -28,12 +28,7 @@ export default defineConfig(({ command }) => {
         dts: true,
         resolvers: [AntDesignVueResolver({ importStyle: false })],
       }),
-      createSvgIconsPlugin({
-        iconDirs: [resolve('./src/assets/icons/')],
-        symbolId: 'icon-[dir]-[name]',
-        inject: 'body-last',
-        customDomId: '__svg__icons__dom__',
-      }),
+      VitePluginSvgSpritemap('./src/assets/icons/*.svg'),
       electron({
         main: {
           vite: {

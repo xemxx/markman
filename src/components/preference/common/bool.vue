@@ -4,7 +4,7 @@
       <slot></slot>
     </div>
     <div class="flex items-center space-x-2">
-      <Switch :checked="model" @update:checked="update" />
+      <Switch :model-value="model" @update:model-value="update" />
     </div>
   </div>
 </template>

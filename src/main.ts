@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from '@/router'
-import 'virtual:svg-icons-register'
 import pinia, { useSidebarStore } from '@/store'
 import { useUserStore, usePreferenceStore } from '@/store'
 import { initializeApp } from '@/services/appInitService'
@@ -26,12 +25,14 @@ app
 const user = useUserStore()
 
 // 初始化应用（获取用户信息等）
-await initializeApp().then(() => {
+await initializeApp().then(async () => {
   if (!user.isLogin) {
     router.push('/login')
   }
   const sidebar = useSidebarStore()
   sidebar.loadNodeTree()
+  const preference = usePreferenceStore()
+  await preference.initListen()
 })
 
 router.beforeEach((to, _from, next) => {
@@ -53,6 +54,3 @@ router.beforeEach((to, _from, next) => {
   }
   next()
 })
-
-const preference = usePreferenceStore()
-await preference.initListen()
