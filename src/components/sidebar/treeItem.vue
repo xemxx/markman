@@ -365,7 +365,7 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
       class="group my-0.5 flex items-center rounded-md px-2 py-1 outline-none transition-colors hover:bg-muted/50 data-[selected]:bg-muted"
       :style="{ 'padding-left': `${level * 1.5 + 0.5}rem` }"
       @click="onNodeSelect(tree)"
-      draggable="true"
+      :draggable="!inRenameMode"
       @dragstart="onDragStart($event, tree)"
       @dragend="onDragEnd"
       @dragenter="onDragEnter($event, tree)"
@@ -393,7 +393,10 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
           class="icon-[ion--document-text-outline] size-5 flex-none text-muted-foreground"
         />
       </template>
-      <div class="flex items-center flex-1 overflow-hidden group">
+      <div
+        class="flex items-center flex-1 overflow-hidden group"
+        :class="{ 'user-select-text': inRenameMode }"
+      >
         <input
           v-if="inRenameMode"
           ref="nodeRenameInputRef"
@@ -403,6 +406,11 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
           @keydown.stop
           class="flex-1 px-2 py-1 text-sm border rounded-sm border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
           @click.stop
+          style="
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+          "
         />
         <template v-else>
           <div class="flex-1 pl-2 truncate">
@@ -505,5 +513,11 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
   border-radius: 4px;
   color: var(--foreground);
   font-size: 14px;
+}
+
+.user-select-text {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
 }
 </style>
