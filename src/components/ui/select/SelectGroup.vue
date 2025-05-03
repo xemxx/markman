@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { type HTMLAttributes, computed } from 'vue'
-import { SelectGroup, type SelectGroupProps } from 'radix-vue'
+import { SelectGroup, type SelectGroupProps } from 'reka-ui'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<SelectGroupProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<
+  SelectGroupProps & { class?: HTMLAttributes['class'] }
+>()
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props
@@ -13,7 +15,7 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <SelectGroup :class="cn('p-1 w-full', props.class)" v-bind="delegatedProps">
+  <SelectGroup :class="cn('w-full p-1', props.class)" v-bind="delegatedProps">
     <slot />
   </SelectGroup>
 </template>

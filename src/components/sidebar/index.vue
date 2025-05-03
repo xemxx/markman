@@ -1,54 +1,54 @@
 <template>
   <div
     v-show="toggleSidebar"
-    class="flex h-full flex-col bg-background text-foreground"
+    class="flex h-full flex-col border-r border-border bg-background text-foreground"
   >
     <!-- 顶部用户菜单 -->
-    <div class="flex h-12 items-center justify-between border-b px-4">
+    <div class="flex h-12 items-center justify-between border-b px-4 shadow-sm">
       <Menu />
     </div>
 
     <!-- 搜索框 -->
-    <div class="relative w-full p-2">
+    <div class="relative w-full p-3">
       <Input
         v-model="searchStr"
         placeholder="搜索笔记"
         @keyup.enter="doSearch"
-        class="pl-10"
+        class="pl-10 focus-visible:ring-1"
       />
       <span
-        class="absolute inset-y-0 start-0 flex items-center justify-center px-2"
+        class="absolute inset-y-0 start-0 flex items-center justify-center px-3"
       >
-        <span class="icon-[lucide--search] size-5 text-muted-foreground" />
+        <span class="icon-[lucide--search] size-4 text-muted-foreground" />
       </span>
     </div>
 
     <!-- 笔记管理区域 -->
     <div class="flex flex-1 flex-col overflow-hidden">
       <div
-        class="flex items-center justify-between px-4 py-2"
+        class="flex items-center justify-between bg-muted/30 px-4 py-2"
         @dragover="onDragOver"
         @dragenter="onDragEnter"
         @dragleave="onDragLeave"
         @drop="onDrop"
         :class="{
-          'border-2 border-dashed border-ring bg-muted/80': isDragOver,
+          'border-2 border-dashed border-primary bg-muted/80': isDragOver,
         }"
       >
-        <h2 class="text-lg font-semibold">笔记管理</h2>
+        <h2 class="text-base font-semibold tracking-tight">笔记管理</h2>
         <div class="flex gap-2">
           <div class="relative" ref="menuRef">
             <Button
               variant="ghost"
               size="icon"
-              class="h-8 w-8"
+              class="h-7 w-7 rounded-full hover:bg-primary/10"
               @click="toggleMenu"
             >
-              <span class="icon-[lucide--plus] size-5" />
+              <span class="icon-[lucide--plus] size-4" />
             </Button>
             <div
               v-if="menuOpen"
-              class="absolute right-0 z-10 mt-2 min-w-[8rem] rounded-md border bg-popover shadow-lg"
+              class="absolute right-0 z-10 mt-2 min-w-[8rem] rounded-md border bg-popover shadow-md animate-in fade-in-50 zoom-in-95"
               @mousedown.stop
             >
               <div
@@ -71,14 +71,14 @@
       </div>
 
       <!-- 创建输入框 - 移到 ScrollArea 外部 -->
-      <div v-if="createInputShow" class="mb-2 px-2">
+      <div v-if="createInputShow" class="mb-2 px-3 py-2">
         <input
           ref="createInputRef"
           v-model="createName"
           :placeholder="
             createType === 'note' ? '输入笔记名称' : '输入笔记本名称'
           "
-          class="w-full flex-1 rounded-sm border border-input bg-background px-2 py-1 text-sm"
+          class="w-full flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           @keyup.enter="doCreateItem"
           @keyup.esc="hideCreateInput"
           @keydown.stop
@@ -88,7 +88,7 @@
       </div>
 
       <!-- 笔记本树 -->
-      <ScrollArea ref="scrollAreaRef" class="flex-1 px-2">
+      <ScrollArea ref="scrollAreaRef" class="flex-1 px-2 pt-2">
         <TreeRoot
           class="w-full select-none rounded-lg bg-background p-1 text-sm"
           :items="trees"
@@ -101,7 +101,7 @@
     </div>
 
     <!-- 底部工具栏 -->
-    <Footer />
+    <Footer class="border-t border-border bg-muted/20 py-2" />
   </div>
 </template>
 
@@ -110,7 +110,7 @@ import { useSidebarStore, useSyncStore, usePreferenceStore } from '@/store'
 import { storeToRefs } from 'pinia'
 import Menu from './menu.vue'
 import Footer from './footer.vue'
-import { TreeRoot } from 'radix-vue'
+import { TreeRoot } from 'reka-ui'
 import Tree from './tree.vue'
 import type { TreeNode } from '@/store/sidebar'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -416,8 +416,8 @@ const findScrollableElement = (): HTMLElement | null => {
 
   // 尝试直接在 DOM 中查找滚动视口元素
   try {
-    // 查找 radix-scroll-area-viewport 数据属性
-    const viewport = document.querySelector('[data-radix-scroll-area-viewport]')
+    // 查找 reka-scroll-area-viewport 数据属性
+    const viewport = document.querySelector('[data-reka-scroll-area-viewport]')
     if (viewport && viewport instanceof HTMLElement) {
       return viewport
     }
@@ -480,10 +480,10 @@ onBeforeUnmount(() => {
 
 <style scoped>
 :deep(.scrollbar) {
-  @apply w-2 rounded-md bg-muted;
+  @apply w-1.5 rounded-full bg-muted;
 }
 
 :deep(.scrollbar-thumb) {
-  @apply rounded-md bg-muted-foreground/20 hover:bg-muted-foreground/30;
+  @apply rounded-full bg-muted-foreground/20 transition-colors hover:bg-muted-foreground/40;
 }
 </style>

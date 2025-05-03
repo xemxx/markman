@@ -81,7 +81,6 @@ export const useUserStore = defineStore('user', {
       let user: userItem = await model.getCurrentUser()
       this.update_user(user)
       this.setLogin()
-      ipcRenderer.send('m::set-logging-state', true)
     },
 
     update_user(value: userItem) {
@@ -100,6 +99,7 @@ export const useUserStore = defineStore('user', {
     },
     setLogin() {
       this.isLogin = true
+      ipcRenderer.send('m::set-logging-state', true)
     },
   },
 })

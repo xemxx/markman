@@ -55,4 +55,4 @@ router.beforeEach((to, _from, next) => {
 })
 
 const preference = usePreferenceStore()
-preference.initListen()
+await preference.initListen()

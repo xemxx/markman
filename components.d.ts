@@ -70,6 +70,8 @@ declare module 'vue' {
     ContextMenuTrigger: typeof import('./src/components/ui/context-menu/ContextMenuTrigger.vue')['default']
     Creap: typeof import('./src/components/milkdown/Creap.vue')['default']
     CrepeEditor: typeof import('./src/components/milkdown/CrepeEditor.vue')['default']
+    CustomContextMenu: typeof import('./src/components/sidebar/CustomContextMenu.vue')['default']
+    CustomContextMenuItem: typeof import('./src/components/sidebar/CustomContextMenuItem.vue')['default']
     Dialog: typeof import('./src/components/ui/dialog/Dialog.vue')['default']
     DialogClose: typeof import('./src/components/ui/dialog/DialogClose.vue')['default']
     DialogContent: typeof import('./src/components/ui/dialog/DialogContent.vue')['default']

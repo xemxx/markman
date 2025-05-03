@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { TreeItem } from 'radix-vue'
+import { TreeItem } from 'reka-ui'
 import Tree from './tree.vue'
 import type { TreeNode } from '@/store/sidebar'
 const props = defineProps<{
@@ -452,7 +452,7 @@ onBeforeUnmount(() => {
     :value="tree"
   >
     <div
-      class="group my-0.5 flex items-center rounded-md px-2 py-1 outline-none transition-colors hover:bg-muted/50 data-[selected]:bg-muted"
+      class="group my-0.5 flex items-center rounded-md px-2 py-1.5 outline-none transition-colors hover:bg-muted/80 data-[selected]:bg-accent/50 data-[selected]:text-accent-foreground"
       :style="{ 'padding-left': `${level * 1.5 + 0.5}rem` }"
       @click="onNodeSelect(tree)"
       :draggable="!inRenameMode"
@@ -464,23 +464,23 @@ onBeforeUnmount(() => {
       @drop="onDrop($event, tree)"
       :class="{
         'opacity-50': isDragging,
-        'border-2 border-dashed border-ring bg-muted/80': isDragOver,
+        'border-2 border-dashed border-primary bg-muted/80': isDragOver,
       }"
     >
       <template v-if="tree.type === 'folder'">
         <span
           v-if="!isExpanded"
-          class="icon-[lucide--folder] size-5 flex-none text-muted-foreground"
+          class="icon-[lucide--folder] size-4 flex-none text-muted-foreground/90 transition-colors group-hover:text-foreground"
         />
         <span
           v-else
-          class="icon-[lucide--folder-open] size-5 flex-none text-muted-foreground"
+          class="icon-[lucide--folder-open] size-4 flex-none text-muted-foreground/90 transition-colors group-hover:text-foreground"
         />
       </template>
       <template v-else>
         <!-- 所有文件节点使用文档图标 -->
         <span
-          class="icon-[ion--document-text-outline] size-5 flex-none text-muted-foreground"
+          class="icon-[ion--document-text-outline] size-4 flex-none text-muted-foreground/90 transition-colors group-hover:text-foreground"
         />
       </template>
       <div
@@ -494,7 +494,7 @@ onBeforeUnmount(() => {
           @keyup.enter="doRenameNode(tree)"
           @blur="blurRenameBook"
           @keydown.stop
-          class="flex-1 rounded-sm border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          class="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           @click.stop
           style="
             user-select: text;
@@ -506,20 +506,28 @@ onBeforeUnmount(() => {
           <div class="flex-1 truncate pl-2">
             <CustomContextMenu>
               <div class="flex w-full items-center">
-                <span class="truncate text-sm">{{ tree.label }}</span>
+                <span class="truncate text-sm font-medium">{{
+                  tree.label
+                }}</span>
               </div>
               <template #content>
                 <!-- 共有菜单项 -->
                 <CustomContextMenuItem @click="addNoteInParent(tree)">
-                  <span class="icon-[lucide--file-plus] mr-2 size-4" />
+                  <span
+                    class="icon-[lucide--file-plus] mr-2 size-4 text-muted-foreground"
+                  />
                   新建笔记
                 </CustomContextMenuItem>
                 <CustomContextMenuItem @click="addFolder(tree)">
-                  <span class="icon-[lucide--folder-plus] mr-2 size-4" />
+                  <span
+                    class="icon-[lucide--folder-plus] mr-2 size-4 text-muted-foreground"
+                  />
                   新建笔记本
                 </CustomContextMenuItem>
                 <CustomContextMenuItem @click="renameNode(tree)">
-                  <span class="icon-[lucide--pencil] mr-2 size-4" />
+                  <span
+                    class="icon-[lucide--pencil] mr-2 size-4 text-muted-foreground"
+                  />
                   重命名
                 </CustomContextMenuItem>
                 <!-- 根据节点类型使用不同的删除操作 -->
@@ -530,24 +538,26 @@ onBeforeUnmount(() => {
                       : onDeleteNote(tree)
                   "
                 >
-                  <span class="icon-[lucide--trash-2] mr-2 size-4" />
+                  <span
+                    class="icon-[lucide--trash-2] mr-2 size-4 text-destructive/70"
+                  />
                   删除
                 </CustomContextMenuItem>
               </template>
             </CustomContextMenu>
           </div>
           <div
-            class="grid flex-none grid-cols-1 place-content-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            class="grid flex-none grid-cols-1 place-content-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             @click.stop
             v-show="!inRenameMode"
           >
             <Button
               variant="ghost"
               size="icon"
-              class="h-6 w-6"
+              class="h-6 w-6 rounded-full hover:bg-primary/10"
               @click="addNode(tree)"
             >
-              <span class="icon-[lucide--plus] size-4" />
+              <span class="icon-[lucide--plus] size-3.5" />
             </Button>
           </div>
         </template>
@@ -571,7 +581,7 @@ onBeforeUnmount(() => {
         :placeholder="
           creatingType === 'note' ? '输入笔记名称' : '输入笔记本名称'
         "
-        class="w-full flex-1 rounded-sm border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        class="w-full flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         @keyup.enter="finishCreateChild"
         @keyup.esc="cancelCreateChild"
         @click.stop
@@ -590,9 +600,10 @@ onBeforeUnmount(() => {
   padding: 4px 8px;
   background-color: var(--background);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
   color: var(--foreground);
   font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .user-select-text {

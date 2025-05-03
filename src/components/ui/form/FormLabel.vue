@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { HTMLAttributes } from 'vue'
-import type { LabelProps } from 'radix-vue'
+import type { LabelProps } from 'reka-ui'
 import { useFormField } from './useFormField'
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
@@ -12,10 +12,7 @@ const { error, formItemId } = useFormField()
 
 <template>
   <Label
-    :class="cn(
-      error && 'text-destructive',
-      props.class,
-    )"
+    :class="cn(error && 'text-destructive', props.class)"
     :for="formItemId"
   >
     <slot />
