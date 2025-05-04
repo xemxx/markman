@@ -72,14 +72,14 @@ const { autoSync, syncInterval } = storeToRefs(preferenceStore)
 const isSyncing = computed(() => syncStore.isSyncing)
 const lastSyncTime = computed(() => syncStore.lastSyncTime)
 
-// 监听自动同步设置变化
-watch(autoSync, newValue => {
-  if (newValue) {
-    syncStore.initAutoSync()
-  } else {
-    syncStore.stopAutoSync()
-  }
-})
+// // 监听自动同步设置变化
+// watch(autoSync, newValue => {
+//   if (newValue) {
+//     syncStore.initAutoSync()
+//   } else {
+//     syncStore.stopAutoSync()
+//   }
+// })
 
 // 处理同步间隔变化
 function handleIntervalChange() {

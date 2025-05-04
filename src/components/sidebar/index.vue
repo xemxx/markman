@@ -319,7 +319,7 @@ const onDrop = async (event: DragEvent) => {
     // 执行移动操作
     if (draggedNode.type === 'file') {
       // 移动文件到根目录
-      await sidebar.moveNote({
+      await sidebar.moveNode({
         id: draggedNode.data.id,
         parentId: 'root',
       })

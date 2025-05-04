@@ -1,35 +1,34 @@
-import { NodeModel } from '@/model/node'
+import { NodeModel, NodeItem } from '@/model/node'
 
 import { emitter } from '@/lib/emitter.ts'
 import { defineStore } from 'pinia'
-import { usePreferenceStore, useSidebarStore } from './index'
+import { usePreferenceStore, useSyncStore } from './index'
 
 const nodeModel = new NodeModel()
 
 const autoSaveTimers = new Map()
 
-interface DNote {
-  id: number
-  markdown: string
-  title: string
-  content: string //数据库内容
-  SC: number
-  isSave: boolean
-}
-const defaultNote: DNote = {
+const defaultNote: NodeItem = {
   id: 0,
-  markdown: '',
-  content: '',
+  uid: 0,
+  guid: '',
+  parentId: '',
   title: '',
+  content: '',
+  type: 'note',
+  sort: 0,
+  sortType: 0,
+  modifyState: 0,
   SC: 0,
-  isSave: true,
+  modifyDate: 0,
+  addDate: 0,
 }
 import { Crepe } from '@milkdown/crepe'
 
 export const useEditorStore = defineStore('editor', {
   state: () => ({
     isEdit: false,
-    currentNote: defaultNote,
+    dbNote: defaultNote,
     editContent: '',
     modify: false,
     isSaving: false,
@@ -37,21 +36,22 @@ export const useEditorStore = defineStore('editor', {
     isLoadNewNote: false,
   }),
   actions: {
-    resetDefaultNote() {
-      this.currentNote = defaultNote
+    closeEditor() {
+      this.$reset()
     },
     // flash note
-    flashNote(title: string, content: string, SC: number) {
-      this.currentNote.title = title
-      this.currentNote.content = content
-      this.currentNote.markdown = content
-      this.currentNote.SC = SC
-      this.editContent = content
+    async flashNote(updateEditor = true) {
+      if (updateEditor) {
+        return this.loadNote(this.dbNote.id)
+      }
+      const data = await nodeModel.get(this.dbNote.id)
+      if (data == undefined) return false
+      this.dbNote = data
     },
 
     // click note to load note from sqlite
     checkoutNote(id: number) {
-      const { id: oldId, isSave } = this.currentNote
+      const { id: oldId } = this.dbNote
       if (id == oldId) {
         return
       }
@@ -59,29 +59,25 @@ export const useEditorStore = defineStore('editor', {
       // close and save old note
       if (oldId != id && oldId != undefined) {
         // ask user if note need save
-        if (!isSave) {
+        if (this.editContent != this.dbNote.content) {
           emitter.emit('query-close-note', id)
           return
         }
       }
-      this.loadNote(id)
+      return this.loadNote(id)
     },
 
     async loadNote(id: number) {
       try {
         // load new note
         const data = await nodeModel.get(id)
-        if (data == undefined) return
-        this.currentNote = {
-          id: data.id,
-          markdown: data.content,
-          title: data.title,
-          SC: data.SC,
-          isSave: true,
-          content: data.content,
-        }
+        if (data == undefined) return false
+        this.dbNote = data
         this.isLoadNewNote = true
         this.isEdit = true
+        this.editContent = data.content
+        this.modify = false
+        return true
       } catch (err) {
         console.log(err)
       }
@@ -89,38 +85,27 @@ export const useEditorStore = defineStore('editor', {
 
     // save note to sqlite
     async saveNote() {
-      if (this.editor == null) {
-        throw new Error('not init vditor')
+      // 如果编辑器未打开，则不保存，对应场景是删除当前编辑的笔记时，编辑器会关闭
+      if (this.isEdit == false) {
+        return
       }
       if (this.isSaving) {
         return
       }
       this.isSaving = true
-      let {
-        markdown = '',
-        id = 0,
-        title = '',
-        SC = 0,
-        isSave = false,
-      } = this.currentNote
+      let { content = '', id = 0, title = '', SC = 0 } = this.dbNote
       if (id == undefined || id == 0) {
         this.isSaving = false
         return
       }
-      const newContent = this.editor.getMarkdown()
-      this.currentNote.markdown = newContent
-      markdown = newContent
-      if (isSave && newContent == this.currentNote.content) {
+      const newContent = this.editContent
+      if (newContent == content) {
         console.debug('no need save')
         this.isSaving = false
         return
       }
       try {
         const origin = await nodeModel.get(id)
-        if (origin.content == markdown && origin.title == title) {
-          this.isSaving = false
-          return
-        }
         // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
         if (origin.SC > SC) {
           console.debug('need fix conflict')
@@ -134,30 +119,31 @@ export const useEditorStore = defineStore('editor', {
         const { modifyState } = origin
         const time = Date.parse(Date()) / 1000
         const data = {
-          content: markdown,
+          content: newContent,
           title,
           modifyState: modifyState == 0 ? 2 : modifyState,
           modifyDate: time,
         }
         await nodeModel.update(id, data)
-        this.currentNote.isSave = true
+        this.dbNote.content = newContent
+        this.dbNote.title = title
+        this.dbNote.modifyState = modifyState == 0 ? 2 : modifyState
+        this.dbNote.modifyDate = time
         this.isSaving = false
+        const sync = useSyncStore()
+        sync.sync()
       } catch (err) {
         this.isSaving = false
         console.log(err)
       }
     },
 
-    // 设置笔记修改状态
-    setNoteModified(modified: boolean) {
-      this.modify = modified
-      this.currentNote.isSave = !modified
-    },
-
     // 更新编辑器内容
     updateContent(content: string) {
       this.editContent = content
-      this.currentNote.content = content
+      if (this.editContent != content) {
+        this.modify = true
+      }
     },
 
     handleAutoSave() {
@@ -165,82 +151,24 @@ export const useEditorStore = defineStore('editor', {
       const { autoSave, autoSaveDelay } = preference
       if (!autoSave) return
 
-      if (autoSaveTimers.has(this.currentNote.id)) {
-        clearTimeout(autoSaveTimers.get(this.currentNote.id))
-        autoSaveTimers.delete(this.currentNote.id)
+      if (autoSaveTimers.has(this.dbNote.id)) {
+        clearTimeout(autoSaveTimers.get(this.dbNote.id))
+        autoSaveTimers.delete(this.dbNote.id)
       }
       const timeFunc = setTimeout(async () => {
-        autoSaveTimers.delete(this.currentNote.id)
+        autoSaveTimers.delete(this.dbNote.id)
         console.debug('do auto save')
         if (this.editor != null) {
-          await this.autoSaveNote(this.editor.getMarkdown())
+          await this.saveNote()
         }
       }, autoSaveDelay)
-      autoSaveTimers.set(this.currentNote.id, timeFunc)
-    },
-
-    async autoSaveNote(newContent: string) {
-      if (this.isSaving) {
-        return
-      }
-      this.isSaving = true
-      let {
-        markdown = '',
-        id = 0,
-        title = '',
-        SC = 0,
-        isSave = false,
-      } = this.currentNote
-      if (id == undefined || id == 0) {
-        this.isSaving = false
-        return
-      }
-      this.currentNote.markdown = newContent
-      markdown = newContent
-      if (isSave && newContent == this.currentNote.content) {
-        console.debug('no need save')
-        this.isSaving = false
-        return
-      }
-      try {
-        const origin = await nodeModel.get(id)
-        if (origin.content == markdown && origin.title == title) {
-          this.isSaving = false
-          return
-        }
-        // 只有当远端的SC大于本地的SC时，才需要解决冲突，否则直接更新本地覆盖即可
-        if (origin.SC > SC) {
-          console.debug('need fix conflict')
-          console.debug(origin.SC)
-          console.debug(SC)
-          await this.__fixConflict()
-          this.isSaving = false
-          return
-        }
-        // update sqlite
-        const { modifyState } = origin
-        const time = Date.parse(Date()) / 1000
-        const data = {
-          content: markdown,
-          title,
-          modifyState: modifyState == 0 ? 2 : modifyState,
-          modifyDate: time,
-        }
-        await nodeModel.update(id, data)
-        this.currentNote.isSave = true
-        this.isSaving = false
-      } catch (err) {
-        this.isSaving = false
-        console.log(err)
-      }
+      autoSaveTimers.set(this.dbNote.id, timeFunc)
     },
 
     //no feel to conflict
     async __fixConflict() {
-      const sidebar = useSidebarStore()
-
       try {
-        let local = this.currentNote
+        let local = this.dbNote
         let server = await nodeModel.get(local.id)
         let newTitle = `local:${local.title} [---] server:${server.title}`
         let newContent = `local>>>>>>>>>>>>>>\n${local.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${server.content}`
@@ -252,12 +180,7 @@ export const useEditorStore = defineStore('editor', {
           modifyState: 2,
         })
 
-        local.title = newTitle
-        local.content = newContent
-        local.markdown = newContent
-        local.SC = server.SC
-        local.isSave = true
-        this.currentNote = local
+        this.loadNote(local.id)
       } catch (err) {
         console.log(err)
       }

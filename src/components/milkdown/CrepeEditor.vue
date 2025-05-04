@@ -1,5 +1,5 @@
 <template>
-  <Milkdown class="m-0 border-none size-full" />
+  <Milkdown class="m-0 size-full border-none" />
 </template>
 
 <script setup lang="ts">
@@ -27,20 +27,16 @@ useEditor(root => {
     listener.markdownUpdated((ctx, markdown, prevMarkdown) => {
       if (markdown !== prevMarkdown) {
         editorS.updateContent(markdown)
-        if (markdown !== editorS.currentNote.content) {
-          editorS.setNoteModified(true)
-        }
       }
     })
   })
   // 修复某些文档加载后无法正常编辑的问题，解决办法：固定版本到7.6.2
   watch(
-    () => editorS.currentNote,
+    () => editorS.dbNote,
     v => {
       if (editorS.isLoadNewNote && crepe.editor != undefined) {
         crepe.editor.action(replaceAll(v.content, false))
         editorS.isLoadNewNote = false
-        editorS.setNoteModified(false)
       }
     },
   )

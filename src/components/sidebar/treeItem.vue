@@ -266,7 +266,7 @@ const onDrop = async (event: DragEvent, targetNode: TreeNode) => {
     // 执行移动操作
     if (draggedNode.type === 'file') {
       // 移动文件
-      await sidebar.moveNote({
+      await sidebar.moveNode({
         id: draggedNode.data.id,
         parentId: targetNode.data.guid,
       })

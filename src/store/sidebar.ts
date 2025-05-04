@@ -434,7 +434,7 @@ export const useSidebarStore = defineStore('sidebar', {
     },
 
     // 移动笔记
-    async moveNote({ id, parentId }: { id: number; parentId: string }) {
+    async moveNode({ id, parentId }: { id: number; parentId: string }) {
       try {
         await nodeModel.update(id, { parentId, modifyState: 2 })
       } catch (err) {
@@ -457,9 +457,8 @@ export const useSidebarStore = defineStore('sidebar', {
           }
           await nodeModel.update(id, data)
         }
-        if (id === editor.currentNote.id) {
-          editor.resetDefaultNote()
-          editor.isEdit = false
+        if (id === editor.dbNote.id) {
+          editor.closeEditor()
         }
         const sync = useSyncStore()
         sync.sync()
@@ -608,17 +607,13 @@ export const useSidebarStore = defineStore('sidebar', {
     async moveFolder(id: string, targetId: string) {
       const node = await nodeModel.getByGuid(id)
       if (!node) return false
-      console.log('执行')
       const sync = useSyncStore()
       try {
-        console.log(id, targetId)
-        console.log(
-          await nodeModel.update(node.id, {
-            parentId: targetId,
-            modifyState: node.modifyState === 0 ? 2 : node.modifyState,
-          }),
-        )
-        // sync.sync()
+        await nodeModel.update(node.id, {
+          parentId: targetId,
+          modifyState: node.modifyState === 0 ? 2 : node.modifyState,
+        })
+        sync.sync()
         return true
       } catch (err) {
         console.error(err)

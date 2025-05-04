@@ -11,7 +11,7 @@ const state = {
   // theme
   themeType: 'light',
   // sync
-  autoSync: true,
+  autoSync: false,
   syncInterval: 60000, // 默认同步间隔：1分钟
 }
 

@@ -17,7 +17,6 @@ import {
 
 // 模型实例
 const nodeModel = new NodeModel()
-const userModel = new User()
 
 // 同步配置
 const DEFAULT_SYNC_INTERVAL = 60000 // 默认同步间隔：1分钟
@@ -196,17 +195,19 @@ export const useSyncStore = defineStore('sync', {
       }
 
       const user = useUserStore()
-      const uid = user.dbUser?.id
+      if (!user.isLogin) {
+        this.update_isSyncing(false)
+        return
+      }
       const server = user.server
 
       try {
         // 获取本地上次更新版本号
-        const user = await userModel.getLastSC(uid)
-        if (user == null) {
+        if (user.dbUser == undefined) {
           // 当前用户不存在，可能是数据bug，需要重新登录
           throw new Error('用户不存在')
         }
-        const localSC = user.lastSC
+        const localSC = user.dbUser?.lastSC
 
         // 获取服务端版本号
         const { SC: serverSC = 0 } = await syncApi.getLastSyncCount(server)
@@ -216,7 +217,7 @@ export const useSyncStore = defineStore('sync', {
           await this.pull({ localSC, serverSC })
         }
 
-        await this.push()
+        await this.push(user.dbUser?.id!)
 
         // 非静默模式才更新状态
         if (!silent) {
@@ -246,19 +247,12 @@ export const useSyncStore = defineStore('sync', {
     /**
      * 推送数据
      */
-    async push(): Promise<void> {
-      try {
-        await this._pushNodes()
-      } catch (err: any) {
-        if (err.rePull) {
-          console.debug('需要重新拉取数据')
-          // push过程中出现另一客户端对服务端进行了修改，需要重新pull
-          setTimeout(() => {
-            this.sync(true)
-          }, 5000)
-        }
-        return Promise.reject(err)
+    async push(uid: number) {
+      if (uid === null) {
+        console.error('用户ID为空')
+        return
       }
+      await this._pushNodes(uid)
     },
 
     /**
@@ -320,8 +314,6 @@ export const useSyncStore = defineStore('sync', {
             title,
             content,
             SC,
-            addDate,
-            modifyDate,
             parentId,
             type,
             sort,
@@ -330,8 +322,8 @@ export const useSyncStore = defineStore('sync', {
           } = serverNode
 
           // 转换日期格式
-          const parsedAddDate = Date.parse(addDate) / 1000
-          const parsedModifyDate = Date.parse(modifyDate) / 1000
+          const parsedAddDate = Date.parse(serverNode.addDate) / 1000
+          const parsedModifyDate = Date.parse(serverNode.modifyDate) / 1000
 
           // 如果本地存在该节点
           if (localNode) {
@@ -343,10 +335,10 @@ export const useSyncStore = defineStore('sync', {
               switch (localNode.modifyState) {
                 case 0: // 本地无冲突，直接覆盖
                   await nodeModel.update(localNode.id, {
-                    SC,
+                    SC: serverNode.SC,
                     title,
                     content,
-                    parentId,
+                    parentId: serverNode.parentId,
                     type,
                     sort,
                     sortType,
@@ -355,20 +347,18 @@ export const useSyncStore = defineStore('sync', {
                   })
 
                   // 如果是笔记且本地编辑器已经打开了需要同步
-                  if (
-                    type === 'note' &&
-                    localNode.id === editor.currentNote.id
-                  ) {
-                    editor.flashNote(title, content, SC)
+                  if (type === 'note' && localNode.id === editor.dbNote.id) {
+                    editor.flashNote(true)
                   }
                   break
 
-                case 1: // 本地新建但UUID冲突
-                  if (serverNode.title === localNode.title) {
-                    // 如果标题相同，更新本地UUID
-                    await nodeModel.update(localNode.id, {
-                      guid: uuid(),
-                    })
+                case 1: // 本地新建说明UUID冲突,更新本地UUID
+                  await nodeModel.update(localNode.id, {
+                    guid: uuid(),
+                  })
+                  // 如果有冲突且当前正在编辑，更新编辑器
+                  if (localNode.id === editor.dbNote.id) {
+                    editor.flashNote(false)
                   }
                   break
 
@@ -377,51 +367,64 @@ export const useSyncStore = defineStore('sync', {
                     // 文件夹冲突处理：比较修改时间，新的覆盖旧的
                     if (
                       Date.parse(String(localNode.modifyDate)) <
-                      Date.parse(modifyDate)
+                      Date.parse(serverNode.modifyDate)
                     ) {
                       await nodeModel.update(localNode.id, {
                         title,
-                        SC,
+                        parentId: serverNode.parentId,
+                        SC: serverNode.SC, // 更新SC，表示包含服务端版本
                         modifyDate: parsedModifyDate,
                         modifyState: 0,
                       })
                     }
                   } else {
                     // 笔记冲突处理：保留两端数据，让用户自行处理
-                    const newTitle = `local:${localNode.title} [---] server:${title}`
-                    const newContent = `local>>>>>>>>>>>>>>\n${localNode.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${content}`
+                    let newTitle = `local: ${localNode.title} [---] server: ${title}`
+                    let newContent = `local>>>>>>>>>>>>>>\n${localNode.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${content}`
                     const newModifyDate =
                       Date.parse(String(localNode.modifyDate)) <
-                      Date.parse(modifyDate)
+                      Date.parse(serverNode.modifyDate)
                         ? parsedModifyDate
                         : localNode.modifyDate
 
+                    // 如果有冲突且当前正在编辑，更新编辑器
+                    if (localNode.id === editor.dbNote.id) {
+                      newContent = `local>>>>>>>>>>>>>>\n${editor.editContent}\n [---------------------------------]\n\n\n server:>>>>>>>>>>>>>>>>\n${content}`
+                    }
                     await nodeModel.update(localNode.id, {
                       title: newTitle,
                       content: newContent,
+                      parentId: serverNode.parentId,
                       modifyDate: newModifyDate,
-                      SC, // 更新SC，表示与服务端同步
+                      SC: serverNode.SC, // 更新SC，表示包含服务端版本
                     })
-
-                    // 如果有冲突且当前正在编辑，更新编辑器
-                    if (localNode.id === editor.currentNote.id) {
-                      editor.flashNote(newTitle, newContent, SC)
+                    if (localNode.id === editor.dbNote.id) {
+                      editor.flashNote(true)
                     }
                   }
                   break
 
-                case 3: // 本地已删除但服务端更新，忽略
+                case 3: // 拉取阶段，本地已删除但服务端更新，说明有另一个客户端推送了更新
+                  // 选择覆盖本地，基本原则：根据SC大的来操作
+                  await nodeModel.update(localNode.id, {
+                    title,
+                    content,
+                    parentId: serverNode.parentId,
+                    modifyDate: parsedModifyDate,
+                    SC: serverNode.SC,
+                    modifyState: 0,
+                  })
                   break
               }
             }
-          } else if (isDel === 0) {
+          } else if (serverNode.isDel === 0) {
             // 本地不存在且服务器未删除，添加到本地
             await nodeModel.add({
               guid,
               SC,
               title,
               content,
-              parentId,
+              parentId: serverNode.parentId,
               type,
               sort,
               sortType,
@@ -441,15 +444,7 @@ export const useSyncStore = defineStore('sync', {
     /**
      * 推送节点数据
      */
-    async _pushNodes(): Promise<void> {
-      const user = useUserStore()
-      const uid = user.dbUser?.id
-
-      if (uid === null) {
-        console.error('用户ID为空')
-        return
-      }
-
+    async _pushNodes(uid: number) {
       try {
         const nodesToSync = await nodeModel.getModify(uid)
 
@@ -479,7 +474,6 @@ export const useSyncStore = defineStore('sync', {
       const user = useUserStore()
       const editor = useEditorStore()
       const server = user.server
-      const uid = user.dbUser?.id
       const localNode = data[index]
 
       let result: SyncResponse
@@ -508,7 +502,15 @@ export const useSyncStore = defineStore('sync', {
 
         if (isErr) {
           // 服务端冲突，需要重新拉取
-          return Promise.reject({ rePull: true })
+          console.error(
+            '未更新，SC不匹配，或者服务端错误，将在下一次同步更新: ',
+            localNode.id,
+            localNode.title,
+            localNode.modifyState,
+            SC,
+            localNode.SC,
+          )
+          return this._updateNodesToServer({ data, index: index + 1 })
         } else if (isRepeat) {
           // UUID冲突，更新本地UUID并重试
           const newGuid = uuid()
@@ -517,7 +519,10 @@ export const useSyncStore = defineStore('sync', {
           await nodeModel.update(localNode.id, {
             guid: newGuid,
           })
-
+          // 如果当前正在编辑的笔记被更新，更新编辑器
+          if (localNode.id === editor.dbNote.id) {
+            editor.dbNote.guid = newGuid
+          }
           return this._updateNodesToServer({
             data,
             index,
@@ -530,35 +535,37 @@ export const useSyncStore = defineStore('sync', {
           } else {
             // 更新本地SC和修改状态
             await nodeModel.update(localNode.id, {
-              SC: Number(SC),
+              SC: SC,
               modifyState: 0,
             })
+            if (localNode.id === editor.dbNote.id) {
+              editor.flashNote(false)
+            }
           }
 
           // 更新用户的lastSC
-          await userModel.update(uid!, { lastSC: SC })
-          user.update_lastSC(SC)
-
-          // 如果当前正在编辑的笔记被更新，更新编辑器
-          if (
-            localNode.type === 'note' &&
-            localNode.id === editor.currentNote.id
-          ) {
-            editor.flashNote(
-              editor.currentNote.title,
-              editor.currentNote.markdown,
-              Number(SC),
-            )
-          }
+          await user.update_lastSC(SC)
 
           // 处理下一个节点
           return this._updateNodesToServer({ data, index: index + 1 })
         } else {
-          console.log('未更新，SC不匹配')
+          console.error(
+            '未更新，SC不匹配，将在下一次同步更新: ',
+            localNode.id,
+            localNode.title,
+            localNode.modifyState,
+            SC,
+            localNode.SC,
+          )
+          return this._updateNodesToServer({ data, index: index + 1 })
         }
       } catch (error) {
-        console.error('更新服务器节点失败:', error)
-        throw error
+        console.error(
+          '更新服务器节点失败，将在下一次同步更新:',
+          error,
+          localNode.id,
+        )
+        return this._updateNodesToServer({ data, index: index + 1 })
       }
     },
   },

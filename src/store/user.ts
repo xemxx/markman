@@ -87,10 +87,10 @@ export const useUserStore = defineStore('user', {
       this.dbUser = value
     },
 
-    update_lastSC(serverSC: any) {
+    async update_lastSC(serverSC: number) {
       if (this.dbUser != undefined) {
-        model.update(this.dbUser?.id!, { lastSC: serverSC })
-        this.dbUser.lastSC! = serverSC
+        await model.update(this.dbUser?.id!, { lastSC: serverSC })
+        this.dbUser.lastSC = serverSC
       }
     },
 
