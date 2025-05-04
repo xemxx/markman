@@ -34,7 +34,7 @@
     deleteAppDataOnUninstall: false,
   },
   linux: {
-    target: ['AppImage', 'deb', 'pacman'],
+    target: ['AppImage', 'deb'],
     icon: 'public/icons/mac/icon.icns',
     category: 'Office',
   },
