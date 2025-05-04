@@ -7,6 +7,12 @@ const state = {
   autoSaveDelay: 1000,
   // menu status
   toggleSidebar: false,
+  nativeBar: true,
+  // theme
+  themeType: 'light',
+  // sync
+  autoSync: false,
+  syncInterval: 60000, // 默认同步间隔：1分钟
 }
 
 export const usePreferenceStore = defineStore('preference', {
@@ -29,17 +35,38 @@ export const usePreferenceStore = defineStore('preference', {
       this[entryName] = !this[entryName]
     },
 
-    getLocal() {
-      ipcRenderer.send('m::get-user-pref')
-
+    async initListen() {
       ipcRenderer.on('m::user-pref', (_, preferences) => {
         this.SET_PREFERENCE(preferences)
       })
+      const p = await ipcRenderer.invoke('m::get-user-pref')
+      this.SET_PREFERENCE(p)
+      this.$subscribe((mutation, state) => {
+        Object.keys(state).forEach(key => {
+          if (
+            typeof state[key] !== 'undefined' &&
+            typeof this[key] !== 'undefined'
+          ) {
+            // 每当状态发生变化时，将整个 state 同步到其他窗口
+            this.setOne({ type: key, value: state[key] })
+          }
+        })
+      })
     },
+
+    destroyListen() {
+      ipcRenderer.removeAllListeners('m::user-pref')
+    },
+
     // eslint-disable-next-line no-empty-pattern
     setOne({ type, value }) {
       // save to electron-store
       ipcRenderer.send('m::set-user-pref', { [type]: value })
+    },
+    // eslint-disable-next-line no-empty-pattern
+    async getOne(key: string) {
+      // save to electron-store
+      return await ipcRenderer.invoke('m::get-user-pref-one', { key })
     },
   },
 })

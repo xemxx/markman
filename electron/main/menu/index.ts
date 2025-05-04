@@ -2,9 +2,8 @@ import { BrowserWindow, Menu } from 'electron'
 import { isOsx, isWindows, isLinux } from '../config'
 import { configEditorMenu, configSettingMenu } from './templates'
 import { ipcMain } from 'electron'
-import { Debug } from '../log'
 import Keybindings from '../keyboard/shortcutHandler'
-
+import type Preference from '../preferences'
 export const MenuType = {
   DEFAULT: 0,
   EDITOR: 1,
@@ -12,14 +11,14 @@ export const MenuType = {
 }
 
 interface MenuCustom {
-  menu: Electron.Menu
+  menu: Electron.Menu | null
   type: number
 }
 
 class AppMenu {
   _keybindings: any
   _userDataPath: any
-  _userPreference: any
+  _userPreference: Preference
   isOsxOrWindows: boolean
   activeWindowId: number
   windowMenus: Map<any, MenuCustom>
@@ -27,7 +26,11 @@ class AppMenu {
    * @param {Keybindings} keybindings The keybindings instances.
    * @param {string} userDataPath The user data path.
    */
-  constructor(keybindings: Keybindings, userDataPath: string, userPreference) {
+  constructor(
+    keybindings: Keybindings,
+    userDataPath: string,
+    userPreference: Preference,
+  ) {
     this._keybindings = keybindings
     this._userDataPath = userDataPath
     this._userPreference = userPreference
@@ -78,9 +81,12 @@ class AppMenu {
    * @param {number} windowId The window id.
    * @param {boolean} flag Always on top.
    */
-  updateAlwaysOnTopMenu(windowId: number, flag) {
+  updateAlwaysOnTopMenu(windowId: number, flag: boolean) {
     const menus = this.getWindowMenuById(windowId)
-    const menu = menus.getMenuItemById('alwaysOnTopMenuItem')
+    const menu = menus?.getMenuItemById('alwaysOnTopMenuItem')
+    if (!menu) {
+      return
+    }
     menu.checked = flag
   }
 
@@ -90,7 +96,7 @@ class AppMenu {
    * @param {number} windowId The window id.
    * @returns {Electron.Menu} The menu.
    */
-  getWindowMenuById(windowId: number): Electron.Menu {
+  getWindowMenuById(windowId: number): Electron.Menu | null {
     const menu = this.windowMenus.get(windowId)
     if (!menu) {
       throw new Error(`Cannot find window menu for id ${windowId}.`)
@@ -105,7 +111,7 @@ class AppMenu {
         return
       }
 
-      const menuItem = menu.getMenuItemById('autoSaveMenuItem')
+      const menuItem = menu?.getMenuItemById('autoSaveMenuItem')
       menuItem!.checked = autoSave
     })
   }
@@ -117,7 +123,7 @@ class AppMenu {
         return
       }
 
-      const menuItem = menu.getMenuItemById('sideBarMenuItem')
+      const menuItem = menu?.getMenuItemById('sideBarMenuItem')
       menuItem!.checked = toggleSidebar
     })
   }
@@ -129,11 +135,26 @@ class AppMenu {
         return
       }
 
-      const menuItem = menu.getMenuItemById('previewMenuItem')
+      const menuItem = menu?.getMenuItemById('previewMenuItem')
       if (!menuItem) {
         return
       }
       menuItem.checked = togglePreview
+    })
+  }
+
+  updatePreferenceEnabled(enabled: boolean) {
+    this.windowMenus.forEach(value => {
+      const { menu, type } = value
+      if (type !== MenuType.EDITOR) {
+        return
+      }
+
+      const menuItem = menu?.getMenuItemById('preferences')
+      if (!menuItem) {
+        return
+      }
+      menuItem.enabled = enabled
     })
   }
 
@@ -184,8 +205,6 @@ class AppMenu {
 
   _listenForIpcMain() {
     ipcMain.on('broadcast-pref-changed', (pref: any) => {
-      Debug('Menu: broadcast-pref-changed')
-      Debug(pref)
       if (pref.autoSave !== undefined) this.updateAutoSaveMenu(pref.autoSave)
       else if (pref.toggleSidebar !== undefined)
         this.updateToggleSidebar(pref.toggleSidebar)
@@ -201,8 +220,11 @@ class AppMenu {
  * @param {string} menuId Menu ID
  * @returns {Electron.MenuItem} Returns the menu or null.
  */
-export const getMenuItemById = (menuId: string): Electron.MenuItem => {
+export const getMenuItemById = (menuId: string): Electron.MenuItem | null => {
   const menus = Menu.getApplicationMenu()
+  if (!menus) {
+    return null
+  }
   return menus.getMenuItemById(menuId)
 }
 

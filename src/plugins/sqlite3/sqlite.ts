@@ -4,52 +4,51 @@ const sqlite = sqlite3.verbose()
 
 class Sqlite {
   db!: sqlite3.Database
-  static instance: any
+  static instance: Sqlite | undefined
   constructor(dbPath: string) {
     this.connect(dbPath)
   }
   // 连接数据库
   connect(path: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db = new sqlite.Database(path, err => {
-        if (err === null) {
-          resolve(err)
-        } else {
+        if (err) {
           reject(err)
+        } else {
+          resolve()
         }
       })
     })
   }
   // 运行sql
   run(sql: string, params: any) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db.run(sql, params, err => {
-        if (err === null) {
-          resolve(err)
-        } else {
+        if (err) {
           reject(err)
+        } else {
+          resolve()
         }
       })
     })
   }
   // 运行多条sql
   exec(sql: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.db.exec(sql, err => {
-        if (err === null) {
-          resolve(err)
-        } else {
+        if (err) {
           reject(err)
+        } else {
+          resolve()
         }
       })
     })
   }
   // 查询一条数据
   get<T>(sql: string, params: any) {
-    return new Promise((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
       this.db.get(sql, params, (err, data: T) => {
         if (err) {
-          console.log('run:' + err)
           reject(err)
         } else {
           resolve(data)
@@ -58,9 +57,9 @@ class Sqlite {
     })
   }
   // 查询所有数据
-  all(sql: string, params: any) {
-    return new Promise((resolve, reject) => {
-      this.db.all(sql, params, (err, data) => {
+  all<T>(sql: string, params: any) {
+    return new Promise<T[]>((resolve, reject) => {
+      this.db.all(sql, params, (err, data: T[]) => {
         if (err) {
           reject(err)
         } else {
@@ -76,7 +75,9 @@ class Sqlite {
 
   // 单例
   static getInstance(dbPath: string) {
-    this.instance = this.instance ? this.instance : new Sqlite(dbPath)
+    if (!this.instance) {
+      this.instance = new Sqlite(dbPath)
+    }
     return this.instance
   }
 }

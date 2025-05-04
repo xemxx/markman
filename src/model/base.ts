@@ -1,7 +1,7 @@
-import { db } from '../plugins/sqlite3/db'
+import { db } from '../plugins/sqlite3/index'
 
 export class Model {
-  insert(table: any, data: { [x: string]: string }) {
+  async insert(table: any, data: { [x: string]: string }) {
     let keys = Object.keys(data)
     let fields = ''
     let values = ''
@@ -16,13 +16,15 @@ export class Model {
       fields.length - 1,
     )}) values( ${values.substring(0, values.length - 1)} )`
 
-    return db.run(sql, arr).then(
-      () => this.getId(table),
-      (err: string) => console.log('isnet:' + err),
-    )
+    try {
+      await db.run(sql, arr)
+      return this.getId(table)
+    } catch (err) {
+      console.log('insert:' + err)
+    }
   }
 
-  update(id: any, table: any, data: { [x: string]: string }) {
+  async update(id: any, table: any, data: { [x: string]: string }) {
     let keys = Object.keys(data)
     let sql = `update ${table} set `
     let arr: string[] = []
@@ -32,16 +34,26 @@ export class Model {
     }
     sql = sql.substring(0, sql.length - 1) + ` where id=?`
     arr.push(id)
-    return db.run(sql, arr)
+    try {
+      await db.run(sql, arr)
+    } catch (err) {
+      console.error('update:' + err)
+    }
   }
 
-  delete(id: any, table: any) {
+  async delete(id: any, table: any) {
     const sql = `delete from ${table} where id=?`
-    return db.run(sql, [id])
+
+    try {
+      await db.run(sql, [id])
+    } catch (err) {
+      console.log('delete:' + err)
+    }
   }
 
-  getId(table: string) {
+  async getId(table: string) {
     const sql = 'select last_insert_rowid() as id from ' + table
-    return db.get(sql).then((data: { id: any }) => data.id)
+    const data = await db.get(sql, [])
+    return (data as { id: any }).id
   }
 }

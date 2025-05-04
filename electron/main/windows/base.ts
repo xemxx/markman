@@ -20,13 +20,10 @@ export const WindowType = {
   SETTINGS: 'settings',
 }
 
-const url = process.env.VITE_DEV_SERVER_URL
-const indexHtml = join(ROOT_PATH.dist, 'index.html')
-
-class BaseWindow extends EventEmitter {
+export class BaseWindow extends EventEmitter {
   protected _accessor: Accessor
   id: number
-  browserWindow: BrowserWindow
+  browserWindow: BrowserWindow | null
   type: string
   url: string
 
@@ -37,25 +34,30 @@ class BaseWindow extends EventEmitter {
     super()
 
     this._accessor = accessor
-    this.id = null
+    this.id = 0
     this.browserWindow = null
     this.type = WindowType.BASE
+    this.url = ''
   }
 
   bringToFront() {
     const { browserWindow: win } = this
+    if (!win) {
+      Debug('Window not found.')
+      return
+    }
 
     if (win.isMinimized()) win.restore()
     if (!win.isVisible()) win.show()
     if (isLinux) {
-      win.focus()
+      win?.focus()
     } else {
-      win.moveTop()
+      win?.moveTop()
     }
   }
 
   reload() {
-    this.browserWindow.reload()
+    this.browserWindow?.reload()
   }
 
   destroy() {
@@ -64,15 +66,13 @@ class BaseWindow extends EventEmitter {
       this.browserWindow.destroy()
       this.browserWindow = null
     }
-    this.id = null
+    this.id = 0
   }
 
   _buildUrlString() {
     if (app.isPackaged) {
-      return 'file://' + indexHtml
+      return 'file://' + join(ROOT_PATH.dist, 'index.html')
     }
-    return url
+    return process.env.VITE_DEV_SERVER_URL
   }
 }
-
-export default BaseWindow

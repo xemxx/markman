@@ -1,4 +1,4 @@
-import { db } from '../plugins/sqlite3/db'
+import { db } from '../plugins/sqlite3/index'
 import { Model } from './base.js'
 
 export interface notebookItem {
@@ -18,7 +18,15 @@ export interface notebookItem {
 
 export class Notebook extends Model {
   getAll(uid: any) {
-    return db.all(`select * from notebook where uid=? and modifyState<3`, [uid])
+    return db.all<notebookItem>(
+      `select * from notebook where uid=? and modifyState<3`,
+      [uid],
+    )
+  }
+  get(id: any): Promise<notebookItem> {
+    return db.get<notebookItem>(`select * from notebook where id=?`, [
+      id,
+    ]) as Promise<notebookItem>
   }
   add(data: { [x: string]: any }) {
     return super.insert('notebook', data)
@@ -30,12 +38,16 @@ export class Notebook extends Model {
     return super.delete(id, 'notebook')
   }
 
-  deleteLocal(id: any, guid: any) {
-    return this.update(id, { modifyState: 3 })
-      .then(() => {
-        return db.run(`update note set modifyState=? where bid=?`, [3, guid])
-      })
-      .catch((err: any) => console.log(err))
+  async deleteLocal(id: any, guid: any) {
+    try {
+      await this.update(id, { modifyState: 3 })
+      return await db.run(`update note set modifyState=? where bid=?`, [
+        3,
+        guid,
+      ])
+    } catch (err) {
+      return console.log(err)
+    }
   }
 
   getLocalByServer(uid: any, serverData: any[]) {
@@ -45,7 +57,7 @@ export class Notebook extends Model {
       return row.guid
     })
     guids.push(uid)
-    return db.all(
+    return db.all<notebookItem>(
       `select * from notebook where guid in (${sql.substr(
         0,
         sql.length - 1,
@@ -55,6 +67,9 @@ export class Notebook extends Model {
   }
 
   getModify(uid: any) {
-    return db.all(`select * from notebook where uid=? and modifyState>0`, [uid])
+    return db.all<notebookItem>(
+      `select * from notebook where uid=? and modifyState>0`,
+      [uid],
+    )
   }
 }

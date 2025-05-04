@@ -5,8 +5,12 @@ import vue from '@vitejs/plugin-vue'
 import electron from 'vite-plugin-electron/simple'
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import pkg from './package.json'
+import vueDevTools from 'vite-plugin-vue-devtools'
+import VitePluginSvgSpritemap from '@spiriit/vite-plugin-svg-spritemap'
+
+import tailwind from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
 
 rmSync('dist', { recursive: true, force: true }) // v14.14.0
 
@@ -16,40 +20,24 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve'
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
   return {
-    type: "module",
+    type: 'module',
     plugins: [
       vue(),
+      vueDevTools(),
       Components({
         dts: true,
         resolvers: [AntDesignVueResolver({ importStyle: false })],
       }),
-      createSvgIconsPlugin({
-        // 指定需要缓存的图标文件夹
-        iconDirs: [resolve('./src/assets/icons/')],
-        // 指定symbolId格式
-        symbolId: 'icon-[dir]-[name]',
-
-        /**
-         * 自定义插入位置
-         * @default: body-last
-         */
-        inject: 'body-last',
-
-        /**
-         * custom dom id
-         * @default: __svg__icons__dom__
-         */
-        customDomId: '__svg__icons__dom__',
-      }),
+      VitePluginSvgSpritemap('./src/assets/icons/*.svg'),
       electron({
         main: {
           vite: {
             build: {
               lib: {
-               entry: 'electron/main/index.ts',
-               formats: ['cjs'],
-               fileName: () => '[name].js',
-             },
+                entry: 'electron/main/index.ts',
+                formats: ['es'],
+                fileName: () => '[name].mjs',
+              },
               outDir: 'dist/electron/main',
               sourcemap,
               minify: isBuild,
@@ -110,6 +98,9 @@ export default defineConfig(({ command }) => {
         },
       },
       devSourcemap: false,
+      postcss: {
+        plugins: [tailwind(), autoprefixer()],
+      },
     },
     server:
       process.env.VSCODE_DEBUG &&
@@ -128,6 +119,7 @@ export default defineConfig(({ command }) => {
       esbuildOptions: {
         target: 'esnext',
       },
+      exclude: ['@vue/devtools'],
     },
     // 设置路径别名
     resolve: {

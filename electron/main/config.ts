@@ -6,8 +6,10 @@ export const isDevelopment = process.env.NODE_ENV !== 'production'
 import { app } from 'electron'
 import { join } from 'path'
 
+const __dirname = import.meta.dirname
+
 export const userDataPath = app.getPath('userData')
-const preload = join(__dirname, '../preload/index.js')
+const preload = join(__dirname, '../preload/index.mjs')
 export const editorWinOptions = {
   title: 'markman',
   minWidth: 500,
@@ -56,7 +58,7 @@ export const URL_REG =
 
 export const ROOT_PATH = {
   // /dist
-  dist: join(__dirname, '../..'),
+  dist: join(__dirname, app.isPackaged ? '../..' : '../../..'),
   // /dist or /public
   public: join(__dirname, app.isPackaged ? '../..' : '../../../public'),
 }
