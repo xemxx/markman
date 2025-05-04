@@ -88,7 +88,7 @@ function handleIntervalChange() {
 
 // 立即同步
 function syncNow() {
-  syncStore.sync(true)
+  syncStore.sync()
 }
 
 // 格式化上次同步时间

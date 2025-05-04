@@ -1,9 +1,8 @@
 import { User, userItem } from '@/model/user'
 import { getCookie, setCookie } from '../tools'
 import { defineStore } from 'pinia'
-import { useSidebarStore, useEditorStore } from './index'
+import { useSidebarStore, useEditorStore, useSyncStore } from './index'
 import { ipcRenderer } from 'electron'
-import { User2Icon } from 'lucide-vue-next'
 
 const model = new User()
 
@@ -33,7 +32,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    unSetCurrentUser() {
+    async unSetCurrentUser() {
       this.isLogin = false
       if (this.dbUser == undefined) {
         return Promise.resolve()
@@ -43,10 +42,9 @@ export const useUserStore = defineStore('user', {
       const editor = useEditorStore()
       editor.$reset()
       ipcRenderer.send('m::set-logging-state', false)
-      return model.update(this.dbUser.id, { state: 0 }).then(() => {
-        this.dbUser = undefined
-        console.log('unset state')
-      })
+      await model.update(this.dbUser.id, { state: 0 })
+      this.dbUser = undefined
+      console.log('unset state')
     },
 
     unsetDBActive(id: number) {
@@ -100,6 +98,9 @@ export const useUserStore = defineStore('user', {
     setLogin() {
       this.isLogin = true
       ipcRenderer.send('m::set-logging-state', true)
+      const sync = useSyncStore()
+      sync.update_online(true)
+      sync.sync()
     },
   },
 })

@@ -156,6 +156,7 @@ function onSubmit(values: Record<string, any>) {
       toast({
         title: '登录成功:)',
       })
+
       router.push('/editorBase')
     })
     .catch(err => {

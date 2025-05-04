@@ -1,6 +1,6 @@
 {
   "name": "markman",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "dist/electron/main/index.mjs",
   "description": "A markdown editor based on electron and vue3",
   "displayName": "Markman",

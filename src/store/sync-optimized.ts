@@ -25,7 +25,7 @@ const nodeModel = new NodeModel()
 // 同步配置
 const DEFAULT_SYNC_INTERVAL = 60000 // 默认同步间隔：1分钟
 const MIN_SYNC_INTERVAL = 30000 // 最小同步间隔：30秒
-const OFFLINE_CHECK_INTERVAL = 30000 // 离线检查间隔：30秒
+const OFFLINE_CHECK_INTERVAL = 5000 // 离线检查间隔：30秒
 
 // 初始状态
 interface SyncState {
@@ -33,6 +33,7 @@ interface SyncState {
   online: boolean
   platform: string | undefined
   syncTimer: number | null
+  checkOnlineTimer: number | null
   lastSyncTime: number
   syncInterval: number
   isLogin: boolean
@@ -43,6 +44,7 @@ const state: SyncState = {
   online: false,
   platform: process.env.platform,
   syncTimer: null,
+  checkOnlineTimer: null,
   lastSyncTime: 0,
   syncInterval: DEFAULT_SYNC_INTERVAL,
   isLogin: false,
@@ -126,22 +128,24 @@ export const useSyncStore = defineStore('sync', {
      * 更新在线状态
      * @param value 是否在线
      */
-    update_online(value: boolean): void {
-      // 如果状态没变，不做处理
-      if (this.online === value) {
-        return
-      }
-
+    update_online(value: boolean, sync: boolean = false): void {
       this.online = value
-      if (!this.isLogin) {
-        return
-      }
-      if (value) {
-        // 如果从离线变为在线，执行一次同步
-        this.sync(false, true) // 静默同步
-      } else {
+      if (!value) {
         // 如果离线，定时检查连接
-        setTimeout(() => this.checkServerOnline(), OFFLINE_CHECK_INTERVAL)
+        if (this.checkOnlineTimer !== null) {
+          window.clearTimeout(this.checkOnlineTimer)
+        }
+        this.checkOnlineTimer = window.setInterval(
+          () => this.checkServerOnline(),
+          OFFLINE_CHECK_INTERVAL,
+        )
+      } else {
+        if (this.checkOnlineTimer !== null) {
+          window.clearTimeout(this.checkOnlineTimer)
+        }
+        if (sync) {
+          this.sync(false, true)
+        }
       }
     },
 
@@ -160,7 +164,9 @@ export const useSyncStore = defineStore('sync', {
     async checkServerOnline(): Promise<boolean> {
       const user = useUserStore()
       const server = user.server
-
+      if (server == '') {
+        return false
+      }
       if (!navigator.onLine) {
         this.update_online(false)
         return false
@@ -224,7 +230,7 @@ export const useSyncStore = defineStore('sync', {
         await this.push(user.dbUser?.id!)
         const sidebarS = useSidebarStore()
         await sidebarS.loadNodeTree()
-
+        this.update_online(true)
         // 非静默模式才更新状态
         if (!silent) {
           setTimeout(() => this.update_isSyncing(false), 1000)
@@ -578,7 +584,9 @@ export const useSyncStore = defineStore('sync', {
 })
 
 // 监听网络状态变化
-window.addEventListener('online', () => useSyncStore().update_online(true))
+window.addEventListener('online', () =>
+  useSyncStore().update_online(true, true),
+)
 window.addEventListener('offline', () => useSyncStore().update_online(false))
 
 // 在应用启动时初始化定时同步
