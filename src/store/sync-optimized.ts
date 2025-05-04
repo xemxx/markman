@@ -4,9 +4,13 @@
 import { v1 as uuid } from 'uuid'
 import { defineStore } from 'pinia'
 
-import { User } from '@/model/user'
 import { NodeModel, NodeItem } from '@/model/node'
-import { useUserStore, useEditorStore, usePreferenceStore } from './index'
+import {
+  useUserStore,
+  useEditorStore,
+  usePreferenceStore,
+  useSidebarStore,
+} from './index'
 import {
   syncApi,
   ServerNodeData,
@@ -218,6 +222,8 @@ export const useSyncStore = defineStore('sync', {
         }
 
         await this.push(user.dbUser?.id!)
+        const sidebarS = useSidebarStore()
+        await sidebarS.loadNodeTree()
 
         // 非静默模式才更新状态
         if (!silent) {

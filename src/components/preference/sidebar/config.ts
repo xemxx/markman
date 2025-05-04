@@ -14,10 +14,10 @@ export const category = [
   //   icon: 'pref_sync',
   //   path: '/preference/sync',
   // },
-  {
-    name: 'Image',
-    label: 'image',
-    icon: 'pref_image',
-    path: '/preference/image',
-  },
+  // {
+  //   name: 'Image',
+  //   label: 'image',
+  //   icon: 'pref_image',
+  //   path: '/preference/image',
+  // },
 ]

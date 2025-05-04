@@ -3,19 +3,10 @@
  */
 
 import { syncApi } from '@/api/syncApi'
-import { ipcRenderer } from 'electron'
 import { emitter } from '@/lib/emitter'
 
 // 当前客户端版本
 const currentVersion = '0.3.1' // 硬编码版本号，实际应用中可以从package.json中获取
-
-// 事件名称
-export const MIGRATION_EVENTS = {
-  SHOW_MIGRATION: 'migration:show',
-  UPDATE_PROGRESS: 'migration:update-progress',
-  COMPLETE_MIGRATION: 'migration:complete',
-  SHOW_CONFIRM: 'migration:show-confirm',
-}
 
 /**
  * 检查服务端版本
@@ -71,7 +62,7 @@ export function showMigrationProgress(
     showProgress?: boolean
   } = {},
 ) {
-  emitter.emit(MIGRATION_EVENTS.SHOW_MIGRATION, options)
+  emitter.emit('migration:show', options)
 }
 
 /**
@@ -80,7 +71,7 @@ export function showMigrationProgress(
  * @param message 状态消息
  */
 export function updateMigrationProgress(percent: number, message: string) {
-  emitter.emit(MIGRATION_EVENTS.UPDATE_PROGRESS, { percent, message })
+  emitter.emit('migration:update-progress', { percent, message })
 }
 
 /**
@@ -89,7 +80,7 @@ export function updateMigrationProgress(percent: number, message: string) {
  * @param message 消息
  */
 export function completeMigration(success: boolean = true, message?: string) {
-  emitter.emit(MIGRATION_EVENTS.COMPLETE_MIGRATION, { success, message })
+  emitter.emit('migration:complete', { success, message })
 }
 
 /**

@@ -26,7 +26,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { emitter } from '@/lib/emitter'
-import { MIGRATION_EVENTS } from '@/services/migrationService'
 import { useSidebarStore } from '@/store'
 
 // UI状态
@@ -62,7 +61,7 @@ function onCancel() {
 // 监听事件
 onMounted(() => {
   // 显示迁移进度
-  emitter.on(MIGRATION_EVENTS.SHOW_MIGRATION, (options: any = {}) => {
+  emitter.on('migration:show', (options = {}) => {
     const {
       show = true,
       title: newTitle,
@@ -87,30 +86,24 @@ onMounted(() => {
   })
 
   // 更新迁移进度
-  emitter.on(
-    MIGRATION_EVENTS.UPDATE_PROGRESS,
-    ({ percent, message }: { percent: number; message: string }) => {
-      progress.value = percent
-      statusMessage.value = message
-    },
-  )
+  emitter.on('migration:update-progress', data => {
+    progress.value = data.percent
+    statusMessage.value = data.message
+  })
 
   // 完成迁移
-  emitter.on(
-    MIGRATION_EVENTS.COMPLETE_MIGRATION,
-    ({ success, message }: { success: boolean; message?: string }) => {
-      progress.value = 100
-      statusMessage.value =
-        message || (success ? '迁移完成' : '迁移失败，请联系开发者')
+  emitter.on('migration:complete', data => {
+    progress.value = 100
+    statusMessage.value =
+      data.message || (data.success ? '迁移完成' : '迁移失败，请联系开发者')
 
-      // 3秒后关闭迁移对话框
-      setTimeout(() => {
-        showMigration.value = false
-      }, 3000)
+    // 3秒后关闭迁移对话框
+    setTimeout(() => {
+      showMigration.value = false
+    }, 3000)
 
-      sidebarS.loadNodeTree()
-    },
-  )
+    sidebarS.loadNodeTree()
+  })
 })
 </script>
 

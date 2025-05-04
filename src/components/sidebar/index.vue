@@ -1,50 +1,73 @@
 <template>
   <div
-    v-show="toggleSidebar"
     class="flex h-full flex-col border-r border-border bg-background text-foreground"
   >
     <!-- 顶部用户菜单 -->
-    <div class="flex h-12 items-center justify-between border-b px-4 shadow-sm">
+    <div
+      class="flex h-12 items-center justify-between border-b border-border bg-gradient-to-r from-emerald-50 to-slate-50 px-4 shadow-sm dark:from-background dark:to-background"
+    >
       <Menu />
+      <Button
+        variant="ghost"
+        size="icon"
+        class="h-8 w-8 rounded-full hover:bg-emerald-100 dark:hover:bg-primary/10"
+        @click="toggleSearchInput()"
+      >
+        <span
+          class="icon-[lucide--search] size-4 text-emerald-600 dark:text-primary"
+        />
+      </Button>
     </div>
 
     <!-- 搜索框 -->
-    <div class="relative w-full p-3">
+    <div
+      v-show="isSearchVisible"
+      class="relative w-full overflow-hidden p-2 transition-all duration-200 ease-in-out"
+    >
       <Input
         v-model="searchStr"
         placeholder="搜索笔记"
         @keyup.enter="doSearch"
-        class="pl-10 focus-visible:ring-1"
+        class="pl-8 focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
+        @keyup.esc="toggleSearchInput(false)"
+        ref="searchInputRef"
       />
-      <span
-        class="absolute inset-y-0 start-0 flex items-center justify-center px-3"
-      >
-        <span class="icon-[lucide--search] size-4 text-muted-foreground" />
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3.5">
+        <span
+          class="icon-[lucide--search] size-4 text-emerald-500 dark:text-muted-foreground"
+        />
       </span>
     </div>
 
     <!-- 笔记管理区域 -->
     <div class="flex flex-1 flex-col overflow-hidden">
       <div
-        class="flex items-center justify-between bg-muted/30 px-4 py-2"
+        class="flex items-center justify-between border-y border-emerald-100 bg-gradient-to-r from-emerald-50 to-slate-50 px-4 py-2 dark:border-border dark:from-muted/30 dark:to-muted/30"
         @dragover="onDragOver"
         @dragenter="onDragEnter"
         @dragleave="onDragLeave"
         @drop="onDrop"
         :class="{
-          'border-2 border-dashed border-primary bg-muted/80': isDragOver,
+          'border-2 border-dashed border-emerald-500 bg-muted/80 dark:border-primary':
+            isDragOver,
         }"
       >
-        <h2 class="text-base font-semibold tracking-tight">笔记管理</h2>
+        <h2
+          class="text-base font-semibold tracking-tight text-emerald-700 dark:text-foreground"
+        >
+          笔记管理
+        </h2>
         <div class="flex gap-2">
           <div class="relative" ref="menuRef">
             <Button
               variant="ghost"
               size="icon"
-              class="h-7 w-7 rounded-full hover:bg-primary/10"
+              class="h-7 w-7 rounded-full hover:bg-emerald-100 dark:hover:bg-primary/10"
               @click="toggleMenu"
             >
-              <span class="icon-[lucide--plus] size-4" />
+              <span
+                class="icon-[lucide--plus] size-4 text-emerald-600 dark:text-primary"
+              />
             </Button>
             <div
               v-if="menuOpen"
@@ -52,17 +75,21 @@
               @mousedown.stop
             >
               <div
-                class="flex cursor-pointer items-center px-3 py-2 hover:bg-accent"
+                class="flex cursor-pointer items-center px-3 py-2 hover:bg-emerald-50 dark:hover:bg-accent"
                 @click="onMenuItemClick('note')"
               >
-                <span class="icon-[lucide--file-plus] mr-2 size-4" />
+                <span
+                  class="icon-[lucide--file-plus] mr-2 size-4 text-blue-500 dark:text-blue-400"
+                />
                 新建笔记
               </div>
               <div
-                class="flex cursor-pointer items-center px-3 py-2 hover:bg-accent"
+                class="flex cursor-pointer items-center px-3 py-2 hover:bg-emerald-50 dark:hover:bg-accent"
                 @click="onMenuItemClick('folder')"
               >
-                <span class="icon-[lucide--folder-plus] mr-2 size-4" />
+                <span
+                  class="icon-[lucide--folder-plus] mr-2 size-4 text-amber-600 dark:text-amber-400"
+                />
                 新建笔记本
               </div>
             </div>
@@ -71,14 +98,14 @@
       </div>
 
       <!-- 创建输入框 - 移到 ScrollArea 外部 -->
-      <div v-if="createInputShow" class="mb-2 px-3 py-2">
+      <div v-if="createInputShow" class="mb-1 px-2 py-1">
         <input
           ref="createInputRef"
           v-model="createName"
           :placeholder="
             createType === 'note' ? '输入笔记名称' : '输入笔记本名称'
           "
-          class="w-full flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          class="w-full flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
           @keyup.enter="doCreateItem"
           @keyup.esc="hideCreateInput"
           @keydown.stop
@@ -88,9 +115,9 @@
       </div>
 
       <!-- 笔记本树 -->
-      <ScrollArea ref="scrollAreaRef" class="flex-1 px-2 pt-2">
+      <ScrollArea ref="scrollAreaRef" class="flex-1 px-1 pt-1">
         <TreeRoot
-          class="w-full select-none rounded-lg bg-background p-1 text-sm"
+          class="w-full select-none rounded-lg bg-background p-0.5 text-sm"
           :items="trees"
           :get-key="item => item.key"
           :typeahead-search="false"
@@ -101,13 +128,14 @@
     </div>
 
     <!-- 底部工具栏 -->
-    <Footer class="border-t border-border bg-muted/20 py-2" />
+    <Footer
+      class="border-t border-emerald-100 bg-gradient-to-r from-emerald-50 to-slate-50 py-2 dark:border-border dark:from-muted/30 dark:to-muted/30"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useSidebarStore, useSyncStore, usePreferenceStore } from '@/store'
-import { storeToRefs } from 'pinia'
 import Menu from './menu.vue'
 import Footer from './footer.vue'
 import { TreeRoot } from 'reka-ui'
@@ -117,9 +145,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ref, nextTick, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-
-const preference = usePreferenceStore()
-const { toggleSidebar } = storeToRefs(preference)
 
 const sidebar = useSidebarStore()
 const trees = computed(() => {
@@ -476,14 +501,42 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', handleClickOutside)
 })
+
+// 搜索输入框的显示控制
+const isSearchVisible = ref(false)
+const searchInputRef = ref<HTMLInputElement | null>(null)
+
+const toggleSearchInput = (show?: boolean) => {
+  console.log(
+    'toggleSearchInput 被调用, 当前状态:',
+    isSearchVisible.value,
+    '参数:',
+    show,
+  )
+
+  if (show !== undefined) {
+    isSearchVisible.value = show
+  } else {
+    isSearchVisible.value = !isSearchVisible.value
+  }
+
+  console.log('切换后的状态:', isSearchVisible.value)
+
+  // 如果显示搜索框，则聚焦输入框
+  if (isSearchVisible.value) {
+    nextTick(() => {
+      searchInputRef.value?.focus()
+    })
+  }
+}
 </script>
 
 <style scoped>
 :deep(.scrollbar) {
-  @apply w-1.5 rounded-full bg-muted;
+  @apply w-1.5 rounded-full bg-slate-100 dark:bg-muted;
 }
 
 :deep(.scrollbar-thumb) {
-  @apply rounded-full bg-muted-foreground/20 transition-colors hover:bg-muted-foreground/40;
+  @apply rounded-full bg-emerald-200 transition-colors hover:bg-emerald-300 dark:bg-muted-foreground/20 dark:hover:bg-muted-foreground/40;
 }
 </style>

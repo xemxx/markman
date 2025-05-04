@@ -452,8 +452,13 @@ onBeforeUnmount(() => {
     :value="tree"
   >
     <div
-      class="group my-0.5 flex items-center rounded-md px-2 py-1.5 outline-none transition-colors hover:bg-muted/80 data-[selected]:bg-accent/50 data-[selected]:text-accent-foreground"
-      :style="{ 'padding-left': `${level * 1.5 + 0.5}rem` }"
+      class="group my-0.5 flex items-center rounded-md px-2 py-1 outline-none transition-colors hover:bg-muted/80 data-[selected]:text-accent-foreground dark:hover:bg-muted/40"
+      :class="{
+        'opacity-50': isDragging,
+        'border-2 border-dashed border-primary bg-muted/80': isDragOver,
+        'bg-emerald-100 dark:bg-accent/50': tree.selected,
+      }"
+      :style="{ 'padding-left': `${level * 0.75 + 0.5}rem` }"
       @click="onNodeSelect(tree)"
       :draggable="!inRenameMode"
       @dragstart="onDragStart($event, tree)"
@@ -462,25 +467,21 @@ onBeforeUnmount(() => {
       @dragover="onDragOver($event, tree)"
       @dragleave="onDragLeave"
       @drop="onDrop($event, tree)"
-      :class="{
-        'opacity-50': isDragging,
-        'border-2 border-dashed border-primary bg-muted/80': isDragOver,
-      }"
     >
       <template v-if="tree.type === 'folder'">
         <span
           v-if="!isExpanded"
-          class="icon-[lucide--folder] size-4 flex-none text-muted-foreground/90 transition-colors group-hover:text-foreground"
+          class="icon-[lucide--folder] size-3.5 flex-none text-amber-600 transition-colors group-hover:text-amber-700 dark:text-amber-400 dark:group-hover:text-amber-300"
         />
         <span
           v-else
-          class="icon-[lucide--folder-open] size-4 flex-none text-muted-foreground/90 transition-colors group-hover:text-foreground"
+          class="icon-[lucide--folder-open] size-3.5 flex-none text-amber-600 transition-colors group-hover:text-amber-700 dark:text-amber-400 dark:group-hover:text-amber-300"
         />
       </template>
       <template v-else>
         <!-- 所有文件节点使用文档图标 -->
         <span
-          class="icon-[ion--document-text-outline] size-4 flex-none text-muted-foreground/90 transition-colors group-hover:text-foreground"
+          class="icon-[ion--document-text-outline] size-3.5 flex-none text-blue-500 transition-colors group-hover:text-blue-600 dark:text-blue-400 dark:group-hover:text-blue-300"
         />
       </template>
       <div
@@ -494,7 +495,7 @@ onBeforeUnmount(() => {
           @keyup.enter="doRenameNode(tree)"
           @blur="blurRenameBook"
           @keydown.stop
-          class="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          class="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
           @click.stop
           style="
             user-select: text;
@@ -503,30 +504,33 @@ onBeforeUnmount(() => {
           "
         />
         <template v-else>
-          <div class="flex-1 truncate pl-2">
+          <div class="flex-1 truncate pl-1.5">
             <CustomContextMenu>
               <div class="flex w-full items-center">
-                <span class="truncate text-sm font-medium">{{
-                  tree.label
-                }}</span>
+                <span
+                  class="truncate text-sm"
+                  :class="{ 'font-medium': tree.selected }"
+                >
+                  {{ tree.label }}
+                </span>
               </div>
               <template #content>
                 <!-- 共有菜单项 -->
                 <CustomContextMenuItem @click="addNoteInParent(tree)">
                   <span
-                    class="icon-[lucide--file-plus] mr-2 size-4 text-muted-foreground"
+                    class="icon-[lucide--file-plus] mr-2 size-4 text-blue-500 dark:text-blue-400"
                   />
                   新建笔记
                 </CustomContextMenuItem>
                 <CustomContextMenuItem @click="addFolder(tree)">
                   <span
-                    class="icon-[lucide--folder-plus] mr-2 size-4 text-muted-foreground"
+                    class="icon-[lucide--folder-plus] mr-2 size-4 text-amber-600 dark:text-amber-400"
                   />
                   新建笔记本
                 </CustomContextMenuItem>
                 <CustomContextMenuItem @click="renameNode(tree)">
                   <span
-                    class="icon-[lucide--pencil] mr-2 size-4 text-muted-foreground"
+                    class="icon-[lucide--pencil] mr-2 size-4 text-emerald-600 dark:text-emerald-400"
                   />
                   重命名
                 </CustomContextMenuItem>
@@ -539,7 +543,7 @@ onBeforeUnmount(() => {
                   "
                 >
                   <span
-                    class="icon-[lucide--trash-2] mr-2 size-4 text-destructive/70"
+                    class="icon-[lucide--trash-2] mr-2 size-4 text-rose-500 dark:text-rose-400"
                   />
                   删除
                 </CustomContextMenuItem>
@@ -554,10 +558,12 @@ onBeforeUnmount(() => {
             <Button
               variant="ghost"
               size="icon"
-              class="h-6 w-6 rounded-full hover:bg-primary/10"
+              class="h-5 w-5 rounded-full hover:bg-emerald-100 dark:hover:bg-primary/10"
               @click="addNode(tree)"
             >
-              <span class="icon-[lucide--plus] size-3.5" />
+              <span
+                class="icon-[lucide--plus] size-3 text-emerald-600 dark:text-emerald-400"
+              />
             </Button>
           </div>
         </template>
@@ -572,7 +578,7 @@ onBeforeUnmount(() => {
         creatingParentNode.key === tree.key
       "
       class="my-1 px-2"
-      :style="{ 'padding-left': `${(level + 1) * 1.5 + 0.5}rem` }"
+      :style="{ 'padding-left': `${(level + 1) * 0.75 + 0.5}rem` }"
       @click.stop
     >
       <input
@@ -581,7 +587,7 @@ onBeforeUnmount(() => {
         :placeholder="
           creatingType === 'note' ? '输入笔记名称' : '输入笔记本名称'
         "
-        class="w-full flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        class="w-full flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
         @keyup.enter="finishCreateChild"
         @keyup.esc="cancelCreateChild"
         @click.stop

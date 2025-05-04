@@ -59,7 +59,7 @@ export const useEditorStore = defineStore('editor', {
       // close and save old note
       if (oldId != id && oldId != undefined) {
         // ask user if note need save
-        if (this.editContent != this.dbNote.content) {
+        if (this.editContent.trimEnd() != this.dbNote.content.trimEnd()) {
           emitter.emit('query-close-note', id)
           return
         }
