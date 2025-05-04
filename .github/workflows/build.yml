@@ -3,7 +3,7 @@ name: build
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 jobs:
   release:
     name: build and release electron app
@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-12, ubuntu-latest]
+        os: [ubuntu-latest, macos-15, macos-latest-large]
 
     steps:
       - name: Check out git repository
@@ -25,19 +25,19 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - name: Install Python 3.11.4
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11.4'
+          python-version: "3.11.4"
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Release for MacOS
-        if: matrix.os == 'macos-12'
+        if: matrix.os == 'macos-latest-large' || matrix.os == 'macos-15'
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |

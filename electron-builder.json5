@@ -15,8 +15,7 @@
   ],
   files: ['dist'],
   mac: {
-    // artifactName: '${productName}_${version}.${ext}',
-    target: ['dmg', 'zip'],
+    target: ['dmg'],
     icon: 'public/icons/mac/icon.icns',
   },
   win: {
@@ -26,7 +25,6 @@
         arch: ['x64'],
       },
     ],
-    // artifactName: '${productName}_${version}.${ext}',
     icon: 'public/icons/win/icon.ico',
   },
   nsis: {
@@ -36,7 +34,7 @@
     deleteAppDataOnUninstall: false,
   },
   linux: {
-    target: ['AppImage', 'deb'],
+    target: ['AppImage', 'deb', 'pacman'],
     icon: 'public/icons/mac/icon.icns',
     category: 'Office',
   },
