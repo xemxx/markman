@@ -2,52 +2,7 @@
  * 迁移服务 - 处理版本检查和数据迁移
  */
 
-import { syncApi } from '@/api/syncApi'
 import { emitter } from '@/lib/emitter'
-
-// 当前客户端版本
-const currentVersion = '0.3.1' // 硬编码版本号，实际应用中可以从package.json中获取
-
-/**
- * 检查服务端版本
- * @returns 服务端版本是否兼容
- */
-export async function checkServerVersion(server: string): Promise<boolean> {
-  try {
-    if (!server) {
-      return true // 没有服务器地址，不需要检查
-    }
-
-    // 获取服务器版本
-    try {
-      const versionInfo = await syncApi.getServerVersion(server)
-
-      // 检查最低客户端版本要求
-      if (versionInfo.minClientVersion) {
-        const compareResult = compareVersions(
-          currentVersion,
-          versionInfo.minClientVersion,
-        )
-
-        if (compareResult < 0) {
-          // 客户端版本低于服务端要求的最低版本
-          return false
-        }
-      }
-
-      return true
-    } catch (error) {
-      console.error('获取服务端版本失败:', error)
-
-      // 服务端可能是旧版本，没有版本API
-      // 为了兼容性，我们允许继续使用
-      return true
-    }
-  } catch (error) {
-    console.error('检查服务端版本时出错:', error)
-    return true
-  }
-}
 
 /**
  * 显示迁移进度
