@@ -40,4 +40,4 @@ const themeArr = [
 ]
 </script>
 
-<style lang="stylus" scoped></style>
+<style scoped></style>

@@ -11,4 +11,4 @@
 import PSidebar from '@/components/preference/sidebar/index.vue'
 </script>
 
-<style lang="stylus" scoped></style>
+<style scoped></style>

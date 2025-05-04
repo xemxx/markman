@@ -265,21 +265,22 @@ onUnmounted(() => {
   emitter.off('query-close-note', showCloseQuery)
 })
 </script>
-<style lang="stylus" scoped>
+<style scoped>
+.editor-title {
+  width: 100%;
+  padding: 5px 10px;
+  font-size: 24px;
+  font-weight: 500;
+}
 
-.editor-title
-  width 100%
-  padding 5px 10px
-  font-size 24px
-  font-weight 500
+.editor-title:focus {
+  outline: none;
+}
 
-  &:focus
-    outline none
-
-
-.tags
-  width 100%
-  height auto
-  min-height 26px
-  background-color #aaeedd
+.tags {
+  width: 100%;
+  height: auto;
+  min-height: 26px;
+  background-color: #aaeedd;
+}
 </style>

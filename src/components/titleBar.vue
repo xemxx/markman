@@ -1,4 +1,4 @@
-<style lang="stylus" scoped></style>
+<style scoped></style>
 
 <script setup lang="ts">
 import {

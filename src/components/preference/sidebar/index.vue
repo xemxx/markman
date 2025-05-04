@@ -49,4 +49,4 @@ const handleCategoryItemClick = (path: string, label: string) => {
 }
 </script>
 
-<style lang="stylus"></style>
+<style></style>

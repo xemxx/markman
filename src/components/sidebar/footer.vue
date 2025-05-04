@@ -51,12 +51,14 @@ const quit = () => {
 }
 </script>
 
-<style lang="stylus" scoped>
-.toolbar
-  height 36px
-  align-items center
-  padding 2px 5px
-  p
-    text-align center
-    flex 1
+<style scoped>
+.toolbar {
+  height: 36px;
+  align-items: center;
+  padding: 2px 5px;
+}
+.toolbar p {
+  text-align: center;
+  flex: 1;
+}
 </style>

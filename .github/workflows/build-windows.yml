@@ -44,11 +44,6 @@ jobs:
           search-text: "#!/usr/bin/env node"
           replacement-text: "#!node"
 
-      - name: 修复Stylus依赖
-        run: |
-          pnpm add stylus --save-dev
-          pnpm install
-
       - name: Release for Windows
         if: matrix.os == 'windows-latest'
         run: pnpm release

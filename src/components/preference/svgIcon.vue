@@ -25,10 +25,18 @@ const props = defineProps({
 const symbolId = computed(() => `/__spritemap#${props.prefix}-${props.name}`)
 </script>
 
-<style lang="stylus" scoped>
-svg
-  width 28px
-  height 28px
-  fill var(--iconColor)
-  margin-right 15px
+<style scoped>
+.iconwrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.item {
+  padding: 15px;
+}
+.name {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #666;
+}
 </style>

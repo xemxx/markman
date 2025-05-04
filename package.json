@@ -37,7 +37,6 @@
     "@tailwindcss/typography": "^0.5.16",
     "@tsconfig/node20": "^20.1.5",
     "@types/node": "^20.17.32",
-    "@types/sqlite3": "^5.1.0",
     "@vee-validate/zod": "^4.15.0",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/tsconfig": "^0.7.0",
@@ -63,7 +62,6 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "regenerator-runtime": "^0.13.11",
     "reka-ui": "^2.2.0",
-    "stylus": "^0.62.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
@@ -93,19 +91,5 @@
     "vite",
     "vue3",
     "vue"
-  ],
-  "pnpm": {
-    "overrides": {
-      "@npmcli/move-file": "^2.0.0",
-      "boolean": "^3.2.0",
-      "gauge": "^4.0.4",
-      "glob": "^8.1.0",
-      "resolve-url": "^0.2.1",
-      "rimraf": "^3.0.2",
-      "source-map-resolve": "^0.6.0",
-      "source-map-url": "^0.4.1",
-      "stable": "^0.1.8",
-      "urix": "^0.1.0"
-    }
-  }
+  ]
 }
