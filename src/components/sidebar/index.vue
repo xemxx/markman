@@ -241,22 +241,7 @@ const doCreateItem = async () => {
     hideCreateInput()
     return
   }
-
-  if (createType.value === 'folder') {
-    // 创建笔记本
-    await sidebar.addFolder(name)
-  } else {
-    // 创建笔记
-    const guid = await sidebar.addNoteInFolder('root')
-    if (guid) {
-      // 获取新创建的笔记
-      const note = await sidebar.getNodeByGuid(guid)
-      if (note) {
-        // 更新笔记标题
-        await sidebar.updateNote({ id: note.id, title: name })
-      }
-    }
-  }
+  await sidebar.addNodeInTree('root', createType.value, name)
 
   // 先隐藏输入框
   hideCreateInput()

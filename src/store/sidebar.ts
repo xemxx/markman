@@ -249,8 +249,12 @@ export const useSidebarStore = defineStore('sidebar', {
       return true
     },
 
-    // 在给定节点下创建新笔记
-    async addNoteInFolder(parentId: string): Promise<string | undefined> {
+    // 在给定节点下创建新节点
+    async addNodeInTree(
+      parentId: string,
+      type: 'folder' | 'note',
+      title: string,
+    ): Promise<string | undefined> {
       const user = useUserStore()
       if (user.dbUser?.id! === null) {
         console.error('User ID is null')
@@ -261,9 +265,9 @@ export const useSidebarStore = defineStore('sidebar', {
         uid: user.dbUser?.id!,
         guid: uuid(),
         parentId: parentId, // 父节点的guid
-        title: '未命名',
+        title: title,
         content: '',
-        type: 'note' as 'note',
+        type: type,
         sort: 0,
         sortType: 0,
         modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
@@ -273,8 +277,12 @@ export const useSidebarStore = defineStore('sidebar', {
       }
       try {
         const id = await nodeModel.add(note)
-        const editor = useEditorStore()
-        editor.checkoutNote(id)
+        if (type == 'note') {
+          const editor = useEditorStore()
+          editor.checkoutNote(id)
+        }
+        const sync = useSyncStore()
+        sync.sync()
         return note.guid
       } catch (err) {
         console.error(err)
@@ -289,41 +297,6 @@ export const useSidebarStore = defineStore('sidebar', {
         console.error('获取节点失败:', err)
         return null
       }
-    },
-
-    // 添加新的根目录笔记
-    async addRootNote() {
-      const guid = await this.addNoteInFolder('root')
-      if (guid) {
-        // 创建一个虚拟的根节点，用于添加新笔记
-        const rootNode: TreeNode = {
-          key: 'root',
-          label: 'Root',
-          icon: '',
-          type: 'folder',
-          selected: false,
-          level: -1,
-          data: { guid: 'root' },
-        }
-
-        // 添加新节点到树中，并标记为需要重命名
-        const newNode = await this.addTreeNode(rootNode, guid)
-
-        // 确保新节点被添加到树的根级别
-        if (newNode) {
-          // 从虚拟根节点的子节点中移除
-          this.treeLabels.push({
-            ...newNode,
-            parentId: 'root',
-            level: 0,
-            isNew: true,
-          })
-
-          // 重新加载树结构以确保正确显示
-          await this.loadNodeTree()
-        }
-      }
-      return guid
     },
 
     // 添加树节点
@@ -355,44 +328,10 @@ export const useSidebarStore = defineStore('sidebar', {
       removeNode(this.treeLabels, node)
     },
 
-    // 添加文件夹
-    async addFolder(name: string) {
-      const user = useUserStore()
-      if (user.dbUser?.id! === null) {
-        console.error('User ID is null')
-        return
-      }
-      const sync = useSyncStore()
-      const time = Date.parse(Date()) / 1000
-      try {
-        await nodeModel.add({
-          uid: user.dbUser?.id!,
-          guid: uuid(),
-          parentId: 'root',
-          title: name,
-          content: '',
-          type: 'folder' as 'folder',
-          sort: 1,
-          sortType: 1,
-          modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
-          SC: 0, //暂时不用
-          addDate: time,
-          modifyDate: time,
-        })
-        //同步服务器
-        sync.sync()
-      } catch (err) {
-        return console.log(err)
-      }
-    },
-
-    // 删除文件夹
-    async deleteFolder(id: any) {
+    async deleteNode(id: any, guid: any) {
       const sync = useSyncStore()
       try {
-        const node = await nodeModel.get(id)
-        await nodeModel.deleteLocal(id, node.guid)
-        //同步服务器
+        await nodeModel.deleteLocal(id, guid)
         sync.sync()
       } catch (err) {
         return console.log(err)
@@ -439,31 +378,6 @@ export const useSidebarStore = defineStore('sidebar', {
         await nodeModel.update(id, { parentId, modifyState: 2 })
       } catch (err) {
         return console.log(err)
-      }
-    },
-
-    // 删除笔记
-    async deleteNote(id: number) {
-      const editor = useEditorStore()
-      try {
-        const { modifyState } = await nodeModel.get(id)
-        if (modifyState === 1) {
-          await nodeModel.delete(id)
-        } else {
-          const time = Date.parse(Date()) / 1000
-          const data = {
-            modifyState: 3,
-            modifyDate: time,
-          }
-          await nodeModel.update(id, data)
-        }
-        if (id === editor.dbNote.id) {
-          editor.closeEditor()
-        }
-        const sync = useSyncStore()
-        sync.sync()
-      } catch (err) {
-        console.log(err)
       }
     },
 

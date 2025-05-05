@@ -95,9 +95,10 @@ const blurRenameBook = () => {
   nodeRename.value = ''
   inRenameMode.value = false
 }
-// delete folder
-const onDeleteFolder = async (node: TreeNode) => {
-  await sidebar.deleteFolder(node.data.id)
+
+// delete node
+const onDeleteNode = async (node: TreeNode) => {
+  await sidebar.deleteNode(node.data.id, node.data.guid)
   sidebar.deleteTreeNode(node)
 }
 
@@ -111,7 +112,7 @@ const addNode = async (node: TreeNode) => {
     return
   }
 
-  const noteGuid = await sidebar.addNoteInFolder(node.data.guid)
+  const noteGuid = await sidebar.addNodeInTree(node.data.guid, 'note', '未命名')
   if (noteGuid) {
     // 添加新节点并获取返回的节点
     const newNode = await sidebar.addTreeNode(node, noteGuid)
@@ -121,12 +122,6 @@ const addNode = async (node: TreeNode) => {
       treeItemRef.value?.handleToggle()
     }
   }
-}
-
-// delete note
-const onDeleteNote = async (node: TreeNode) => {
-  await sidebar.deleteNote(node.data.id)
-  sidebar.deleteTreeNode(node)
 }
 
 // 拖拽相关的状态
@@ -385,30 +380,11 @@ const finishCreateChild = async () => {
   }
 
   try {
-    if (creatingType.value === 'folder') {
-      // 创建笔记本
-      await sidebar.addFolder(creatingName.value.trim())
-    } else {
-      // 创建笔记
-      // 根据父节点类型确定添加位置
-      let parentId = 'root'
-      if (creatingParentNode.value.type === 'folder') {
-        parentId = creatingParentNode.value.data.guid
-      } else if (creatingParentNode.value.parentId) {
-        parentId = creatingParentNode.value.parentId
-      }
-
-      const guid = await sidebar.addNoteInFolder(parentId)
-      if (guid) {
-        const note = await sidebar.getNodeByGuid(guid)
-        if (note) {
-          await sidebar.updateNote({
-            id: note.id,
-            title: creatingName.value.trim(),
-          })
-        }
-      }
-    }
+    sidebar.addNodeInTree(
+      creatingParentNode.value.data.guid,
+      creatingType.value,
+      creatingName.value.trim(),
+    )
 
     // 重新加载树结构
     await sidebar.loadNodeTree()
@@ -419,16 +395,6 @@ const finishCreateChild = async () => {
     console.error('创建失败:', error)
     cancelCreateChild()
   }
-}
-
-// 修改添加笔记本函数
-const addFolder = async (parentNode: TreeNode) => {
-  showCreateChildInput(parentNode, 'folder')
-}
-
-// 修改添加笔记函数
-const addNoteInParent = async (parentNode: TreeNode) => {
-  showCreateChildInput(parentNode, 'note')
 }
 
 // 在组件卸载时移除事件监听器
@@ -516,13 +482,17 @@ onBeforeUnmount(() => {
               </div>
               <template #content>
                 <!-- 共有菜单项 -->
-                <CustomContextMenuItem @click="addNoteInParent(tree)">
+                <CustomContextMenuItem
+                  @click="showCreateChildInput(tree, 'note')"
+                >
                   <span
                     class="icon-[lucide--file-plus] mr-2 size-4 text-blue-500 dark:text-blue-400"
                   />
                   新建笔记
                 </CustomContextMenuItem>
-                <CustomContextMenuItem @click="addFolder(tree)">
+                <CustomContextMenuItem
+                  @click="showCreateChildInput(tree, 'folder')"
+                >
                   <span
                     class="icon-[lucide--folder-plus] mr-2 size-4 text-amber-600 dark:text-amber-400"
                   />
@@ -535,13 +505,7 @@ onBeforeUnmount(() => {
                   重命名
                 </CustomContextMenuItem>
                 <!-- 根据节点类型使用不同的删除操作 -->
-                <CustomContextMenuItem
-                  @click="
-                    tree.type === 'folder'
-                      ? onDeleteFolder(tree)
-                      : onDeleteNote(tree)
-                  "
-                >
+                <CustomContextMenuItem @click="onDeleteNode(tree)">
                   <span
                     class="icon-[lucide--trash-2] mr-2 size-4 text-rose-500 dark:text-rose-400"
                   />
