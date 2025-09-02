@@ -1,27 +1,86 @@
 <template>
   <div
-    class="flex h-full flex-col border-r border-border bg-background text-foreground"
+    class="relative flex h-full flex-col border-r border-border bg-background text-foreground"
   >
-    <!-- 顶部用户菜单 -->
+    <!-- 顶部用户菜单和搜索 -->
     <div
       class="flex h-12 items-center justify-between border-b border-border bg-gradient-to-r from-emerald-50 to-slate-50 px-4 shadow-sm dark:from-background dark:to-background"
     >
       <Menu />
-      <Button
-        variant="ghost"
-        size="icon"
-        class="h-8 w-8 rounded-full hover:bg-emerald-100 dark:hover:bg-primary/10"
-        @click="toggleSearchInput()"
-      >
-        <span
-          class="icon-[lucide--search] size-4 text-emerald-600 dark:text-primary"
-        />
-      </Button>
+    </div>
+
+    <!-- 排序菜单 -->
+    <div
+      v-if="sortMenuOpen"
+      class="absolute right-4 top-20 z-20 min-w-[12rem] rounded-md border bg-popover shadow-md animate-in fade-in-50 zoom-in-95"
+      @mousedown.stop
+    >
+      <div class="p-2">
+        <div class="mb-2 text-xs font-medium text-muted-foreground">
+          排序方式（文件夹优先）
+        </div>
+        <div
+          class="flex cursor-pointer items-center rounded px-3 py-2 hover:bg-emerald-50 dark:hover:bg-accent"
+          :class="{
+            'bg-emerald-100 dark:bg-accent': sidebar.sortConfig.mode === 'name',
+          }"
+          @click="setSortMode('name')"
+        >
+          <span
+            class="icon-[lucide--sort-alpha-asc] mr-2 size-4 text-blue-500 dark:text-blue-400"
+          />
+          按名称排序
+        </div>
+        <div
+          class="flex cursor-pointer items-center rounded px-3 py-2 hover:bg-emerald-50 dark:hover:bg-accent"
+          :class="{
+            'bg-emerald-100 dark:bg-accent': sidebar.sortConfig.mode === 'date',
+          }"
+          @click="setSortMode('date')"
+        >
+          <span
+            class="icon-[lucide--calendar] mr-2 size-4 text-green-500 dark:text-green-400"
+          />
+          按日期排序
+        </div>
+      </div>
+      <div class="border-t border-border p-2">
+        <div class="mb-2 text-xs font-medium text-muted-foreground">
+          排序方向
+        </div>
+        <div class="flex gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="h-7 flex-1 text-xs"
+            :class="{
+              'bg-emerald-100 dark:bg-accent':
+                sidebar.sortConfig.direction === 'asc',
+            }"
+            @click="setSortDirection('asc')"
+          >
+            <span class="icon-[lucide--arrow-up] mr-1 size-3" />
+            升序
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="h-7 flex-1 text-xs"
+            :class="{
+              'bg-emerald-100 dark:bg-accent':
+                sidebar.sortConfig.direction === 'desc',
+            }"
+            @click="setSortDirection('desc')"
+          >
+            <span class="icon-[lucide--arrow-down] mr-1 size-3" />
+            降序
+          </Button>
+        </div>
+      </div>
     </div>
 
     <!-- 搜索框 -->
     <div
-      v-show="isSearchVisible"
       class="relative w-full overflow-hidden p-2 transition-all duration-200 ease-in-out"
     >
       <Input
@@ -29,8 +88,6 @@
         placeholder="搜索笔记"
         @keyup.enter="doSearch"
         class="pl-8 focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
-        @keyup.esc="toggleSearchInput(false)"
-        ref="searchInputRef"
       />
       <span class="absolute inset-y-0 left-0 flex items-center pl-3.5">
         <span
@@ -58,6 +115,19 @@
           笔记管理
         </h2>
         <div class="flex gap-2">
+          <!-- 排序配置按钮 -->
+          <div class="relative" ref="sortMenuRef">
+            <Button
+              variant="ghost"
+              size="icon"
+              class="h-7 w-7 rounded-full hover:bg-emerald-100 dark:hover:bg-primary/10"
+              @click="toggleSortMenu"
+            >
+              <span
+                class="icon-[lucide--sort-asc] size-4 text-emerald-600 dark:text-primary"
+              />
+            </Button>
+          </div>
           <div class="relative" ref="menuRef">
             <Button
               variant="ghost"
@@ -97,7 +167,7 @@
         </div>
       </div>
 
-      <!-- 创建输入框 - 移到 ScrollArea 外部 -->
+      <!-- 创建输入框 -->
       <div v-if="createInputShow" class="mb-1 px-2 py-1">
         <input
           ref="createInputRef"
@@ -118,11 +188,11 @@
       <ScrollArea ref="scrollAreaRef" class="flex-1 px-1 pt-1">
         <TreeRoot
           class="w-full select-none rounded-lg bg-background p-0.5 text-sm"
-          :items="trees"
+          :items="sortedTrees"
           :get-key="item => item.key"
           :typeahead-search="false"
         >
-          <Tree :tree-items="trees" />
+          <Tree :tree-items="sortedTrees" />
         </TreeRoot>
       </ScrollArea>
     </div>
@@ -137,7 +207,6 @@
 <script setup lang="ts">
 import { useSidebarStore, useSyncStore, usePreferenceStore } from '@/store'
 import Menu from './menu.vue'
-import Footer from './footer.vue'
 import { TreeRoot } from 'reka-ui'
 import Tree from './tree.vue'
 import type { TreeNode } from '@/store/sidebar'
@@ -147,15 +216,51 @@ import { Button } from '@/components/ui/button'
 import { ref, nextTick, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 
 const sidebar = useSidebarStore()
-const trees = computed(() => {
-  if (sidebar.inSearch) {
-    return sidebar.searchResult
+const sync = useSyncStore()
+
+// 排序后的树数据
+const sortedTrees = computed(() => {
+  const trees = sidebar.inSearch ? sidebar.searchResult : sidebar.treeLabels
+  return sidebar.getSortedTreeData(trees)
+})
+
+// 排序菜单控制
+const sortMenuOpen = ref(false)
+const sortMenuRef = ref<HTMLElement | null>(null)
+
+const toggleSortMenu = () => {
+  sortMenuOpen.value = !sortMenuOpen.value
+}
+
+const setSortMode = (mode: 'name' | 'date') => {
+  sidebar.updateSortConfig({ mode })
+  sortMenuOpen.value = false
+}
+
+const setSortDirection = (direction: 'asc' | 'desc') => {
+  sidebar.updateSortConfig({ direction })
+}
+
+// 点击外部关闭排序菜单
+const handleSortMenuClickOutside = (e: MouseEvent) => {
+  if (
+    sortMenuOpen.value &&
+    sortMenuRef.value &&
+    !sortMenuRef.value.contains(e.target as Node)
+  ) {
+    sortMenuOpen.value = false
   }
-  return sidebar.treeLabels
+}
+
+onMounted(() => {
+  document.addEventListener('mousedown', handleSortMenuClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', handleSortMenuClickOutside)
 })
 
 onMounted(async () => {
-  const sync = useSyncStore()
   await sync.sync()
   document.addEventListener('dragover', handleDragScroll, { passive: true })
   document.addEventListener('dragend', clearScrollInterval)
@@ -486,34 +591,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', handleClickOutside)
 })
-
-// 搜索输入框的显示控制
-const isSearchVisible = ref(false)
-const searchInputRef = ref<HTMLInputElement | null>(null)
-
-const toggleSearchInput = (show?: boolean) => {
-  console.log(
-    'toggleSearchInput 被调用, 当前状态:',
-    isSearchVisible.value,
-    '参数:',
-    show,
-  )
-
-  if (show !== undefined) {
-    isSearchVisible.value = show
-  } else {
-    isSearchVisible.value = !isSearchVisible.value
-  }
-
-  console.log('切换后的状态:', isSearchVisible.value)
-
-  // 如果显示搜索框，则聚焦输入框
-  if (isSearchVisible.value) {
-    nextTick(() => {
-      searchInputRef.value?.focus()
-    })
-  }
-}
 </script>
 
 <style scoped>

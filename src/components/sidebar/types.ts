@@ -1,5 +1,9 @@
-// 从 store 中导入 TreeNode 类型
 import type { TreeNode } from '@/store/sidebar'
 
-// 导出以兼容现有代码
+export interface SortConfig {
+  mode: 'name' | 'date'
+  direction: 'asc' | 'desc'
+}
+
+// 重新导出TreeNode类型以保持兼容性
 export type { TreeNode }

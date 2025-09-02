@@ -10,7 +10,14 @@ const props = defineProps<{
 
 const emits = defineEmits(['onDeleteNode'])
 
-import { ref, useTemplateRef, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import {
+  ref,
+  useTemplateRef,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+} from 'vue'
 import { useSidebarStore } from '@/store'
 const sidebar = useSidebarStore()
 
@@ -59,6 +66,8 @@ const checkShouldRename = () => {
 // 当组件挂载时检查
 onMounted(checkShouldRename)
 
+// 不再需要监听 isNew 变化，因为我们改为先输入再创建
+
 const renameNode = (node: TreeNode) => {
   // 使用统一的方式获取节点名称
   const name = getNodeName(node)
@@ -68,8 +77,12 @@ const renameNode = (node: TreeNode) => {
   nextTick(() => {
     // 必须使用setTimeout，否则无法获取焦点，会被contextMenu的事件覆盖
     setTimeout(() => {
-      nodeRenameInputRef.value?.focus()
-    }, 0)
+      if (nodeRenameInputRef.value) {
+        nodeRenameInputRef.value.focus()
+        // 选中所有文本，方便用户直接输入
+        nodeRenameInputRef.value.select()
+      }
+    }, 50) // 增加延迟时间，确保组件完全渲染
   })
 }
 
@@ -92,8 +105,11 @@ const doRenameNode = async (node: TreeNode) => {
   blurRenameBook()
 }
 const blurRenameBook = () => {
-  nodeRename.value = ''
-  inRenameMode.value = false
+  // 延迟处理失焦事件，避免与点击事件冲突
+  setTimeout(() => {
+    nodeRename.value = ''
+    inRenameMode.value = false
+  }, 100)
 }
 
 // delete node
@@ -112,16 +128,13 @@ const addNode = async (node: TreeNode) => {
     return
   }
 
-  const noteGuid = await sidebar.addNodeInTree(node.data.guid, 'note', '未命名')
-  if (noteGuid) {
-    // 添加新节点并获取返回的节点
-    const newNode = await sidebar.addTreeNode(node, noteGuid)
-
-    // 确保文件夹是展开的
-    if (!treeItemRef.value?.isExpanded) {
-      treeItemRef.value?.handleToggle()
-    }
+  // 防止与右键菜单创建功能冲突
+  if (isCreatingChild.value) {
+    return
   }
+
+  // 直接显示创建输入框
+  showCreateChildInput(node, 'note')
 }
 
 // 拖拽相关的状态
@@ -311,6 +324,12 @@ const showCreateChildInput = (
   parentNode: TreeNode,
   type: 'note' | 'folder',
 ) => {
+  // 如果已经在创建中，先取消
+  if (isCreatingChild.value) {
+    cancelCreateChild()
+    return
+  }
+
   // 移除之前可能存在的处理器
   if (creatingClickOutsideHandler) {
     document.removeEventListener('mousedown', creatingClickOutsideHandler)
@@ -321,7 +340,7 @@ const showCreateChildInput = (
   setTimeout(() => {
     creatingParentNode.value = parentNode
     creatingType.value = type
-    creatingName.value = ''
+    creatingName.value = '' // 清空名称，让用户输入
     isCreatingChild.value = true
 
     // 确保文件夹是展开的
@@ -352,11 +371,11 @@ const showCreateChildInput = (
                 creatingClickOutsideHandler,
               )
             }
-          }, 0)
+          }, 100) // 增加延迟时间，避免与快捷创建按钮冲突
         }
       }, 0)
     })
-  }, 50) // 延迟50ms，确保菜单已关闭
+  }, 100) // 增加延迟时间，确保菜单已关闭
 }
 
 // 取消创建
@@ -374,16 +393,17 @@ const cancelCreateChild = () => {
 
 // 完成创建
 const finishCreateChild = async () => {
-  if (!creatingName.value.trim() || !creatingParentNode.value) {
+  const name = creatingName.value.trim()
+  if (!name || !creatingParentNode.value) {
     cancelCreateChild()
     return
   }
 
   try {
-    sidebar.addNodeInTree(
+    await sidebar.addNodeInTree(
       creatingParentNode.value.data.guid,
       creatingType.value,
-      creatingName.value.trim(),
+      name,
     )
 
     // 重新加载树结构
@@ -461,8 +481,9 @@ onBeforeUnmount(() => {
           @keyup.enter="doRenameNode(tree)"
           @blur="blurRenameBook"
           @keydown.stop
-          class="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
           @click.stop
+          @mousedown.stop
+          class="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
           style="
             user-select: text;
             -webkit-user-select: text;
@@ -523,7 +544,7 @@ onBeforeUnmount(() => {
               variant="ghost"
               size="icon"
               class="h-5 w-5 rounded-full hover:bg-emerald-100 dark:hover:bg-primary/10"
-              @click="addNode(tree)"
+              @click.stop="addNode(tree)"
             >
               <span
                 class="icon-[lucide--plus] size-3 text-emerald-600 dark:text-emerald-400"

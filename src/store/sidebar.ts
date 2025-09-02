@@ -2,6 +2,7 @@ import { NodeModel, NodeItem } from '@/model/node'
 import { v1 as uuid } from 'uuid'
 import { defineStore } from 'pinia'
 import { useUserStore, useEditorStore, useSyncStore } from './index'
+import type { SortConfig } from '@/components/sidebar/types'
 
 const nodeModel = new NodeModel()
 
@@ -39,6 +40,7 @@ interface State {
   inSearch: boolean
   searchResult: TreeNode[]
   currentDragNode: DragNodeData | null // 当前拖拽中的节点
+  sortConfig: SortConfig // 排序配置
 }
 
 const removeNode = (nodes: TreeNode[], targetNode: TreeNode): boolean => {
@@ -128,6 +130,10 @@ export const useSidebarStore = defineStore('sidebar', {
     inSearch: false,
     searchResult: [],
     currentDragNode: null, // 初始化为null
+    sortConfig: {
+      mode: 'name',
+      direction: 'asc',
+    },
   }),
   actions: {
     async loadNodeTree() {
@@ -583,6 +589,53 @@ export const useSidebarStore = defineStore('sidebar', {
       sync.sync()
 
       return true
+    },
+
+    // 更新排序配置
+    updateSortConfig(config: Partial<SortConfig>) {
+      this.sortConfig = { ...this.sortConfig, ...config }
+    },
+
+    // 获取排序后的树数据
+    getSortedTreeData(trees: TreeNode[]): TreeNode[] {
+      if (!trees || trees.length === 0) return trees
+
+      const sortNodes = (nodes: TreeNode[]): TreeNode[] => {
+        return [...nodes]
+          .sort((a, b) => {
+            // 首先按类型排序：文件夹优先（默认行为）
+            if (a.type === 'folder' && b.type === 'file') {
+              return -1
+            } else if (a.type === 'file' && b.type === 'folder') {
+              return 1
+            }
+
+            // 同类型内按配置的排序方式排序
+            let comparison = 0
+            switch (this.sortConfig.mode) {
+              case 'name':
+                comparison = a.label.localeCompare(b.label)
+                break
+              case 'date':
+                // 这里可以根据实际的数据结构来比较日期
+                comparison = (a.data?.createdAt || 0) - (b.data?.createdAt || 0)
+                break
+              default:
+                comparison = a.label.localeCompare(b.label)
+                break
+            }
+
+            return this.sortConfig.direction === 'asc'
+              ? comparison
+              : -comparison
+          })
+          .map(node => ({
+            ...node,
+            children: node.children ? sortNodes(node.children) : undefined,
+          }))
+      }
+
+      return sortNodes(trees)
     },
   },
 })
