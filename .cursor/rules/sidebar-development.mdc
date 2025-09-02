@@ -1,0 +1,44 @@
+# Sidebar Development Guidelines
+
+## 侧边栏架构原则
+
+- 使用Pinia store管理状态，避免组件间直接传递复杂数据
+- 树形结构数据存储在`sidebar.ts`中
+- 组件职责分离：`index.vue`负责布局，`treeItem.vue`负责节点渲染
+
+## 创建文件的最佳实践
+
+- **先输入再创建**：显示输入框让用户输入文件名，然后创建文件
+- 避免复杂的自动重命名逻辑，容易产生事件冲突
+- 使用`showCreateChildInput`函数显示创建输入框
+- 使用`finishCreateChild`函数完成创建
+
+## 事件处理注意事项
+
+- 使用`@click.stop`防止事件冒泡
+- 使用`@mousedown.stop`防止鼠标事件冲突
+- 对于失焦事件，考虑使用`setTimeout`延迟处理
+- 避免在同一个组件中同时处理多个创建/重命名状态
+
+## 排序功能
+
+- 默认按文件夹优先排序
+- 支持按名称或创建时间排序
+- 排序逻辑在`sidebar.ts`的`getSortedTreeData`方法中实现
+
+## 拖拽功能
+
+- 拖拽状态存储在Pinia store中
+- 防止循环引用：不能拖拽到自己的子节点
+- 支持拖拽到根目录
+
+## 类型定义
+
+- 使用`TreeNode`接口定义树节点结构
+- 使用`SortConfig`接口定义排序配置
+- 在`types.ts`中统一管理类型定义
+  description:
+  globs:
+  alwaysApply: true
+
+---

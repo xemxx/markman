@@ -1,0 +1,47 @@
+# UI Components Development Guidelines
+
+## 组件库架构
+
+- 使用shadcn/ui作为基础组件库
+- 自定义组件在`src/components/`目录
+- UI组件在`src/components/ui/`目录
+
+## 样式规范
+
+- 使用Tailwind CSS进行样式开发
+- 遵循shadcn/ui的设计系统
+- 支持深色模式
+- 使用CSS变量管理主题
+
+## 组件开发原则
+
+- 组件应该是可复用的
+- 使用TypeScript定义props类型
+- 提供合理的默认值
+- 支持插槽(slots)扩展
+
+## 常用组件
+
+- `Button` - 按钮组件
+- `Input` - 输入框组件
+- `Dialog` - 对话框组件
+- `DropdownMenu` - 下拉菜单组件
+- `ContextMenu` - 右键菜单组件
+
+## 响应式设计
+
+- 使用Tailwind的响应式前缀
+- 考虑不同屏幕尺寸的布局
+- 测试在不同分辨率下的表现
+
+## 无障碍性
+
+- 使用语义化的HTML标签
+- 提供适当的ARIA属性
+- 支持键盘导航
+- 确保足够的颜色对比度
+  description:
+  globs:
+  alwaysApply: true
+
+---

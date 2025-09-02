@@ -1,0 +1,51 @@
+# Vue.js + TypeScript Development Patterns
+
+## 组件开发规范
+
+- 使用Composition API (`<script setup>`)
+- 使用`ref`和`computed`管理响应式状态
+- 使用`nextTick`确保DOM更新完成
+- 使用`onMounted`和`onBeforeUnmount`处理生命周期
+
+## 事件处理模式
+
+```typescript
+// 防止事件冒泡
+@click.stop
+@mousedown.stop
+
+// 键盘事件
+@keyup.enter="handleEnter"
+@keyup.esc="handleEscape"
+
+// 失焦事件处理
+const handleBlur = () => {
+  setTimeout(() => {
+    // 延迟处理，避免与点击事件冲突
+  }, 100)
+}
+```
+
+## 状态管理最佳实践
+
+- 使用Pinia store管理全局状态
+- 组件内状态使用`ref`
+- 计算属性使用`computed`
+- 监听变化使用`watch`
+
+## 类型定义
+
+- 为props定义明确的类型
+- 使用接口定义复杂数据结构
+- 使用泛型提高代码复用性
+
+## 错误处理
+
+- 使用try-catch包装异步操作
+- 在控制台输出错误信息便于调试
+- 为用户提供友好的错误提示
+  description:
+  globs:
+  alwaysApply: true
+
+---

@@ -1,0 +1,37 @@
+# Markman Project Structure Guide
+
+## 项目概述
+
+Markman是一个基于Vue.js + Electron的Markdown编辑器，具有侧边栏文件管理功能。
+
+## 核心架构
+
+- **前端**: Vue.js 3 + TypeScript + Tailwind CSS
+- **桌面端**: Electron
+- **状态管理**: Pinia
+- **UI组件**: 自定义组件库 + shadcn/ui
+
+## 关键目录结构
+
+- `src/components/sidebar/` - 侧边栏相关组件
+  - `index.vue` - 主侧边栏组件
+  - `treeItem.vue` - 树节点组件（包含创建、重命名、拖拽功能）
+  - `menu.vue` - 用户下拉菜单
+  - `footer.vue` - 同步状态显示
+- `src/store/` - Pinia状态管理
+  - `sidebar.ts` - 侧边栏状态（树数据、搜索、排序、拖拽）
+- `electron/` - Electron主进程代码
+- `src/views/` - 页面组件
+- `src/model/` - 数据模型定义
+
+## 重要文件
+
+- [src/components/sidebar/index.vue](mdc:src/components/sidebar/index.vue) - 侧边栏主组件
+- [src/components/sidebar/treeItem.vue](mdc:src/components/sidebar/treeItem.vue) - 树节点组件
+- [src/store/sidebar.ts](mdc:src/store/sidebar.ts) - 侧边栏状态管理
+- [src/components/sidebar/types.ts](mdc:src/components/sidebar/types.ts) - 侧边栏类型定义
+  description:
+  globs:
+  alwaysApply: true
+
+---

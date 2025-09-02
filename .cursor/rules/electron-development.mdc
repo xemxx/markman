@@ -1,0 +1,37 @@
+# Electron Development Guidelines
+
+## 项目结构
+
+- `electron/main/` - 主进程代码
+- `electron/preload/` - 预加载脚本
+- `src/` - 渲染进程代码（Vue.js应用）
+
+## 主进程开发
+
+- 主进程代码在`electron/main/`目录
+- 使用TypeScript编写
+- 通过IPC与渲染进程通信
+- 管理窗口和菜单
+
+## 预加载脚本
+
+- 在`electron/preload/`目录
+- 提供安全的API给渲染进程
+- 避免直接暴露Node.js API
+
+## 构建配置
+
+- 使用Vite构建渲染进程
+- 使用electron-builder打包应用
+- 配置文件：`electron-builder.json5`
+
+## 安全注意事项
+
+- 使用预加载脚本而不是直接暴露Node.js API
+- 验证IPC消息
+- 避免在渲染进程中直接使用Node.js模块
+  description:
+  globs:
+  alwaysApply: true
+
+---
