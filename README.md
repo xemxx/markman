@@ -29,6 +29,11 @@ python3 版本太新，不支持distutils，需要手动安装setuptools
 
 pip3 install setuptools
 
+或者执行
+
+cd node_modules/sqlite3
+pnpm rebuild
+
 ### sqlite3 版本
 
 需要锁定 5.1.6 5.1.7有坑会导致打包失败

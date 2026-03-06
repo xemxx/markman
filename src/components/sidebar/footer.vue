@@ -1,28 +1,29 @@
 <template>
-  <div class="flex h-10 items-center justify-between px-4">
+  <div class="flex h-11 items-center justify-between px-3">
     <div class="flex items-center gap-2">
       <Button
         variant="ghost"
         size="icon"
-        class="h-7 w-7 rounded-full hover:bg-primary/10"
+        class="h-8 w-8 rounded-lg hover:bg-primary/10 transition-all duration-200"
         :class="{ 'animate-spin': isSyncing }"
         @click="doSync"
       >
         <span
-          class="icon-[lucide--refresh-cw] size-3.5 text-muted-foreground"
+          class="icon-[lucide--refresh-cw] size-4"
+          :class="sync.online ? 'text-primary' : 'text-muted-foreground'"
         />
       </Button>
-      <span class="text-xs font-medium text-muted-foreground">
+      <span class="text-xs font-medium" :class="sync.online ? 'text-primary/80' : 'text-muted-foreground'">
         {{ sync.online ? (isSyncing ? '同步中...' : '已同步') : '离线' }}
       </span>
     </div>
     <Button
       variant="ghost"
       size="icon"
-      class="h-7 w-7 rounded-full text-destructive/80 hover:bg-destructive/10"
+      class="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
       @click="quit"
     >
-      <span class="icon-[lucide--log-out] size-3.5" />
+      <span class="icon-[lucide--log-out] size-4" />
     </Button>
   </div>
 </template>

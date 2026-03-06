@@ -18,7 +18,6 @@ const user = useUserStore()
 const username = computed(() => user.dbUser?.username || '用户')
 
 const openSettings = () => {
-  // 通过IPC发送消息给主进程打开设置窗口
   ipcRenderer.send('app-create-settings-window')
 }
 
@@ -33,30 +32,31 @@ const quit = () => {
   <div class="flex items-center justify-between">
     <DropdownMenu>
       <DropdownMenuTrigger
-        class="flex items-center space-x-2 outline-none focus-visible:ring-0"
+        class="flex items-center gap-2.5 outline-none focus-visible:ring-0 group"
       >
         <div
-          class="flex items-center justify-center rounded-full p-1 transition-colors hover:bg-muted/50"
+          class="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 text-primary transition-all duration-300 group-hover:shadow-md group-hover:shadow-primary/10"
         >
-          <span
-            class="icon-[lucide--square-user-round] size-5 text-primary/80"
-          ></span>
+          <span class="icon-[lucide--user] size-4" />
         </div>
-        <span class="text-sm font-medium">{{ username }}</span>
+        <span class="text-sm font-medium text-foreground/90">{{ username }}</span>
+        <span class="icon-[lucide--chevron-down] size-3.5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent class="w-48">
-        <DropdownMenuLabel>{{ username }}</DropdownMenuLabel>
+      <DropdownMenuContent class="w-52" align="start">
+        <DropdownMenuLabel class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+            <span class="icon-[lucide--user] size-3.5 text-primary" />
+          </div>
+          <span class="font-medium">{{ username }}</span>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem @click="openSettings">
-          <span
-            class="icon-[lucide--settings] mr-2 size-4 text-muted-foreground"
-          ></span>
+        <DropdownMenuItem @click="openSettings" class="cursor-pointer">
+          <span class="icon-[lucide--settings] mr-2.5 size-4 text-muted-foreground" />
           <span>设置</span>
         </DropdownMenuItem>
-        <DropdownMenuItem @click="quit">
-          <span
-            class="icon-[lucide--log-out] mr-2 size-4 text-destructive/80"
-          ></span>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem @click="quit" class="cursor-pointer text-destructive focus:text-destructive">
+          <span class="icon-[lucide--log-out] mr-2.5 size-4" />
           <span>退出登录</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

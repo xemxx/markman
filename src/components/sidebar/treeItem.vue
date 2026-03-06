@@ -438,11 +438,12 @@ onBeforeUnmount(() => {
     :value="tree"
   >
     <div
-      class="group my-0.5 flex items-center rounded-md px-2 py-1 outline-none transition-colors hover:bg-muted/80 data-[selected]:text-accent-foreground dark:hover:bg-muted/40"
+      class="group relative my-0.5 flex items-center rounded-lg px-2 py-1.5 outline-none transition-all duration-200 ease-out cursor-pointer select-none"
       :class="{
-        'opacity-50': isDragging,
-        'border-2 border-dashed border-primary bg-muted/80': isDragOver,
-        'bg-emerald-100 dark:bg-accent/50': tree.selected,
+        'opacity-40': isDragging,
+        'ring-2 ring-primary/30 ring-offset-1 ring-offset-background bg-primary/5': isDragOver,
+        'bg-primary/10 text-primary': tree.selected,
+        'hover:bg-muted/60': !tree.selected && !isDragOver,
       }"
       :style="{ 'padding-left': `${level * 0.75 + 0.5}rem` }"
       @click="onNodeSelect(tree)"
@@ -455,20 +456,28 @@ onBeforeUnmount(() => {
       @drop="onDrop($event, tree)"
     >
       <template v-if="tree.type === 'folder'">
-        <span
-          v-if="!isExpanded"
-          class="icon-[lucide--folder] size-3.5 flex-none text-amber-600 transition-colors group-hover:text-amber-700 dark:text-amber-400 dark:group-hover:text-amber-300"
-        />
-        <span
-          v-else
-          class="icon-[lucide--folder-open] size-3.5 flex-none text-amber-600 transition-colors group-hover:text-amber-700 dark:text-amber-400 dark:group-hover:text-amber-300"
-        />
+        <div
+          class="flex items-center justify-center w-5 h-5 rounded-md mr-1.5 transition-all duration-200"
+          :class="isExpanded ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-muted/50 group-hover:bg-amber-50 dark:group-hover:bg-amber-900/20'"
+        >
+          <span
+            v-if="!isExpanded"
+            class="icon-[lucide--folder] size-3.5 text-amber-600 dark:text-amber-400"
+          />
+          <span
+            v-else
+            class="icon-[lucide--folder-open] size-3.5 text-amber-600 dark:text-amber-400"
+          />
+        </div>
       </template>
       <template v-else>
-        <!-- 所有文件节点使用文档图标 -->
-        <span
-          class="icon-[ion--document-text-outline] size-3.5 flex-none text-blue-500 transition-colors group-hover:text-blue-600 dark:text-blue-400 dark:group-hover:text-blue-300"
-        />
+        <div
+          class="flex items-center justify-center w-5 h-5 rounded-md mr-1.5 bg-muted/50 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-all duration-200"
+        >
+          <span
+            class="icon-[lucide--file-text] size-3.5 text-blue-500 dark:text-blue-400"
+          />
+        </div>
       </template>
       <div
         class="group flex flex-1 items-center overflow-hidden"
@@ -483,7 +492,7 @@ onBeforeUnmount(() => {
           @keydown.stop
           @click.stop
           @mousedown.stop
-          class="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
+          class="flex-1 rounded-lg border border-primary/30 bg-background px-2.5 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
           style="
             user-select: text;
             -webkit-user-select: text;
@@ -536,19 +545,17 @@ onBeforeUnmount(() => {
             </CustomContextMenu>
           </div>
           <div
-            class="grid flex-none grid-cols-1 place-content-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            class="flex flex-none items-center opacity-0 transition-all duration-200 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0"
             @click.stop
             v-show="!inRenameMode"
           >
             <Button
               variant="ghost"
               size="icon"
-              class="h-5 w-5 rounded-full hover:bg-emerald-100 dark:hover:bg-primary/10"
+              class="h-6 w-6 rounded-md hover:bg-primary/10 hover:text-primary transition-colors"
               @click.stop="addNode(tree)"
             >
-              <span
-                class="icon-[lucide--plus] size-3 text-emerald-600 dark:text-emerald-400"
-              />
+              <span class="icon-[lucide--plus] size-3.5" />
             </Button>
           </div>
         </template>
@@ -562,7 +569,7 @@ onBeforeUnmount(() => {
         creatingParentNode &&
         creatingParentNode.key === tree.key
       "
-      class="my-1 px-2"
+      class="my-1.5 mx-2 animate-fade-in"
       :style="{ 'padding-left': `${(level + 1) * 0.75 + 0.5}rem` }"
       @click.stop
     >
@@ -570,9 +577,9 @@ onBeforeUnmount(() => {
         ref="creatingInputRef"
         v-model="creatingName"
         :placeholder="
-          creatingType === 'note' ? '输入笔记名称' : '输入笔记本名称'
+          creatingType === 'note' ? '输入笔记名称...' : '输入笔记本名称...'
         "
-        class="w-full flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 dark:focus-visible:ring-accent"
+        class="w-full rounded-lg border border-primary/30 bg-background px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transition-all duration-300"
         @keyup.enter="finishCreateChild"
         @keyup.esc="cancelCreateChild"
         @click.stop
@@ -588,18 +595,33 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .drag-image {
-  padding: 4px 8px;
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--foreground);
-  font-size: 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 6px 12px;
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .user-select-text {
   user-select: text !important;
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
 }
 </style>
