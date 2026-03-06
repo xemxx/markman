@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import TreeItem from './treeItem.vue'
-
 import type { TreeNode } from '@/store/sidebar'
 
 withDefaults(
@@ -13,7 +12,13 @@ withDefaults(
 </script>
 
 <template>
-  <li v-for="tree in treeItems" :key="tree.key">
-    <TreeItem :tree="tree" :level="level" :selected="tree.selected" />
-  </li>
+  <ul class="list-none">
+    <TreeItem
+      v-for="tree in treeItems"
+      :key="tree.key"
+      :tree="tree"
+      :level="level"
+      :selected="tree.selected"
+    />
+  </ul>
 </template>
