@@ -47,7 +47,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "core-js": "^3.42.0",
-    "electron": "^36.1.0",
+    "electron": "^36.8.1",
     "electron-about": "^2.0.1",
     "electron-builder": "^26.0.12",
     "electron-store": "^8.2.0",
