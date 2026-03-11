@@ -12,16 +12,15 @@ export interface TreeNode {
   label: string
   children?: TreeNode[]
   data: any
-  type: 'folder' | 'file' // 保持兼容，仍用 'folder' 表示笔记本，'file' 表示笔记
+  type: 'folder' | 'file'
   selected: boolean
-  parentId?: string // 父节点ID
-  level: number // 层级深度
+  parentId?: string
+  level: number
   isExpanded?: boolean
   isNew?: boolean
-  canContainChildren?: boolean // 是否可以包含子节点
+  canContainChildren?: boolean
 }
 
-// 拖拽节点数据结构
 export interface DragNodeData {
   key: string
   type: string
@@ -31,16 +30,14 @@ export interface DragNodeData {
 
 interface State {
   nodes: NodeItem[]
-  type: string
-  flagId: string
-  tid: string
   treeLabels: TreeNode[]
   selectedKeys: string[]
-  rootNodes: NodeItem[] // 根目录下的节点
+  lastClickedKey: string | null
+  rootNodes: NodeItem[]
   inSearch: boolean
   searchResult: TreeNode[]
-  currentDragNode: DragNodeData | null // 当前拖拽中的节点
-  sortConfig: SortConfig // 排序配置
+  currentDragNodes: DragNodeData[]
+  sortConfig: SortConfig
 }
 
 const removeNode = (nodes: TreeNode[], targetNode: TreeNode): boolean => {
@@ -89,9 +86,6 @@ const insertNode = (
   for (let i = 0; i < nodes.length; i++) {
     const currentNode = nodes[i]
     if (currentNode.key === targetNode.key) {
-      // 检查节点是否可以包含子节点
-      // 如果是文件夹类型，默认可以包含子节点
-      // 如果是文件类型，则检查 canContainChildren 标志
       const canAddChild =
         currentNode.type === 'folder' || currentNode.canContainChildren === true
 
@@ -99,7 +93,6 @@ const insertNode = (
         if (!currentNode.children) {
           currentNode.children = []
         }
-        // 设置新节点的父节点ID和层级
         newNode.parentId = currentNode.key
         newNode.level = currentNode.level + 1
 
@@ -118,24 +111,187 @@ const insertNode = (
   return false
 }
 
+const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
+  for (const node of nodes) {
+    if (node.key === key) return node
+    if (node.children) {
+      const found = findNodeByKey(node.children, key)
+      if (found) return found
+    }
+  }
+  return null
+}
+
 export const useSidebarStore = defineStore('sidebar', {
   state: (): State => ({
     nodes: [],
-    type: 'all',
-    flagId: '',
-    tid: '',
     treeLabels: [],
     selectedKeys: [],
+    lastClickedKey: null,
     rootNodes: [],
     inSearch: false,
     searchResult: [],
-    currentDragNode: null, // 初始化为null
+    currentDragNodes: [],
     sortConfig: {
       mode: 'name',
       direction: 'asc',
     },
   }),
   actions: {
+    // ── 选中管理 ──
+
+    isSelected(key: string): boolean {
+      return this.selectedKeys.includes(key)
+    },
+
+    selectNode(key: string) {
+      this.selectedKeys = [key]
+      this.lastClickedKey = key
+      this._syncSelectedToTree()
+    },
+
+    toggleSelectNode(key: string) {
+      const idx = this.selectedKeys.indexOf(key)
+      if (idx >= 0) {
+        this.selectedKeys.splice(idx, 1)
+      } else {
+        this.selectedKeys.push(key)
+      }
+      this.lastClickedKey = key
+      this._syncSelectedToTree()
+    },
+
+    selectRange(key: string, visibleTrees: TreeNode[]) {
+      if (!this.lastClickedKey) {
+        this.selectNode(key)
+        return
+      }
+      const flat = this.flattenVisibleTree(visibleTrees)
+      const startIdx = flat.indexOf(this.lastClickedKey)
+      const endIdx = flat.indexOf(key)
+      if (startIdx === -1 || endIdx === -1) {
+        this.selectNode(key)
+        return
+      }
+      const lo = Math.min(startIdx, endIdx)
+      const hi = Math.max(startIdx, endIdx)
+      this.selectedKeys = flat.slice(lo, hi + 1)
+      this._syncSelectedToTree()
+    },
+
+    clearSelection() {
+      this.selectedKeys = []
+      this.lastClickedKey = null
+      this._syncSelectedToTree()
+    },
+
+    _syncSelectedToTree() {
+      const selectedSet = new Set(this.selectedKeys)
+      const walk = (nodes: TreeNode[]) => {
+        for (const node of nodes) {
+          node.selected = selectedSet.has(node.key)
+          if (node.children) walk(node.children)
+        }
+      }
+      walk(this.treeLabels)
+    },
+
+    getSelectedNodes(): TreeNode[] {
+      const results: TreeNode[] = []
+      const walk = (nodes: TreeNode[]) => {
+        for (const node of nodes) {
+          if (this.selectedKeys.includes(node.key)) results.push(node)
+          if (node.children) walk(node.children)
+        }
+      }
+      walk(this.treeLabels)
+      return results
+    },
+
+    // ── 树扁平化（按可视顺序） ──
+
+    flattenVisibleTree(trees: TreeNode[]): string[] {
+      const result: string[] = []
+      const walk = (nodes: TreeNode[]) => {
+        for (const node of nodes) {
+          result.push(node.key)
+          if (node.isExpanded && node.children && node.children.length > 0) {
+            walk(node.children)
+          }
+        }
+      }
+      walk(trees)
+      return result
+    },
+
+    setNodeExpanded(key: string, expanded: boolean) {
+      const node = findNodeByKey(this.treeLabels, key)
+      if (node) {
+        node.isExpanded = expanded
+      }
+    },
+
+    // ── 批量操作 ──
+
+    async deleteSelectedNodes() {
+      const nodes = this.getSelectedNodes()
+      if (nodes.length === 0) return
+      const sync = useSyncStore()
+      for (const node of nodes) {
+        try {
+          await nodeModel.deleteLocal(node.data.id, node.data.guid)
+          removeNode(this.treeLabels, node)
+        } catch (err) {
+          console.error('批量删除节点失败:', err)
+        }
+      }
+      this.selectedKeys = []
+      this.lastClickedKey = null
+      sync.sync()
+    },
+
+    async moveSelectedNodes(targetKey: string) {
+      const nodes = this.getSelectedNodes()
+      if (nodes.length === 0) return
+      const selectedKeySet = new Set(nodes.map(node => node.key))
+      const shouldMoveNode = (node: TreeNode): boolean => {
+        let parentKey = node.parentId
+        while (parentKey && parentKey !== 'root') {
+          if (selectedKeySet.has(parentKey)) return false
+          const parentNode = findNodeByKey(this.treeLabels, parentKey)
+          if (!parentNode) break
+          parentKey = parentNode.parentId
+        }
+        return true
+      }
+      const rootSelectedNodes = nodes.filter(shouldMoveNode)
+
+      for (const node of rootSelectedNodes) {
+        if (node.key === targetKey) continue
+        if (targetKey !== 'root' && this.isDescendantOf(targetKey, node.key)) continue
+        try {
+          await nodeModel.update(node.data.id, { parentId: targetKey, modifyState: 2 })
+        } catch (err) {
+          console.error('批量移动节点失败:', err)
+        }
+      }
+      await this.loadNodeTree()
+      const sync = useSyncStore()
+      sync.sync()
+    },
+
+    // ── 拖拽 ──
+
+    setDragNodes(nodes: DragNodeData[]) {
+      this.currentDragNodes = nodes
+    },
+
+    clearDragNodes() {
+      this.currentDragNodes = []
+    },
+
+    // ── 节点树加载 ──
+
     async loadNodeTree() {
       const user = useUserStore()
       try {
@@ -143,16 +299,11 @@ export const useSidebarStore = defineStore('sidebar', {
           console.error('User isNotLogin')
           return
         }
-        // 加载所有节点
         this.nodes = await nodeModel.getAll(user.dbUser?.id!)
-
-        // 加载根目录节点
         this.rootNodes = await nodeModel.getChildren(user.dbUser?.id!, 'root')
 
-        // 创建节点映射，用于快速查找
         const nodeMap = new Map<string, TreeNode>()
 
-        // 构建根目录节点
         const rootTreeNodes = this.rootNodes.map(node => {
           const treeNode: TreeNode = {
             label: node.title,
@@ -163,7 +314,7 @@ export const useSidebarStore = defineStore('sidebar', {
             data: node,
             key: node.guid,
             type: node.type === 'folder' ? 'folder' : 'file',
-            selected: false,
+            selected: this.selectedKeys.includes(node.guid),
             parentId: 'root',
             level: 0,
             isExpanded: false,
@@ -174,15 +325,10 @@ export const useSidebarStore = defineStore('sidebar', {
           return treeNode
         })
 
-        // 处理所有非根节点，构建多级嵌套关系
         this.nodes.forEach(node => {
-          // 跳过根目录节点，因为已经处理过
           if (node.parentId === 'root' || !node.parentId) return
-
-          // 检查这个节点是否已经被处理过
           if (nodeMap.has(node.guid)) return
 
-          // 创建树节点
           const treeNode: TreeNode = {
             label: node.title,
             icon:
@@ -192,41 +338,31 @@ export const useSidebarStore = defineStore('sidebar', {
             data: node,
             key: node.guid,
             type: node.type === 'folder' ? 'folder' : 'file',
-            selected: false,
+            selected: this.selectedKeys.includes(node.guid),
             parentId: node.parentId,
-            level: 0, // 临时值，后面会重新计算
+            level: 0,
             isExpanded: false,
             canContainChildren: true,
             children: [],
           }
 
-          // 将节点添加到映射
           nodeMap.set(node.guid, treeNode)
         })
 
-        // 构建节点层级关系
         for (const [, node] of nodeMap.entries()) {
-          // 跳过无父节点ID或父节点ID为root的节点
           if (!node.parentId || node.parentId === 'root') continue
-
-          // 查找父节点，这里确保 parentId 非空
           const parentNode = nodeMap.get(node.parentId)
           if (parentNode) {
-            // 确保父节点有children数组
             if (!parentNode.children) {
               parentNode.children = []
             }
-
-            // 将节点添加到父节点的children
             parentNode.children.push(node)
           } else {
-            // 如果没有找到父节点，将其作为根节点
             node.parentId = 'root'
             rootTreeNodes.push(node)
           }
         }
 
-        // 调整节点层级
         const adjustLevel = (nodes: TreeNode[], level: number) => {
           nodes.forEach(node => {
             node.level = level
@@ -236,26 +372,17 @@ export const useSidebarStore = defineStore('sidebar', {
           })
         }
 
-        // 调整所有根节点的层级
         adjustLevel(rootTreeNodes, 0)
-
-        // 设置最终的树结构
         this.treeLabels = rootTreeNodes
       } catch (err) {
         console.error('加载节点树时出错:', err)
       }
     },
 
-    // 判断节点是否可以包含子节点
     canAddChildren(node: TreeNode): boolean {
-      // 文件夹类型可以包含子节点
-      if (node.type === 'folder') return true
-
-      // 默认所有节点都可以包含子节点
-      return true
+      return node.type === 'folder'
     },
 
-    // 在给定节点下创建新节点
     async addNodeInTree(
       parentId: string,
       type: 'folder' | 'note',
@@ -270,14 +397,14 @@ export const useSidebarStore = defineStore('sidebar', {
       const note = {
         uid: user.dbUser?.id!,
         guid: uuid(),
-        parentId: parentId, // 父节点的guid
+        parentId: parentId,
         title: title,
         content: '',
         type: type,
         sort: 0,
         sortType: 0,
-        modifyState: 1, //0：不需要同步，1：新的东西，2：修改过的东西
-        SC: 0, //新建时该值无用
+        modifyState: 1,
+        SC: 0,
         addDate: time,
         modifyDate: time,
       }
@@ -295,7 +422,6 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    // 通过GUID获取节点
     async getNodeByGuid(guid: string) {
       try {
         return await nodeModel.getByGuid(guid)
@@ -305,7 +431,6 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    // 添加树节点
     async addTreeNode(node: TreeNode, guid: string) {
       const nodeData = await nodeModel.getByGuid(guid)
       const newNode: TreeNode = {
@@ -317,19 +442,17 @@ export const useSidebarStore = defineStore('sidebar', {
         data: nodeData,
         key: guid,
         type: nodeData.type === 'folder' ? 'folder' : 'file',
-        selected: true,
+        selected: false,
         parentId: node.key,
         level: node.level + 1,
         isExpanded: false,
         isNew: true,
-        // 默认新创建的节点可以包含子节点
         canContainChildren: true,
       }
       insertNode(this.treeLabels, node, newNode)
       return newNode
     },
 
-    // 删除树节点
     async deleteTreeNode(node: TreeNode) {
       removeNode(this.treeLabels, node)
     },
@@ -344,7 +467,6 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    // 更新文件夹
     async updateFolder({ id, name }: { id: number; name: string }) {
       const sync = useSyncStore()
       const folder = await nodeModel.get(id)
@@ -361,7 +483,6 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    // 更新笔记
     async updateNote({ id, title }: { id: number; title: string }) {
       const sync = useSyncStore()
       const note = await nodeModel.get(id)
@@ -378,7 +499,6 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    // 移动笔记
     async moveNode({ id, parentId }: { id: number; parentId: string }) {
       try {
         await nodeModel.update(id, { parentId, modifyState: 2 })
@@ -387,17 +507,12 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    // 重命名树节点
     renameTreeNode(node: TreeNode, newName: string) {
       return renameNode(this.treeLabels, node, newName)
     },
 
-    // 移动树节点
     moveTreeNode(node: TreeNode, targetNodeKey: string) {
-      // 不能将节点移动到自己下面
       if (node.key === targetNodeKey) return false
-
-      // 不能将节点移动到其子节点下（防止循环引用）
       if (
         targetNodeKey !== 'root' &&
         this.isDescendantOf(targetNodeKey, node.key)
@@ -417,70 +532,31 @@ export const useSidebarStore = defineStore('sidebar', {
       return false
     },
 
-    // 检查是否是子节点
     isDescendantOf(nodeKey: string, potentialAncestorKey: string): boolean {
-      // 如果节点键相同，返回 false（不是子节点关系）
-      if (nodeKey === potentialAncestorKey) {
-        return false
-      }
+      if (nodeKey === potentialAncestorKey) return false
 
-      // 递归检查节点及其子节点
+      const ancestorNode = findNodeByKey(this.treeLabels, potentialAncestorKey)
+      if (!ancestorNode) return false
+      if (ancestorNode.key === nodeKey) return false
+
       const isDescendant = (nodes: TreeNode[], targetKey: string): boolean => {
         for (const node of nodes) {
-          // 如果当前节点就是要检查的节点，返回 true
-          if (node.key === targetKey) {
-            return true
-          }
-          // 如果有子节点，递归检查
+          if (node.key === targetKey) return true
           if (node.children && node.children.length > 0) {
-            if (isDescendant(node.children, targetKey)) {
-              return true
-            }
+            if (isDescendant(node.children, targetKey)) return true
           }
         }
         return false
       }
 
-      // 在树中查找指定节点
-      const findNode = (nodes: TreeNode[], key: string): TreeNode | null => {
-        for (const node of nodes) {
-          if (node.key === key) {
-            return node
-          }
-          if (node.children) {
-            const found = findNode(node.children, key)
-            if (found) {
-              return found
-            }
-          }
-        }
-        return null
-      }
-
-      // 找到潜在的祖先节点
-      const ancestorNode = findNode(this.treeLabels, potentialAncestorKey)
-      if (!ancestorNode) {
-        return false
-      }
-
-      // 如果要检查的节点就是祖先节点本身，返回 false
-      if (ancestorNode.key === nodeKey) {
-        return false
-      }
-
-      // 检查节点是否在祖先节点的子节点中
       if (ancestorNode.children && ancestorNode.children.length > 0) {
         return isDescendant(ancestorNode.children, nodeKey)
       }
-
       return false
     },
 
-    // 搜索树节点
     searchTreeNodes(searchStr: string) {
-      if (searchStr === '') {
-        return
-      }
+      if (searchStr === '') return
       this.inSearch = true
       const searchNodes = (
         nodes: TreeNode[],
@@ -508,22 +584,10 @@ export const useSidebarStore = defineStore('sidebar', {
       this.searchResult = searchNodes(this.treeLabels, searchStr)
     },
 
-    // 退出搜索
     exitSearch() {
       this.inSearch = false
     },
 
-    // 设置拖拽节点
-    setDragNode(node: DragNodeData | null) {
-      this.currentDragNode = node
-    },
-
-    // 清除拖拽节点
-    clearDragNode() {
-      this.currentDragNode = null
-    },
-
-    // 移动文件夹
     async moveFolder(id: string, targetId: string) {
       const node = await nodeModel.getByGuid(id)
       if (!node) return false
@@ -541,84 +605,26 @@ export const useSidebarStore = defineStore('sidebar', {
       }
     },
 
-    // 处理拖拽到根目录
-    async handleDropToRoot() {
-      if (!this.currentDragNode) return false
-
-      const { key } = this.currentDragNode
-      const node = await nodeModel.getByGuid(key)
-
-      if (!node) return false
-
-      // 更新节点的父ID为root
-      await nodeModel.update(node.id, {
-        parentId: 'root',
-        modifyState: node.modifyState === 0 ? 2 : node.modifyState,
-      })
-
-      // 刷新树
-      await this.loadNodeTree()
-
-      // 同步到服务器
-      const sync = useSyncStore()
-      sync.sync()
-
-      return true
-    },
-
-    // 处理节点拖拽
-    async handleNodeDrop(sourceKey: string, targetKey: string) {
-      if (sourceKey === targetKey) return false
-
-      const sourceNode = await nodeModel.getByGuid(sourceKey)
-      const targetNode = await nodeModel.getByGuid(targetKey)
-
-      if (!sourceNode || !targetNode) return false
-
-      // 更新节点的父ID
-      await nodeModel.update(sourceNode.id, {
-        parentId: targetNode.guid,
-        modifyState: sourceNode.modifyState === 0 ? 2 : sourceNode.modifyState,
-      })
-
-      // 刷新树
-      await this.loadNodeTree()
-
-      // 同步到服务器
-      const sync = useSyncStore()
-      sync.sync()
-
-      return true
-    },
-
-    // 更新排序配置
     updateSortConfig(config: Partial<SortConfig>) {
       this.sortConfig = { ...this.sortConfig, ...config }
     },
 
-    // 获取排序后的树数据
     getSortedTreeData(trees: TreeNode[]): TreeNode[] {
       if (!trees || trees.length === 0) return trees
 
       const sortNodes = (nodes: TreeNode[]): TreeNode[] => {
         return [...nodes]
           .sort((a, b) => {
-            // 首先按类型排序：文件夹优先（默认行为）
-            if (a.type === 'folder' && b.type === 'file') {
-              return -1
-            } else if (a.type === 'file' && b.type === 'folder') {
-              return 1
-            }
+            if (a.type === 'folder' && b.type === 'file') return -1
+            if (a.type === 'file' && b.type === 'folder') return 1
 
-            // 同类型内按配置的排序方式排序
             let comparison = 0
             switch (this.sortConfig.mode) {
               case 'name':
                 comparison = a.label.localeCompare(b.label)
                 break
               case 'date':
-                // 这里可以根据实际的数据结构来比较日期
-                comparison = (a.data?.createdAt || 0) - (b.data?.createdAt || 0)
+                comparison = (a.data?.modifyDate || 0) - (b.data?.modifyDate || 0)
                 break
               default:
                 comparison = a.label.localeCompare(b.label)

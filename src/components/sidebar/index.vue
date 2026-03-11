@@ -54,7 +54,7 @@
                 class="icon-[lucide--calendar-clock] mr-3 size-4"
                 :class="sidebar.sortConfig.mode === 'date' ? 'text-primary' : 'text-muted-foreground'"
               />
-              按日期排序
+              按修改日期排序
             </button>
           </div>
         </div>
@@ -127,9 +127,23 @@
           'border-dashed border-primary/50 bg-primary/5': isDragOver,
         }"
       >
-        <h2 class="text-sm font-medium text-foreground/80 pl-1">
-          笔记管理
-        </h2>
+        <div class="flex items-center gap-2 pl-1">
+          <h2 class="text-sm font-medium text-foreground/80">
+            笔记管理
+          </h2>
+          <span
+            v-if="sidebar.selectedKeys.length > 1"
+            class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
+          >
+            已选 {{ sidebar.selectedKeys.length }} 项
+            <button
+              class="ml-0.5 inline-flex items-center justify-center rounded-full hover:bg-primary/20 transition-colors"
+              @click.stop="sidebar.clearSelection()"
+            >
+              <span class="icon-[lucide--x] size-3" />
+            </button>
+          </span>
+        </div>
         <div class="flex gap-1">
           <!-- 排序配置按钮 -->
           <div class="relative" ref="sortMenuRef">
@@ -222,7 +236,7 @@
       </Transition>
 
       <!-- 笔记本树 -->
-      <ScrollArea ref="scrollAreaRef" class="flex-1 px-2">
+      <ScrollArea ref="scrollAreaRef" class="flex-1 px-2" @click.self="sidebar.clearSelection()">
         <div class="pb-4">
           <TreeRoot
             class="w-full select-none rounded-xl bg-background/50 p-1 text-sm"
@@ -230,7 +244,7 @@
             :get-key="item => item.key"
             :typeahead-search="false"
           >
-            <Tree :tree-items="sortedTrees" />
+            <Tree :tree-items="sortedTrees" :sorted-trees="sortedTrees" />
           </TreeRoot>
 
           <!-- 空状态 -->
@@ -415,16 +429,16 @@ const isDragOver = ref(false)
 
 const onDragEnter = (event: DragEvent) => {
   if (!event.dataTransfer) return
-  if (!sidebar.currentDragNode) return
-  if (sidebar.currentDragNode.parentId === 'root') return
+  if (sidebar.currentDragNodes.length === 0) return
+  if (sidebar.currentDragNodes.every(d => d.parentId === 'root')) return
   event.preventDefault()
   isDragOver.value = true
 }
 
 const onDragOver = (event: DragEvent) => {
   if (!event.dataTransfer) return
-  if (!sidebar.currentDragNode) return
-  if (sidebar.currentDragNode.parentId === 'root') return
+  if (sidebar.currentDragNodes.length === 0) return
+  if (sidebar.currentDragNodes.every(d => d.parentId === 'root')) return
   event.preventDefault()
   isDragOver.value = true
 }
@@ -437,12 +451,17 @@ const onDrop = async (event: DragEvent) => {
   event.preventDefault()
   isDragOver.value = false
 
-  if (!event.dataTransfer) return
-  if (!sidebar.currentDragNode) return
-  if (sidebar.currentDragNode.parentId == 'root') return
+  if (sidebar.currentDragNodes.length === 0) return
 
   try {
-    const dragData = sidebar.currentDragNode
+    if (sidebar.currentDragNodes.length > 1) {
+      await sidebar.moveSelectedNodes('root')
+      sidebar.clearDragNodes()
+      return
+    }
+
+    const dragData = sidebar.currentDragNodes[0]
+    if (!dragData || dragData.parentId === 'root') return
 
     const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
       for (const node of nodes) {
@@ -467,11 +486,11 @@ const onDrop = async (event: DragEvent) => {
       await sidebar.moveFolder(draggedNode.key, 'root')
     }
 
-    sidebar.clearDragNode()
+    sidebar.clearDragNodes()
     await sidebar.loadNodeTree()
   } catch (error) {
     console.error('拖拽处理错误:', error)
-    sidebar.clearDragNode()
+    sidebar.clearDragNodes()
   }
 }
 

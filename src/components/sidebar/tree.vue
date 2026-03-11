@@ -2,10 +2,11 @@
 import TreeItem from './treeItem.vue'
 import type { TreeNode } from '@/store/sidebar'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     treeItems: TreeNode[]
     level?: number
+    sortedTrees: TreeNode[]
   }>(),
   { level: 0 },
 )
@@ -19,6 +20,7 @@ withDefaults(
       :tree="tree"
       :level="level"
       :selected="tree.selected"
+      :sorted-trees="sortedTrees"
     />
   </ul>
 </template>

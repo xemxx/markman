@@ -123,8 +123,13 @@
     color: hsl(var(--foreground));
   }
 
-  /* Focus visible styling */
-  :focus-visible {
+  /* Focus visible styling - only for interactive elements */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 }
@@ -310,7 +315,6 @@
   }
 }
 
-/* Milkdown editor styles */
 .milkdown {
   @apply size-full flex-1 overflow-auto p-8;
 }

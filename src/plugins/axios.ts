@@ -4,6 +4,19 @@ import { message } from 'ant-design-vue'
 import { useUserStore, useSyncStore } from '@/store'
 import router from '@/router'
 
+interface RequestFetchOptions {
+  disableToast?: boolean
+}
+
+type RequestConfigWithFetchOptions = AxiosRequestConfig & {
+  fetchOptions?: RequestFetchOptions
+}
+
+const getDisableToast = (config?: AxiosRequestConfig): boolean => {
+  const typedConfig = config as RequestConfigWithFetchOptions | undefined
+  return typedConfig?.fetchOptions?.disableToast ?? false
+}
+
 const errCode = {
   SUCCESS: 200, //请求成功
   ErrorAuthCheckTokenFail: 20001, //"Token无效"
@@ -36,8 +49,7 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   // 请求成功
   async res => {
-    const config = res.config
-    const disableToast = config.fetchOptions?.disableToast
+    const disableToast = getDisableToast(res.config)
     const user = useUserStore()
     const code = res.data.code
     const msg = res.data.msg
@@ -65,8 +77,7 @@ http.interceptors.response.use(
   },
   // 请求失败，非200自动进入
   err => {
-    const config = err.config
-    const disableToast = config.fetchOptions?.disableToast
+    const disableToast = getDisableToast(err?.config)
     if (err.response) {
       //接收到响应，认为服务器错误，或者用户输入服务器地址错误导致请求成功，但是接口失败
       message.error('服务器错误,' + err)

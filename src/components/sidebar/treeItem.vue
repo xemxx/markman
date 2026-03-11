@@ -2,57 +2,76 @@
 import { TreeItem } from 'reka-ui'
 import Tree from './tree.vue'
 import type { TreeNode } from '@/store/sidebar'
+import { Button } from '@/components/ui/button'
 
 const props = defineProps<{
   tree: TreeNode
   level: number
   selected: boolean
+  sortedTrees: TreeNode[]
 }>()
 
 import {
   ref,
+  computed,
+  watch,
   useTemplateRef,
   nextTick,
   onMounted,
   onBeforeUnmount,
 } from 'vue'
+
 import { useSidebarStore } from '@/store'
 const sidebar = useSidebarStore()
 
-// load note
 import { useEditorStore } from '@/store'
 const editor = useEditorStore()
-const onNodeSelect = (node: TreeNode) => {
-  if (node.type == 'file') {
-    editor.checkoutNote(node.data.id)
+
+const isNodeSelected = computed(() => sidebar.isSelected(props.tree.key))
+const isMultiSelected = computed(() => sidebar.selectedKeys.length > 1)
+
+const handleClick = (event: MouseEvent, node: TreeNode) => {
+  const isMeta = event.metaKey || event.ctrlKey
+  const isShift = event.shiftKey
+
+  if (isMeta) {
+    event.stopPropagation()
+    event.preventDefault()
+    sidebar.toggleSelectNode(node.key)
+  } else if (isShift) {
+    event.stopPropagation()
+    event.preventDefault()
+    sidebar.selectRange(node.key, props.sortedTrees)
+  } else {
+    sidebar.selectNode(node.key)
+    if (node.type === 'file') {
+      editor.checkoutNote(node.data.id)
+    }
   }
 }
 
-// right click
+const handleContextMenu = (node: TreeNode) => {
+  if (!sidebar.isSelected(node.key)) {
+    sidebar.selectNode(node.key)
+  }
+}
+
 import CustomContextMenu from './CustomContextMenu.vue'
 import CustomContextMenuItem from './CustomContextMenuItem.vue'
 
-// rename
 const nodeRename = ref('')
 const nodeNameOrigin = ref('')
 const inRenameMode = ref<boolean>(false)
 const nodeRenameInputRef = useTemplateRef<HTMLInputElement>('nodeRenameInputRef')
 
-// 统一获取节点名称
 const getNodeName = (node: TreeNode): string => {
-  return node.type === 'folder' ? node.data.name : node.data.title
+  return node.data.title
 }
 
-// 统一设置节点名称
 const setNodeName = (node: TreeNode, newName: string): void => {
-  if (node.type === 'folder') {
-    node.data.name = newName
-  } else {
-    node.data.title = newName
-  }
+  node.data.title = newName
 }
 
-// 检查当前节点是否需要重命名
 const checkShouldRename = () => {
   if (props.tree.isNew) {
     renameNode(props.tree)
@@ -78,7 +97,6 @@ const renameNode = (node: TreeNode) => {
 }
 
 const doRenameNode = async (node: TreeNode) => {
-  // 如果名称为空或没有变化，回滚并退出
   if (nodeRename.value === '') {
     nodeRename.value = nodeNameOrigin.value
     blurRenameBook()
@@ -95,13 +113,10 @@ const doRenameNode = async (node: TreeNode) => {
     } else {
       await sidebar.updateNote({ id: node.data.id, title: nodeRename.value })
     }
-    // 更新树节点名称
     sidebar.renameTreeNode(props.tree, nodeRename.value)
-    // 更新本地节点数据
     setNodeName(node, nodeRename.value)
   } catch (err) {
     console.error('重命名失败:', err)
-    // 失败时回滚
     nodeRename.value = nodeNameOrigin.value
   }
 
@@ -116,20 +131,21 @@ const blurRenameBook = () => {
   }, 100)
 }
 
-// delete node
 const onDeleteNode = async (node: TreeNode) => {
-  try {
-    await sidebar.deleteNode(node.data.id, node.data.guid)
-    sidebar.deleteTreeNode(node)
-  } catch (err) {
-    console.error('删除节点失败:', err)
+  if (isMultiSelected.value && sidebar.isSelected(node.key)) {
+    await sidebar.deleteSelectedNodes()
+  } else {
+    try {
+      await sidebar.deleteNode(node.data.id, node.data.guid)
+      sidebar.deleteTreeNode(node)
+    } catch (err) {
+      console.error('删除节点失败:', err)
+    }
   }
 }
 
-// 改为使用 any 类型来避免类型检查错误，实际上这是 TreeItem 组件
 const treeItemRef = useTemplateRef<any>('treeItemRef')
 
-// add note
 const addNode = async (node: TreeNode) => {
   if (!sidebar.canAddChildren(node)) {
     console.warn('此节点不能添加子节点')
@@ -143,29 +159,43 @@ const addNode = async (node: TreeNode) => {
   showCreateChildInput(node, 'note')
 }
 
-// 拖拽相关的状态
+// ── 拖拽 ──
+
 const isDragging = ref(false)
 const isDragOver = ref(false)
 
-// 拖拽开始时设置拖拽数据
 const onDragStart = (event: DragEvent, node: TreeNode) => {
   if (!event.dataTransfer) return
 
-  const dragData = {
-    key: node.key,
-    type: node.type,
-    parentId: node.parentId || '',
-    label: node.label,
+  let dragNodes: { key: string; type: string; parentId: string; label: string }[]
+
+  if (sidebar.isSelected(node.key) && sidebar.selectedKeys.length > 1) {
+    const selected = sidebar.getSelectedNodes()
+    dragNodes = selected.map(n => ({
+      key: n.key,
+      type: n.type,
+      parentId: n.parentId || '',
+      label: n.label,
+    }))
+  } else {
+    sidebar.selectNode(node.key)
+    dragNodes = [{
+      key: node.key,
+      type: node.type,
+      parentId: node.parentId || '',
+      label: node.label,
+    }]
   }
 
   event.dataTransfer.effectAllowed = 'move'
-  event.dataTransfer.setData('application/json', JSON.stringify(dragData))
-  sidebar.setDragNode(dragData)
+  event.dataTransfer.setData('application/json', JSON.stringify(dragNodes))
+  sidebar.setDragNodes(dragNodes)
 
-  // 添加自定义的拖拽图像
   const dragImage = document.createElement('div')
   dragImage.classList.add('drag-image')
-  dragImage.textContent = node.label
+  dragImage.textContent = dragNodes.length > 1
+    ? `${dragNodes.length} 个项目`
+    : node.label
   dragImage.style.cssText = 'position:absolute;top:-1000px;'
   document.body.appendChild(dragImage)
   event.dataTransfer.setDragImage(dragImage, 10, 10)
@@ -179,65 +209,64 @@ const onDragStart = (event: DragEvent, node: TreeNode) => {
   }, 0)
 }
 
-// 拖拽结束时清除状态
 const onDragEnd = () => {
   isDragging.value = false
-  sidebar.clearDragNode()
+  sidebar.clearDragNodes()
 }
 
-// 当拖拽进入目标时
 const onDragEnter = (event: DragEvent, node: TreeNode) => {
   if (!event.dataTransfer) return
-  if (!sidebar.currentDragNode) return
-  if (sidebar.currentDragNode.parentId === node.key) return
-  if (sidebar.currentDragNode.key === node.key) return
-  if (sidebar.isDescendantOf(node.key, sidebar.currentDragNode.key)) return
+  if (sidebar.currentDragNodes.length === 0) return
+  if (sidebar.currentDragNodes.some(d => d.key === node.key)) return
+  if (!sidebar.canAddChildren(node)) return
 
-  if (sidebar.canAddChildren(node)) {
-    event.preventDefault()
-    isDragOver.value = true
-  }
+  const hasInvalidDrag = sidebar.currentDragNodes.some(
+    d => d.parentId === node.key || sidebar.isDescendantOf(node.key, d.key),
+  )
+  if (hasInvalidDrag) return
+
+  event.preventDefault()
+  isDragOver.value = true
 }
 
-// 当拖拽在目标上方时
 const onDragOver = (event: DragEvent, node: TreeNode) => {
   if (!event.dataTransfer) return
-  if (!sidebar.currentDragNode) return
-  if (sidebar.currentDragNode.key === node.key) return
-  if (sidebar.currentDragNode.parentId === node.key) return
-  if (sidebar.isDescendantOf(node.key, sidebar.currentDragNode.key)) return
+  if (sidebar.currentDragNodes.length === 0) return
+  if (sidebar.currentDragNodes.some(d => d.key === node.key)) return
+  if (!sidebar.canAddChildren(node)) return
 
-  if (sidebar.canAddChildren(node)) {
-    event.preventDefault()
-    isDragOver.value = true
-  }
+  const hasInvalidDrag = sidebar.currentDragNodes.some(
+    d => d.parentId === node.key || sidebar.isDescendantOf(node.key, d.key),
+  )
+  if (hasInvalidDrag) return
+
+  event.preventDefault()
+  isDragOver.value = true
 }
 
-// 当拖拽离开目标时
 const onDragLeave = () => {
   isDragOver.value = false
 }
 
-// 当放置拖拽项时
 const onDrop = async (event: DragEvent, targetNode: TreeNode) => {
   event.preventDefault()
   isDragOver.value = false
 
   if (!sidebar.canAddChildren(targetNode)) return
-  if (!event.dataTransfer) return
+  if (sidebar.currentDragNodes.length === 0) return
+
+  if (sidebar.currentDragNodes.length > 1) {
+    await sidebar.moveSelectedNodes(targetNode.data.guid)
+    return
+  }
+
+  const dragData = sidebar.currentDragNodes[0]
+  if (!dragData) return
+  if (dragData.key === targetNode.key) return
+  if (dragData.parentId == targetNode.key) return
+  if (sidebar.isDescendantOf(targetNode.key, dragData.key)) return
 
   try {
-    const dragData = JSON.parse(
-      event.dataTransfer.getData('application/json'),
-    ) as { key: string; type: string; parentId: string; label: string }
-
-    if (dragData.key === targetNode.key) return
-    if (dragData.parentId == targetNode.key) return
-    if (sidebar.isDescendantOf(targetNode.key, dragData.key)) {
-      console.warn('不能将节点拖放到其子节点上（会造成循环引用）')
-      return
-    }
-
     const draggedNode = findNodeByKey(sidebar.treeLabels, dragData.key)
     if (!draggedNode) return
     if (draggedNode.parentId == targetNode.key) return
@@ -258,7 +287,6 @@ const onDrop = async (event: DragEvent, targetNode: TreeNode) => {
   }
 }
 
-// 在树中查找节点
 const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
   for (const node of nodes) {
     if (node.key === key) return node
@@ -270,7 +298,19 @@ const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
   return null
 }
 
-// 添加创建相关状态变量
+// ── isExpanded 同步 ──
+
+watch(
+  () => treeItemRef.value?.isExpanded,
+  (expanded) => {
+    if (expanded !== undefined) {
+      sidebar.setNodeExpanded(props.tree.key, expanded)
+    }
+  },
+)
+
+// ── 创建子节点 ──
+
 const isCreatingChild = ref(false)
 const creatingType = ref<'note' | 'folder'>('note')
 const creatingName = ref('')
@@ -278,7 +318,6 @@ const creatingInputRef = useTemplateRef<HTMLInputElement>('creatingInputRef')
 const creatingParentNode = ref<TreeNode | null>(null)
 let creatingClickOutsideHandler: ((event: MouseEvent) => void) | null = null
 
-// 显示创建输入框
 const showCreateChildInput = (
   parentNode: TreeNode,
   type: 'note' | 'folder',
@@ -299,9 +338,7 @@ const showCreateChildInput = (
     creatingName.value = ''
     isCreatingChild.value = true
 
-    // 展开文件夹
     if (parentNode.type === 'folder' && treeItemRef.value) {
-      // 使用 reka-ui 的 expand 方法
       if (!treeItemRef.value.isExpanded && treeItemRef.value.handleToggle) {
         treeItemRef.value.handleToggle()
       }
@@ -330,7 +367,6 @@ const showCreateChildInput = (
   }, 100)
 }
 
-// 取消创建
 const cancelCreateChild = () => {
   isCreatingChild.value = false
   creatingName.value = ''
@@ -342,7 +378,6 @@ const cancelCreateChild = () => {
   }
 }
 
-// 完成创建
 const finishCreateChild = async () => {
   const name = creatingName.value.trim()
   if (!name || !creatingParentNode.value) {
@@ -364,7 +399,6 @@ const finishCreateChild = async () => {
   }
 }
 
-// 清理事件监听器
 onBeforeUnmount(() => {
   if (creatingClickOutsideHandler) {
     document.removeEventListener('mousedown', creatingClickOutsideHandler)
@@ -387,11 +421,12 @@ onBeforeUnmount(() => {
         :class="{
           'opacity-40': isDragging,
           'ring-2 ring-primary/30 ring-offset-1 ring-offset-background bg-primary/5': isDragOver,
-          'bg-primary/10 text-primary': tree.selected,
-          'hover:bg-muted/60': !tree.selected && !isDragOver,
+          'bg-primary/10 text-primary': isNodeSelected,
+          'hover:bg-muted/60': !isNodeSelected && !isDragOver,
         }"
         :style="{ 'padding-left': `${level * 0.75 + 0.5}rem` }"
-        @click="onNodeSelect(tree)"
+        @click="handleClick($event, tree)"
+        @contextmenu="handleContextMenu(tree)"
         :draggable="!inRenameMode"
         @dragstart="onDragStart($event, tree)"
         @dragend="onDragEnd"
@@ -444,35 +479,45 @@ onBeforeUnmount(() => {
                 <div class="flex w-full items-center">
                   <span
                     class="truncate text-sm"
-                    :class="{ 'font-medium': tree.selected }"
+                    :class="{ 'font-medium': isNodeSelected }"
                   >
                     {{ tree.label }}
                   </span>
                 </div>
                 <template #content>
-                  <CustomContextMenuItem @click="showCreateChildInput(tree, 'note')">
-                    <span class="icon-[lucide--file-plus] mr-2 size-4 text-blue-500 dark:text-blue-400" />
-                    新建笔记
-                  </CustomContextMenuItem>
-                  <CustomContextMenuItem @click="showCreateChildInput(tree, 'folder')">
-                    <span class="icon-[lucide--folder-plus] mr-2 size-4 text-amber-600 dark:text-amber-400" />
-                    新建笔记本
-                  </CustomContextMenuItem>
-                  <CustomContextMenuItem @click="renameNode(tree)">
-                    <span class="icon-[lucide--pencil] mr-2 size-4 text-emerald-600 dark:text-emerald-400" />
-                    重命名
-                  </CustomContextMenuItem>
-                  <CustomContextMenuItem @click="onDeleteNode(tree)">
-                    <span class="icon-[lucide--trash-2] mr-2 size-4 text-rose-500 dark:text-rose-400" />
-                    删除
-                  </CustomContextMenuItem>
+                  <!-- 多选时只显示批量删除 -->
+                  <template v-if="isMultiSelected && isNodeSelected">
+                    <CustomContextMenuItem @click="onDeleteNode(tree)">
+                      <span class="icon-[lucide--trash-2] mr-2 size-4 text-rose-500 dark:text-rose-400" />
+                      删除 {{ sidebar.selectedKeys.length }} 个项目
+                    </CustomContextMenuItem>
+                  </template>
+                  <!-- 单选时显示完整菜单 -->
+                  <template v-else>
+                    <CustomContextMenuItem v-if="tree.type === 'folder'" @click="showCreateChildInput(tree, 'note')">
+                      <span class="icon-[lucide--file-plus] mr-2 size-4 text-blue-500 dark:text-blue-400" />
+                      新建笔记
+                    </CustomContextMenuItem>
+                    <CustomContextMenuItem v-if="tree.type === 'folder'" @click="showCreateChildInput(tree, 'folder')">
+                      <span class="icon-[lucide--folder-plus] mr-2 size-4 text-amber-600 dark:text-amber-400" />
+                      新建笔记本
+                    </CustomContextMenuItem>
+                    <CustomContextMenuItem @click="renameNode(tree)">
+                      <span class="icon-[lucide--pencil] mr-2 size-4 text-emerald-600 dark:text-emerald-400" />
+                      重命名
+                    </CustomContextMenuItem>
+                    <CustomContextMenuItem @click="onDeleteNode(tree)">
+                      <span class="icon-[lucide--trash-2] mr-2 size-4 text-rose-500 dark:text-rose-400" />
+                      删除
+                    </CustomContextMenuItem>
+                  </template>
                 </template>
               </CustomContextMenu>
             </div>
             <div
               class="flex flex-none items-center opacity-0 transition-all duration-200 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0"
               @click.stop
-              v-show="!inRenameMode"
+              v-show="!inRenameMode && tree.type === 'folder'"
             >
               <Button
                 variant="ghost"
@@ -487,7 +532,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <!-- 创建子项输入框 - 在节点下显示 -->
+      <!-- 创建子项输入框 -->
       <div
         v-if="isCreatingChild && creatingParentNode && creatingParentNode.key === tree.key"
         class="my-1.5 mx-2 animate-fade-in"
@@ -508,7 +553,7 @@ onBeforeUnmount(() => {
 
       <!-- 子节点列表 -->
       <ul v-if="isExpanded && tree.children && tree.children.length > 0" class="list-none">
-        <Tree :tree-items="tree.children" :level="level + 1" />
+        <Tree :tree-items="tree.children" :level="level + 1" :sorted-trees="sortedTrees" />
       </ul>
     </li>
   </TreeItem>
