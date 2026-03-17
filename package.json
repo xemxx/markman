@@ -13,8 +13,8 @@
     "tsc:lint": "vue-tsc --noEmit",
     "dev": "vite dev",
     "vue:tools": "vue-devtools",
-    "build": "vue-tsc --noEmit && vite build && electron-builder --publish never",
-    "release": "vue-tsc --noEmit && vite build && electron-builder --publish onTagOrDraft"
+    "build": "vue-tsc --noEmit && vite build && node scripts/run-electron-builder.mjs --publish never",
+    "release": "vue-tsc --noEmit && vite build && node scripts/run-electron-builder.mjs --publish onTagOrDraft"
   },
   "engines": {
     "node": ">=20.11.0"
@@ -49,7 +49,7 @@
     "core-js": "^3.42.0",
     "electron": "^36.8.1",
     "electron-about": "^2.0.1",
-    "electron-builder": "^26.0.12",
+    "electron-builder": "^26.8.1",
     "electron-store": "^8.2.0",
     "fs-extra": "^11.3.0",
     "json-schema-typed": "^7.0.3",
@@ -92,6 +92,24 @@
     "vue"
   ],
   "pnpm": {
+    "overrides": {
+      "@tootallnate/once": "^3.0.1",
+      "ajv@6": "^6.14.0",
+      "ajv@8": "^8.18.0",
+      "esbuild": "^0.25.0",
+      "form-data": "^4.0.5",
+      "glob@10": "^10.5.0",
+      "js-yaml": "^4.1.1",
+      "lodash": "^4.17.23",
+      "lodash-es": "^4.17.23",
+      "minimatch@3": "^3.1.4",
+      "minimatch@5": "^5.1.8",
+      "minimatch@9": "^9.0.7",
+      "minimatch@10": "^10.2.3",
+      "rollup": "^4.59.0",
+      "tar": "^7.5.11",
+      "tmp": "^0.2.5"
+    },
     "ignoredBuiltDependencies": [
       "core-js",
       "electron-winstaller",
