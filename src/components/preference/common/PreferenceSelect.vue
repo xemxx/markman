@@ -7,14 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useVModel } from '@vueuse/core'
 
 const props = defineProps<{
   defaultValue?: string
   modelValue?: string
   items?: { label: string; value: string }[]
 }>()
-
-import { useVModel } from '@vueuse/core'
 
 const emits = defineEmits<{
   (e: 'update:modelValue', payload: string): void

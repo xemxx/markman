@@ -14,7 +14,7 @@ import { initDB } from '@/plugins/sqlite3/index'
  */
 export async function initializeApp(): Promise<void> {
   // 初始化数据库
-  initDB()
+  await initDB()
   const user = useUserStore()
   const sync = useSyncStore()
 

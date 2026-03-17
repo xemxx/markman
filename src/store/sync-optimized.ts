@@ -25,11 +25,12 @@ const nodeModel = new NodeModel()
 // 同步配置
 const DEFAULT_SYNC_INTERVAL = 60000 // 默认同步间隔：1分钟
 const MIN_SYNC_INTERVAL = 30000 // 最小同步间隔：30秒
-const OFFLINE_CHECK_INTERVAL = 5000 // 离线检查间隔：30秒
+const OFFLINE_CHECK_INTERVAL = 5000 // 离线检查间隔：5秒
 
 // 初始状态
 interface SyncState {
   isSyncing: boolean
+  pendingSync: boolean
   online: boolean
   platform: string | undefined
   syncTimer: number | null
@@ -41,6 +42,7 @@ interface SyncState {
 
 const state: SyncState = {
   isSyncing: false,
+  pendingSync: false,
   online: false,
   platform: process.env.platform,
   syncTimer: null,
@@ -56,6 +58,15 @@ const state: SyncState = {
 export const useSyncStore = defineStore('sync', {
   state: () => state,
   actions: {
+    shouldReloadTreeAfterPush(node: NodeItem): boolean {
+      if (node.type === 'folder') {
+        return true
+      }
+
+      // 创建/删除会影响树结构；普通 note 内容更新不需要每次重建整棵树
+      return node.modifyState === 1 || node.modifyState === 3
+    },
+
     /**
      * 初始化定时同步
      */
@@ -133,7 +144,7 @@ export const useSyncStore = defineStore('sync', {
       if (!value) {
         // 如果离线，定时检查连接
         if (this.checkOnlineTimer !== null) {
-          window.clearTimeout(this.checkOnlineTimer)
+          window.clearInterval(this.checkOnlineTimer)
         }
         this.checkOnlineTimer = window.setInterval(
           () => this.checkServerOnline(),
@@ -141,7 +152,8 @@ export const useSyncStore = defineStore('sync', {
         )
       } else {
         if (this.checkOnlineTimer !== null) {
-          window.clearTimeout(this.checkOnlineTimer)
+          window.clearInterval(this.checkOnlineTimer)
+          this.checkOnlineTimer = null
         }
         if (sync) {
           this.sync(false, true)
@@ -188,25 +200,21 @@ export const useSyncStore = defineStore('sync', {
      * @param silent 是否静默同步（不显示状态变化）
      */
     async sync(force = false, silent = false): Promise<void> {
-      // 记录同步时间
-      this.lastSyncTime = Date.now()
-
-      if (!force) {
-        if (!this.online) {
-          return
-        }
-        // 防止重复同步
-        if (this.isSyncing) return
-
-        // 非静默模式才更新状态
-        if (!silent) {
-          this.isSyncing = true
-        }
+      if (!force && !this.online) {
+        return
       }
+
+      // 静默同步同样需要持有锁，避免定时器和联网恢复触发并发同步
+      if (this.isSyncing) {
+        this.pendingSync = true
+        return
+      }
+
+      this.pendingSync = false
+      this.update_isSyncing(true)
 
       const user = useUserStore()
       if (!user.isLogin) {
-        this.update_isSyncing(false)
         return
       }
       const server = user.server
@@ -222,25 +230,39 @@ export const useSyncStore = defineStore('sync', {
         // 获取服务端版本号
         const { SC: serverSC = 0 } = await syncApi.getLastSyncCount(server)
 
+        let shouldReloadTree = false
+
         // 如果需要更新则拉取
         if (serverSC > localSC) {
-          await this.pull({ localSC, serverSC })
+          shouldReloadTree =
+            (await this.pull({ localSC, serverSC })) || shouldReloadTree
         }
 
-        await this.push(user.dbUser?.id!)
-        const sidebarS = useSidebarStore()
-        await sidebarS.loadNodeTree()
-        this.update_online(true)
-        // 非静默模式才更新状态
-        if (!silent) {
-          setTimeout(() => this.update_isSyncing(false), 1000)
+        shouldReloadTree =
+          (await this.push(user.dbUser?.id!)) || shouldReloadTree
+        if (shouldReloadTree) {
+          const sidebarS = useSidebarStore()
+          await sidebarS.loadNodeTree()
         }
+
+        this.lastSyncTime = Date.now()
+        this.update_online(true)
       } catch (err) {
         console.error('同步失败:', err)
+      } finally {
+        const shouldRunAgain = this.pendingSync
+        this.pendingSync = false
 
-        // 非静默模式才更新状态
-        if (!silent) {
+        if (silent) {
+          this.update_isSyncing(false)
+        } else {
           setTimeout(() => this.update_isSyncing(false), 1000)
+        }
+
+        if (shouldRunAgain) {
+          setTimeout(() => {
+            this.sync(force, true)
+          }, silent ? 0 : 1000)
         }
       }
     },
@@ -249,44 +271,51 @@ export const useSyncStore = defineStore('sync', {
      * 拉取数据
      * @param params 同步参数
      */
-    async pull(params: SyncParams): Promise<void> {
+    async pull(params: SyncParams): Promise<boolean> {
       const user = useUserStore()
 
-      await this._pullNodes(params.localSC)
+      const shouldReloadTree = await this._pullNodes(params.localSC)
       user.update_lastSC(params.serverSC)
+      return shouldReloadTree
     },
 
     /**
      * 推送数据
      */
-    async push(uid: number) {
+    async push(uid: number): Promise<boolean> {
       if (uid === null) {
         console.error('用户ID为空')
-        return
+        return false
       }
-      await this._pushNodes(uid)
+      return await this._pushNodes(uid)
     },
 
     /**
      * 拉取节点数据
      * @param afterSC 同步计数
      */
-    async _pullNodes(afterSC: string | number): Promise<void> {
+    async _pullNodes(afterSC: string | number): Promise<boolean> {
       const user = useUserStore()
       const server = user.server
 
       try {
         const data = await syncApi.getSyncNodes(server, afterSC)
         const nodes = data.nodes
+        let shouldReloadTree = false
 
         if (nodes.length > 0) {
-          await this._updateNodesToLocal(nodes)
+          shouldReloadTree = await this._updateNodesToLocal(nodes)
         }
 
         if (nodes.length === 20) {
           // 如果返回的数据量等于请求的最大数量，说明可能还有更多数据
-          return this._pullNodes(nodes[nodes.length - 1].SC)
+          return (
+            (await this._pullNodes(nodes[nodes.length - 1].SC)) ||
+            shouldReloadTree
+          )
         }
+
+        return shouldReloadTree
       } catch (error) {
         console.error('拉取节点数据失败:', error)
         throw error
@@ -297,19 +326,20 @@ export const useSyncStore = defineStore('sync', {
      * 更新节点到本地
      * @param serverData 服务器节点数据
      */
-    async _updateNodesToLocal(serverData: ServerNodeData[]): Promise<void> {
+    async _updateNodesToLocal(serverData: ServerNodeData[]): Promise<boolean> {
       const user = useUserStore()
       const editor = useEditorStore()
       const uid = user.dbUser?.id!
 
       if (uid === null) {
         console.error('用户ID为空')
-        return
+        return false
       }
 
       try {
         const localNodes = await nodeModel.getLocalByServer(uid, serverData)
         const localDataMap = new Map<string, NodeItem>()
+        let shouldReloadTree = false
 
         // 构建本地数据映射
         for (const node of localNodes) {
@@ -342,6 +372,7 @@ export const useSyncStore = defineStore('sync', {
             if (isDel === 1) {
               // 服务器已删除，本地也删除
               await nodeModel.delete(localNode.id)
+              shouldReloadTree = true
             } else {
               // 根据本地修改状态处理
               switch (localNode.modifyState) {
@@ -357,6 +388,13 @@ export const useSyncStore = defineStore('sync', {
                     modifyDate: parsedModifyDate,
                     modifyState: 0,
                   })
+                  shouldReloadTree =
+                    shouldReloadTree ||
+                    localNode.title !== title ||
+                    localNode.parentId !== parentId ||
+                    localNode.type !== type ||
+                    localNode.sort !== sort ||
+                    localNode.sortType !== sortType
 
                   // 如果是笔记且本地编辑器已经打开了需要同步
                   if (type === 'note' && localNode.id === editor.dbNote.id) {
@@ -377,10 +415,7 @@ export const useSyncStore = defineStore('sync', {
                 case 2: // 本地已修改且服务端SC更高，需要处理冲突
                   if (type === 'folder') {
                     // 文件夹冲突处理：比较修改时间，新的覆盖旧的
-                    if (
-                      Date.parse(String(localNode.modifyDate)) <
-                      Date.parse(serverNode.modifyDate)
-                    ) {
+                    if (Number(localNode.modifyDate) < parsedModifyDate) {
                       await nodeModel.update(localNode.id, {
                         title,
                         parentId: serverNode.parentId,
@@ -388,16 +423,16 @@ export const useSyncStore = defineStore('sync', {
                         modifyDate: parsedModifyDate,
                         modifyState: 0,
                       })
+                      shouldReloadTree = true
                     }
                   } else {
                     // 笔记冲突处理：保留两端数据，让用户自行处理
                     let newTitle = `local: ${localNode.title} [---] server: ${title}`
                     let newContent = `local>>>>>>>>>>>>>>\n${localNode.content}\n [---------------------------------]\n server:>>>>>>>>>>>>>>>>\n${content}`
                     const newModifyDate =
-                      Date.parse(String(localNode.modifyDate)) <
-                      Date.parse(serverNode.modifyDate)
+                      Number(localNode.modifyDate) < parsedModifyDate
                         ? parsedModifyDate
-                        : localNode.modifyDate
+                        : Number(localNode.modifyDate)
 
                     // 如果有冲突且当前正在编辑，更新编辑器
                     if (localNode.id === editor.dbNote.id) {
@@ -413,6 +448,10 @@ export const useSyncStore = defineStore('sync', {
                     if (localNode.id === editor.dbNote.id) {
                       editor.flashNote(true)
                     }
+                    shouldReloadTree =
+                      shouldReloadTree ||
+                      localNode.title !== newTitle ||
+                      localNode.parentId !== parentId
                   }
                   break
 
@@ -426,6 +465,7 @@ export const useSyncStore = defineStore('sync', {
                     SC: serverNode.SC,
                     modifyState: 0,
                   })
+                  shouldReloadTree = true
                   break
               }
             }
@@ -445,8 +485,10 @@ export const useSyncStore = defineStore('sync', {
               uid,
               modifyState: 0, // 不需要同步
             })
+            shouldReloadTree = true
           }
         }
+        return shouldReloadTree
       } catch (error) {
         console.error('更新本地节点失败:', error)
         throw error
@@ -456,13 +498,17 @@ export const useSyncStore = defineStore('sync', {
     /**
      * 推送节点数据
      */
-    async _pushNodes(uid: number) {
+    async _pushNodes(uid: number): Promise<boolean> {
       try {
         const nodesToSync = await nodeModel.getModify(uid)
+        const shouldReloadTree = nodesToSync.some(node =>
+          this.shouldReloadTreeAfterPush(node),
+        )
 
         if (nodesToSync.length > 0) {
           await this._updateNodesToServer({ data: nodesToSync, index: 0 })
         }
+        return shouldReloadTree
       } catch (error) {
         console.error('推送节点数据失败:', error)
         throw error

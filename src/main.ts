@@ -10,30 +10,15 @@ import './assets/index.css'
 const app = createApp(App)
 
 app
-  .use(router)
   .use(pinia)
+  .use(router)
   .directive('focus', {
     mounted(el) {
       el.focus()
     },
   })
-  .mount('#app')
-  .$nextTick(() => {
-    postMessage({ payload: 'removeLoading' }, '*')
-  })
 
 const user = useUserStore()
-
-// 初始化应用（获取用户信息等）
-await initializeApp().then(async () => {
-  if (!user.isLogin) {
-    router.push('/login')
-  }
-  const sidebar = useSidebarStore()
-  sidebar.loadNodeTree()
-  const preference = usePreferenceStore()
-  await preference.initListen()
-})
 
 router.beforeEach((to, _from, next) => {
   // 只检查用户是否已鉴权
@@ -53,4 +38,22 @@ router.beforeEach((to, _from, next) => {
     }
   }
   next()
+})
+
+// 初始化应用（获取用户信息等）
+await initializeApp()
+
+if (!user.isLogin) {
+  await router.replace(user.server === '' ? '/login-setting' : '/login')
+}
+
+const sidebar = useSidebarStore()
+await sidebar.loadNodeTree()
+const preference = usePreferenceStore()
+await preference.initListen()
+
+await router.isReady()
+
+app.mount('#app').$nextTick(() => {
+  postMessage({ payload: 'removeLoading' }, '*')
 })

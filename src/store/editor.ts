@@ -23,7 +23,7 @@ const defaultNote: NodeItem = {
   modifyDate: 0,
   addDate: 0,
 }
-import { Crepe } from '@milkdown/crepe'
+import type { Crepe } from '@milkdown/crepe'
 
 export const useEditorStore = defineStore('editor', {
   state: () => ({

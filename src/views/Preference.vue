@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import PSidebar from '@/components/preference/sidebar/index.vue'
+import PSidebar from '@/components/preference/sidebar/PreferenceSidebar.vue'
 </script>
 
 <style scoped></style>

@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
+
 const model = defineModel({ type: Number })
 const props = defineProps<{
   after?: string

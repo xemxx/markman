@@ -7,6 +7,10 @@ import LoginSetting from '@/views/LoginSetting.vue'
 
 const routes = [
   {
+    path: '/',
+    redirect: '/editorBase',
+  },
+  {
     path: '/editorBase',
     name: 'editorBase',
     component: Base,

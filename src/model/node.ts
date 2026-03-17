@@ -84,15 +84,22 @@ export class NodeModel extends Model {
   }
 
   // 标记节点为本地删除
-  async deleteLocal(id: any, guid: any) {
+  async deleteLocal(id: any, _guid: any) {
     try {
-      // 标记当前节点为删除状态
-      await this.update(id, { modifyState: 3 })
-      // 标记所有子节点为删除状态
-      return await db.run(`UPDATE node SET modifyState=? WHERE parentId=?`, [
-        3,
-        guid,
-      ])
+      // 递归标记整棵子树，避免深层后代在重建树时漂到根节点
+      return await db.run(
+        `WITH RECURSIVE descendants(guid) AS (
+          SELECT guid FROM node WHERE id = ?
+          UNION ALL
+          SELECT node.guid
+          FROM node
+          JOIN descendants ON node.parentId = descendants.guid
+        )
+        UPDATE node
+        SET modifyState = ?
+        WHERE guid IN (SELECT guid FROM descendants)`,
+        [id, 3],
+      )
     } catch (err) {
       return console.log(err)
     }

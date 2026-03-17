@@ -1,9 +1,13 @@
 <template>
   <div class="pref-sync mt-5">
     <Bool v-model="autoSync">自动同步</Bool>
-    <Input v-model="syncInterval" after="ms" @change="handleIntervalChange">
+    <PreferenceInput
+      v-model="syncInterval"
+      after="ms"
+      @change="handleIntervalChange"
+    >
       同步间隔，单位毫秒
-    </Input>
+    </PreferenceInput>
     <div class="mt-4 flex items-center space-x-2">
       <button
         class="flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
@@ -56,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue'
-import Input from './common/input.vue'
+import PreferenceInput from './common/PreferenceInput.vue'
 import Bool from './common/bool.vue'
 import { usePreferenceStore, useSyncStore } from '@/store'
 import { storeToRefs } from 'pinia'

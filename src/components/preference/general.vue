@@ -1,15 +1,19 @@
 <template>
   <div class="pref-general mt-5">
     <Bool v-model="autoSave">是否自动保存</Bool>
-    <Input v-model="autoSaveDelay" after="ms"> 自动保存时延，单位毫秒 </Input>
-    <Select v-model="themeType" :items="themeArr"> 主题选择 </Select>
+    <PreferenceInput v-model="autoSaveDelay" after="ms">
+      自动保存时延，单位毫秒
+    </PreferenceInput>
+    <PreferenceSelect v-model="themeType" :items="themeArr">
+      主题选择
+    </PreferenceSelect>
   </div>
 </template>
 
 <script setup lang="ts">
-import Input from './common/input.vue'
+import PreferenceInput from './common/PreferenceInput.vue'
 import Bool from './common/bool.vue'
-import Select from './common/select.vue'
+import PreferenceSelect from './common/PreferenceSelect.vue'
 
 import { usePreferenceStore } from '@/store'
 import { storeToRefs } from 'pinia'

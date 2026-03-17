@@ -138,9 +138,7 @@
 
           <!-- Editor -->
           <div class="flex size-full flex-1 flex-col" v-show="editorS.isEdit">
-            <MilkdownProvider>
-              <Milkdown />
-            </MilkdownProvider>
+            <AsyncEditorPane />
           </div>
         </div>
       </ResizablePanel>
@@ -150,8 +148,6 @@
 
 <script setup lang="ts">
 import Sidebar from '@/components/sidebar/index.vue'
-import Milkdown from '@/components/milkdown/CrepeEditor.vue'
-import { MilkdownProvider } from '@milkdown/vue'
 import TitleBar from '@/components/titleBar.vue'
 import {
   ResizableHandle,
@@ -159,12 +155,15 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted } from 'vue'
 import { emitter } from '@/lib/emitter.ts'
 import { Modal, message } from 'ant-design-vue'
 
 import { useListenStore, useEditorStore, usePreferenceStore } from '@/store'
 const editorS = useEditorStore()
+const AsyncEditorPane = defineAsyncComponent(
+  () => import('@/components/milkdown/EditorPane.vue'),
+)
 
 // 处理笔记切换
 const showCloseQuery = async (id: any) => {

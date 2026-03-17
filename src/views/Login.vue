@@ -199,7 +199,7 @@
             <div
               class="w-10 h-10 mx-auto rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-2"
             >
-              <span class="icon-[lucide--cloud-sync] text-amber-600 dark:text-amber-400" />
+              <span class="icon-[lucide--refresh-cw] text-amber-600 dark:text-amber-400" />
             </div>
             <p class="text-xs text-muted-foreground">云端同步</p>
           </div>

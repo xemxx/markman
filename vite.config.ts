@@ -19,6 +19,25 @@ export default defineConfig(({ command }) => {
   const isBuild = command === 'build'
   const isServe = command === 'serve'
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
+  const getManualChunk = (id: string) => {
+    if (!id.includes('node_modules')) {
+      return
+    }
+
+    if (id.includes('ant-design-vue') || id.includes('@ant-design')) {
+      return 'antd-vendor'
+    }
+
+    if (
+      id.includes('vue-router') ||
+      id.includes('pinia') ||
+      id.includes('@vueuse') ||
+      id.includes('reka-ui')
+    ) {
+      return 'app-vendor'
+    }
+  }
+
   return {
     type: 'module',
     plugins: [
@@ -114,6 +133,11 @@ export default defineConfig(({ command }) => {
     // publicDir: 'src/assets',
     build: {
       target: 'esnext',
+      rollupOptions: {
+        output: {
+          manualChunks: getManualChunk,
+        },
+      },
     },
     optimizeDeps: {
       esbuildOptions: {
